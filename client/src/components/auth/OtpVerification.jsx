@@ -1,0 +1,90 @@
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
+const OtpVerification = () => {
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const inputsRef = useRef([]);
+  const navigate = useNavigate();
+
+  const correctOtp = "123456"; // This should ideally come from backend/session
+
+  const handleChange = (value, index) => {
+    if (isNaN(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(-1);
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      inputsRef.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      if (otp[index] === "") {
+        if (index > 0) {
+          inputsRef.current[index - 1]?.focus();
+        }
+      } else {
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputsRef.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputsRef.current[index + 1]?.focus();
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const enteredOtp = otp.join("");
+    if (enteredOtp === correctOtp) {
+      navigate("/dashboard");
+    } else {
+      navigate("/register");
+    }
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-100 to-white px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-2xl p-8">
+        <h2 className="text-2xl font-semibold text-center text-emerald-800 mb-4">
+          OTP Verification
+        </h2>
+        <p className="text-center text-sm text-gray-600 mb-6">
+          Please enter the 6-digit code sent to your number
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="flex justify-between space-x-2 mb-6">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleChange(e.target.value, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                ref={(el) => (inputsRef.current[index] = el)}
+                className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+              />
+            ))}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 transition text-white py-2.5 rounded-lg text-sm font-semibold shadow-md"
+          >
+            Verify
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default OtpVerification;
