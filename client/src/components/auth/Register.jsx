@@ -73,7 +73,7 @@ const Register = () => {
                 borderRadius: "0.5rem",
                 border: "1px solid #d1d5db",
               }}
-              country={"us"}
+              country={"in"}
               enableSearch
             />
           </div>
