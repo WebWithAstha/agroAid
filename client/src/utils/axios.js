@@ -13,6 +13,9 @@ export const pesticidesAxios = axios.create({
     withCredentials: true
 })
 export const agmarknetAxios = axios.create({
-    baseURL: "",
-    withCredentials: true
+    baseURL: "https://api.data.gov.in/resource/",
+
+    withCredentials: false
 })
+
+// agmarknet api  : 

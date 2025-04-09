@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Mic,
   CloudSun,
@@ -13,22 +13,25 @@ import {
 } from "lucide-react";
 import Navbar from "../partials/Navbar";
 import { Link } from "react-router-dom";
+import { getPrices } from "../../Services/agmarknet";
 
 const GreetingCard = ({ isRecording, toggleRecording }) => {
+
+
+
   const assitant = () => (
     <>
       <div className="p-4 border backdrop-blur-xl relative w-max text-white rounded-2xl mt-6">
         <div className="w-max absolute top-1/2 -translate-y-1/2 md:translate-x-1/2 right-2 md:right-0">
-            <button
-              onClick={toggleRecording}
-              className={`flex items-center justify-center w-20 h-20 rounded-full  transition-all duration-300 ${
-                isRecording
-                  ? "bg-red-600 border-red-700 animate-pulse"
-                  : "backdrop-blur-3xl bg-amber-300"
+          <button
+            onClick={toggleRecording}
+            className={`flex items-center justify-center w-20 h-20 rounded-full  transition-all duration-300 ${isRecording
+              ? "bg-red-600 border-red-700 animate-pulse"
+              : "backdrop-blur-3xl bg-amber-300"
               }`}
-            >
-              <Mic size={24} className="text-white" />
-            </button>
+          >
+            <Mic size={24} className="text-white" />
+          </button>
         </div>
         <div className="w-[70%]">
           <h2 className="text-2xl md:text-3xl font-semibold flex items-center gap-2">
@@ -128,28 +131,28 @@ const ServicesGrid = () => {
       desc: "5-day forecast",
       color: "amber",
       icon: <CloudSun size={44} className="text-amber-600" />,
-      link : "/price"
+      link: "/price"
     },
     {
       title: "Crop Prices",
       desc: "Live updates",
       color: "green",
       icon: <IndianRupee size={44} className="text-green-600" />,
-      link : "/price"
+      link: "/price"
     },
     {
       title: "Crop Diagnosis",
       desc: "AI-powered analysis",
       color: "blue",
       icon: <Camera size={44} className="text-blue-600" />,
-      link : "/price"
+      link: "/price"
     },
     {
       title: "Govt Schemes",
       desc: "Latest benefits",
       color: "purple",
       icon: <ScrollText size={44} className="text-purple-600" />,
-      link : "/price"
+      link: "/price"
     },
   ];
   return (
@@ -162,20 +165,20 @@ const ServicesGrid = () => {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {services.map((service, index) => (
-            <Link  key={index} to = {service.link}>
+          <Link key={index} to={service.link}>
 
-          <div
-           
-            className="bg-white border border-emerald-600 p-4 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all duration-300 cursor-pointer"
-          >
             <div
-              className={`bg-${service.color}-100 w-full h-32 rounded-lg flex items-center justify-center mb-3`}
+
+              className="bg-white border border-emerald-600 p-4 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all duration-300 cursor-pointer"
             >
-              {service.icon}
+              <div
+                className={`bg-${service.color}-100 w-full h-32 rounded-lg flex items-center justify-center mb-3`}
+              >
+                {service.icon}
+              </div>
+              <h3 className="font-medium text-gray-800">{service.title}</h3>
+              <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
             </div>
-            <h3 className="font-medium text-gray-800">{service.title}</h3>
-            <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
-          </div>
           </Link>
 
         ))}
@@ -209,6 +212,14 @@ const Dashboard = () => {
   const toggleRecording = () => {
     setIsRecording(!isRecording);
   };
+
+  const get =async  () => {
+    const data = await getPrices();
+    console.log(data);
+  }
+  useEffect(() => {
+    get();
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
