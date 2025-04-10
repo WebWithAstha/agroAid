@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 router.get('/agmarknet', agmarknetController);
-router.post('/weather', weatherController);
+router.get('/weather', weatherController);
 router.post('/crop-health', cropHealthController);
 
 

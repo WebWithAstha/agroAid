@@ -3,67 +3,66 @@ import crypto from 'crypto';
 import { sendSMS } from '../services/twilloSms.service.js';
 import { Otp } from '../models/otpModel.js';
 import { User } from '../models/userModel.js';
+import {
+    successResponse,
+    badRequest,
+    serverError,
+    notFoundResponse,
+} from '../utils/responseHandler.js';
+import { setCookies } from '../middlewares/auth.middleware.js';
 
 export const sendOtpController = async (req, res) => {
     const { phone } = req.body;
 
     if (!phone) {
-        return res.status(400).json({ success: false, message: 'Phone number is required.' });
+        return badRequest(res, 'Phone number is required.');
     }
-
     const otp = crypto.randomInt(100000, 999999).toString();
-
     try {
+        let user = await User.findOne({ phone });
+        if (user) {
+            return badRequest(res, 'User already exists with this number.');
+        }
         await sendSMS(phone, `Your OTP code is: ${otp}`);
-
         await Otp.deleteMany({ phone });
-
         await Otp.create({
             phone,
             otp,
             expiresAt: new Date(Date.now() + 5 * 60 * 1000),
         });
-
-        res.status(200).json({
-            success: true,
-            message: 'OTP sent successfully.',
-        });
+        return successResponse(res, {}, 'OTP sent successfully.');
     } catch (error) {
         console.error('Failed to send OTP:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to send OTP. Please try again later.',
-        });
+        return serverError(res, error);
     }
 };
 
 export const verifyOtpController = async (req, res) => {
     const { phone, otp } = req.body;
-
-    const record = await Otp.findOne({ phone });
-
-    if (!record) {
-        return res.status(400).json({ success: false, message: 'OTP not found or expired.' });
+    if (!phone || !otp) {
+        return badRequest(res, 'Phone number and OTP are required.');
     }
-
-    if (record.expiresAt < new Date()) {
+    try {
+        const record = await Otp.findOne({ phone });
+        if (!record) {
+            return notFoundResponse(res, 'OTP not found or expired.');
+        }
+        if (record.expiresAt < new Date()) {
+            await Otp.deleteOne({ _id: record._id });
+            return badRequest(res, 'OTP has expired.');
+        }
+        if (record.otp !== otp) {
+            return badRequest(res, 'Invalid OTP.');
+        }
         await Otp.deleteOne({ _id: record._id });
-        return res.status(400).json({ success: false, message: 'OTP has expired.' });
-    }
-
-    if (record.otp !== otp) {
-        return res.status(400).json({ success: false, message: 'Invalid OTP.' });
-    }
-
-    await Otp.deleteOne({ _id: record._id });
-
-    let user = await User.findOne({ phone });
-    if (!user) {
-        user = await User.create({ phone, isVerified: true });
-    } else {
-        user.isVerified = true;
+        let user = await User.create({ phone });
+        const { accessToken, refreshToken } = await user.generateTokens();
+        await setCookies(res, accessToken, refreshToken);
         await user.save();
-    }
 
-    res.status(200).json({user, success: true, message: 'OTP verified successfully.' });
+        return successResponse(res, user, 'OTP verified successfully.');
+    } catch (error) {
+        console.error('OTP verification failed:', error);
+        return serverError(res, error);
+    }
 };
