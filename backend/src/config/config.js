@@ -6,6 +6,10 @@ const _config = {
   port: process.env.PORT || 3000,
   mongoUri: process.env.MONGO_URI,
   geminiApiKey: process.env.GEMINI_API_KEY,
+  assemblyKey:process.env.ASSEMBLY_API_KEY,
+  elevenApiKey:process.env.ELEVEN_API_KEY,
+  elevenVoiceId_en:process.ELEVEN_VOICE_ID_EN,
+  corsOrigin:process.env.CORS_ORIGIN,
   twilio: {
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,

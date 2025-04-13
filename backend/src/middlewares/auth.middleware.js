@@ -1,43 +1,41 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
-import userModel from "../models/userModel.js";
-import { responses } from "../utils/responseHandler.js";
+import { User } from "../models/userModel.js";
+import { forbiddenResponse, serverError, unauthorizedResponse } from "../utils/responseHandler.js";
 
 export const isAuthenticated = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = req.cookies;
         if (!accessToken) {
             if (!refreshToken) {
-                return responses.UNAUTHORIZED(res);
+                return unauthorizedResponse(res);
             }
             try {
                 const decodedRefresh = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET);
-                const user = await userModel.findById(decodedRefresh.id);
+                const user = await User.findById(decodedRefresh.id);
 
                 if (!user || user.refreshToken !== refreshToken) {
-                    return responses.FORBIDDEN(res);
+                    return forbiddenResponse(res);
                 }
                 const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await user.generateTokens();
                 await setCookies(res, newAccessToken, newRefreshToken);
                 req.user = user;
                 return next();
             } catch (refreshError) {
-                return responses.FORBIDDEN(res);
+                return forbiddenResponse(res);
             }
         }
         try {
             const decoded = jwt.verify(accessToken, config.JWT_SECRET);
-            req.user = await userModel.findById(decoded.id);
+            req.user = await User.findById(decoded.id);
             next();
         } catch (accessError) {
-            return responses.UNAUTHORIZED(res);
+            return unauthorizedResponse(res);
         }
     } catch (error) {
-        return responses.SERVER_ERROR(res, error);
+        return serverError(res, error);
     }
 };
-
-
 
 export const setCookies = async (res, accessToken, refreshToken) => {
     res.cookie("accessToken", accessToken, {

@@ -1,7 +1,7 @@
 // models/User.js
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken'
-import { config } from '../config/config';
+import { config } from '../config/config.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,6 +13,19 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    language: {
+      type: String,
+      enum: ["en", "hi", "pa","ta"], // "en" for English, "hi" for Hindi, "pa" for Punjabi
+      default: "en",
+    },
+    profile:{
+      type:String,
+      default:"https://res.cloudinary.com/dnokci0nm/image/upload/v1744530135/d4ea3f6e-f259-416e-8a29-aec0356272ac_vverx8.png"
+    },
+    mainCrops:[{
+      String
+    }],
+    location:String,
     refreshToken: String
   },
   { timestamps: true }

@@ -1,25 +1,44 @@
-import { config } from "../config/config.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Initialize Generative AI client
-const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-
-
-// System instruction for the AI model
+import { config } from "../config/config.js";
+const apiKey = config.geminiApiKey;
+const genai = new GoogleGenerativeAI(apiKey);
 const systemInstruction = `
+You are an agriculture assistant. Provide short, accurate, and helpful answers to farmers’ queries related to:
 
-`;
+Crop farming (selection, care, seasonal tips)
 
-// Set up text model
-const textModel = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
-  systemInstruction
-});
+Weather updates (current and forecasts)
 
-const textConfig = {
-  temperature: 0.9,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
+Market/mandi prices (if available)
+
+Pest detection and control
+
+Farming best practices and government schemes
+
+For questions outside agriculture, politely inform the user that you can only assist with agriculture-related topics.
+Language: Respond in the same language as the user's question. If a user asks in Hindi, reply in Hindi; if in English, reply in English, and so on.
+Tone: Professional, concise, friendly, and supportive. Avoid long paragraphs. Be clear and direct in your responses.
+`
+
+
+
+export const callGeminiApi = async ( userQuery) => {
+  try {
+    const model = genai.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: systemInstruction,
+    });
+    const response = await model.generateContent(userQuery);
+    let result = await response.response.text();
+    if (!result) {
+      console.error("Empty or undefined response text:", response);
+      return "Invalid response from API.";
+    }
+    // result = result.replace(/[^a-zA-Z0-9\s]/g, ''); // This will remove any non-alphanumeric characters except spaces.
+
+    return result;
+  } catch (err) {
+    console.log(err);
+    return "Sorry something is wrong.";
+  }
 };

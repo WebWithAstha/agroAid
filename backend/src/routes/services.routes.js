@@ -1,5 +1,5 @@
 import express from 'express';
-import { agmarknetController, cropHealthController, weatherController } from '../controllers/servicesController.js';
+import { agmarknetController, cropHealthController, weatherController } from '../controllers/services.controller.js';
 const router = express.Router()
 
 
