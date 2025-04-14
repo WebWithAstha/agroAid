@@ -1,80 +1,12 @@
-import twilio from 'twilio';
-import { User } from '../models/userModel.js';
-import { config } from '../config/config.js';
-const VoiceResponse = twilio.twiml.VoiceResponse;
-
-// const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
-// const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
-
-// export const startCall = async (req, res) => {
-//   console.log("start call hit")
-//   try{
-//     const twiml = new VoiceResponse();
-
-//     twiml.say("Namaste! Apna sawal batayein. Hum jawab denge."); // Hindi prompt
-//     twiml.record({
-//       action: "https://agroaid.onrender.com/api/ivr/handle-recording", // where Twilio will send the recording
-//       method: "POST",
-//       maxLength: 30, // seconds
-//       trim: "trim-silence"
-//     });
-  
-//     res.type('text/xml');
-//     res.send(twiml.toString());
-// } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-
-// export const handleRecording = async (req, res) => {
-//   const { RecordingUrl, From } = req.body;
-
-//   try {
-//     // 1. Download the Twilio audio (MP3)
-//     const audioResponse = await axios.get(`${RecordingUrl}.mp3`, {
-//       responseType: 'arraybuffer',
-//     });
-//     const audioBuffer = audioResponse.data;
-
-//     // 2. Find farmer by phone number
-//     const user = await User.findOne({ phone: From });
-//     const language = user?.language || 'en'; // fallback to English
-
-//     // 3. Run AI assistant pipeline
-//     // const text = await getTranscriptFromAssembly(audioBuffer, language);
-//     // const answerText = await getResponseFromGemini(text, language);
-//     // const voiceUrl = await getVoiceFromEleven(answerText, language);
-//     const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
-
-//     // 4. Respond with TwiML to play audio
-//     const twiml = new VoiceResponse();
-//     twiml.play(voiceUrl);
-
-//     res.type('text/xml');
-//     res.send(twiml.toString());
-
-//   } catch (err) {
-//     console.error("IVR error:", err);
-//     const twiml = new VoiceResponse();
-//     twiml.say("Maaf kijiye. Kuch galti ho gayi.");
-//     res.type('text/xml');
-//     res.send(twiml.toString());
-//   }
-// };
-
-
-
-
-// const accountSid = process.env.TWILIO_ACCOUNT_SID;
-// const authToken = process.env.TWILIO_AUTH_TOKEN;
+import twilio from "twilio";
+import { config } from "../config/config.js";
 
 const accountSid = config.twilio.accountSid;
 const authToken = config.twilio.authToken;
 
-const twilioNumber = '+19475003036';
-const myNumber = '+917489098294';
-const baseUrl = 'https://agroaid-bdsm.onrender.com/api';
+const twilioNumber = "+19475003036";
+const myNumber = "+917489098294";
+const baseUrl = "https://agroaid-bdsm.onrender.com/api";
 
 const client = twilio(accountSid, authToken);
 
@@ -108,7 +40,9 @@ export const voiceMenu = (req, res) => {
       method: "POST",
     });
 
-    gather.say("Welcome to Agro Aid. Press 1 for Hindi. Press 2 for English. Press 3 for Punjabi. Press 4 for Tamil.");
+    gather.say(
+      "Welcome to Agro Aid. Press 1 for Hindi. Press 2 for English. Press 3 for Punjabi. Press 4 for Tamil."
+    );
 
     res.type("text/xml");
     res.send(twiml.toString());
@@ -138,7 +72,9 @@ export const selectLanguage = (req, res) => {
       twiml.say("Invalid selection. Goodbye!");
       twiml.hangup();
     } else {
-      twiml.say(`You selected ${selectedLang}. Please record your message after the beep. Press the pound key when done.`);
+      twiml.say(
+        `You selected ${selectedLang}. Please record your message after the beep. Press the pound key when done.`
+      );
 
       twiml.record({
         maxLength: 30,
@@ -166,23 +102,32 @@ export const processMessage = async (req, res) => {
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
 
-    // // Step 1: Convert audio to text
-    // const userText = await getTranscriptFromAssembly(recordingUrl, lang);
-    // console.log("📝 Transcript:", userText);
+    // Step 1: Convert audio to text
+    // Step 2: Get Gemini response
+    // Step 3: Convert response to voice (here mocked with static audio)
 
-    // // Step 2: Get Gemini response
-    // const geminiReply = await getResponseFromGemini(userText, lang);
-    // console.log("🤖 Gemini response:", geminiReply);
+    const voiceUrl =
+      "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2";
 
-    // // Step 3: Convert response to voice
-    // const voiceUrl = await getVoiceFromEleven(geminiReply, lang);
-    // console.log("🔊 Voice response URL:", voiceUrl);
-
-    // const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
-    const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2';
-
-    // Respond with audio playback
+    // Play the response audio
     twiml.play(voiceUrl);
+
+    // Ask if they want further assistance
+    const gather = twiml.gather({
+      numDigits: 1,
+      action: `${baseUrl}/ivr/next-action?lang=${lang}`,
+      method: "POST",
+      timeout: 5, // seconds to wait for input
+    });
+
+    gather.say(
+      "Do you need more help? Press 1 to ask another question, or press 2 to hang up."
+    );
+
+    //fallback (if no response)
+    twiml.say(
+      "We did not receive any input. Ending the call. Thank you for using AgroAid."
+    );
     twiml.hangup();
 
     res.type("text/xml");
@@ -194,4 +139,30 @@ export const processMessage = async (req, res) => {
     twiml.hangup();
     res.type("text/xml").send(twiml.toString());
   }
+};
+
+export const nextAction = (req, res) => {
+  const digit = req.body.Digits;
+  const lang = req.query.lang;
+  const twiml = new twilio.twiml.VoiceResponse();
+
+  if (digit === "1") {
+    // Go back to record another message
+    twiml.say(
+      "Okay, please record your next question after the beep. Press the pound key when done."
+    );
+    twiml.record({
+      maxLength: 30,
+      finishOnKey: "#",
+      action: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      method: "POST",
+    });
+  } else {
+    // End the call
+    twiml.say("Thank you for using AgroAid. Goodbye!");
+    twiml.hangup();
+  }
+
+  res.type("text/xml");
+  res.send(twiml.toString());
 };
