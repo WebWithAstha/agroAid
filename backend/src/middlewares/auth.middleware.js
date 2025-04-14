@@ -13,7 +13,6 @@ export const isAuthenticated = async (req, res, next) => {
             try {
                 const decodedRefresh = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET);
                 const user = await User.findById(decodedRefresh.id);
-
                 if (!user || user.refreshToken !== refreshToken) {
                     return forbiddenResponse(res);
                 }

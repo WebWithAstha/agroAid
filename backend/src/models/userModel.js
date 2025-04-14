@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken'
 import { config } from '../config/config.js';
+import { type } from 'os';
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,9 +23,11 @@ const userSchema = new mongoose.Schema(
       type:String,
       default:"https://res.cloudinary.com/dnokci0nm/image/upload/v1744530135/d4ea3f6e-f259-416e-8a29-aec0356272ac_vverx8.png"
     },
-    mainCrops:[{
-      String
-    }],
+    mainCrops:[String],
+    isCompleted :{
+      type:Boolean,
+      default:false
+    },
     location:String,
     refreshToken: String
   },
