@@ -6,6 +6,7 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 export const startCall = async (req, res) => {
+  console.log("start call hit")
   try{
     const twiml = new VoiceResponse();
 
