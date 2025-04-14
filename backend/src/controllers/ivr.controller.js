@@ -1,4 +1,5 @@
 import twilio from 'twilio';
+import { User } from '../models/userModel.js';
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
 // const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
@@ -39,9 +40,10 @@ export const handleRecording = async (req, res) => {
     const language = user?.language || 'en'; // fallback to English
 
     // 3. Run AI assistant pipeline
-    const text = await getTranscriptFromAssembly(audioBuffer, language);
-    const answerText = await getResponseFromGemini(text, language);
-    const voiceUrl = await getVoiceFromEleven(answerText, language);
+    // const text = await getTranscriptFromAssembly(audioBuffer, language);
+    // const answerText = await getResponseFromGemini(text, language);
+    // const voiceUrl = await getVoiceFromEleven(answerText, language);
+    const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
 
     // 4. Respond with TwiML to play audio
     const twiml = new VoiceResponse();
