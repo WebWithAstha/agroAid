@@ -1,5 +1,6 @@
 import twilio from 'twilio';
 import { User } from '../models/userModel.js';
+import { config } from '../config/config.js';
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
 // const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
@@ -68,8 +69,8 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
 
-const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
-const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
+const accountSid = config.twilio.accountSid;
+const authToken = config.twilio.authToken;
 
 const twilioNumber = '+19475003036';
 const myNumber = '+917489098294';
