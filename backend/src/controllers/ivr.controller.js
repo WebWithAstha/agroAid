@@ -178,7 +178,8 @@ export const processMessage = async (req, res) => {
     // const voiceUrl = await getVoiceFromEleven(geminiReply, lang);
     // console.log("🔊 Voice response URL:", voiceUrl);
 
-    const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
+    // const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
+    const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2';
 
     // Respond with audio playback
     twiml.play(voiceUrl);
