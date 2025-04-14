@@ -94,59 +94,103 @@ export const startCall = async (req, res) => {
   }
 };
 
-// Voice menu - TwiML
+// Language selection handler
 export const voiceMenu = (req, res) => {
-  const VoiceResponse = twilio.twiml.VoiceResponse;
-  const twiml = new VoiceResponse();
+  try {
+    console.log("📞 Incoming call - asking for language");
 
-  const gather = twiml.gather({
-    numDigits: 1,
-    action: "/ivr/handle-input",
-    method: "POST",
-  });
+    const VoiceResponse = twilio.twiml.VoiceResponse;
+    const twiml = new VoiceResponse();
 
-  gather.say("Welcome to Astha's system. Press 1 to record a message. Press 2 to hear a joke.");
-
-  res.type("text/xml");
-  res.send(twiml.toString());
-};
-
-// Handle input (1 or 2)
-export const handleInput = (req, res) => {
-  const digit = req.body.Digits;
-  const VoiceResponse = twilio.twiml.VoiceResponse;
-  const twiml = new VoiceResponse();
-
-  if (digit === "1") {
-    twiml.say("Please record your message after the beep. Press the pound key when done.");
-    twiml.record({
-      maxLength: 30,
-      finishOnKey: "#",
-      action: "/ivr/handle-recording",
+    const gather = twiml.gather({
+      numDigits: 1,
+      action: "/ivr/select-language",
       method: "POST",
     });
-  } else if (digit === "2") {
-    twiml.say("Why did the developer go broke? Because he used up all his cache.");
-    twiml.hangup();
-  } else {
-    twiml.say("Invalid input. Goodbye!");
-    twiml.hangup();
-  }
 
-  res.type("text/xml");
-  res.send(twiml.toString());
+    gather.say("Welcome to Agro Aid. Press 1 for Hindi. Press 2 for English. Press 3 for Punjabi. Press 4 for Tamil.");
+
+    res.type("text/xml");
+    res.send(twiml.toString());
+  } catch (error) {
+    console.error("❌ Error in voiceMenu:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
-// Handle the recording
-export const handleRecording = (req, res) => {
-  const recordingUrl = req.body.RecordingUrl;
-  const twiml = new twilio.twiml.VoiceResponse();
+// Store selected language and ask for message
+export const selectLanguage = (req, res) => {
+  try {
+    const digit = req.body.Digits;
+    const twiml = new twilio.twiml.VoiceResponse();
+    console.log("🌐 Language selected:", digit);
 
-  twiml.say("Thank you. We have received your message.");
-  twiml.hangup();
+    const langMap = {
+      1: "hi", // Hindi
+      2: "en", // English
+      3: "pa", // Punjabi
+      4: "ta", // Tamil
+    };
 
-  console.log("📩 New recording at:", recordingUrl);
+    const selectedLang = langMap[digit];
 
-  res.type("text/xml");
-  res.send(twiml.toString());
+    if (!selectedLang) {
+      twiml.say("Invalid selection. Goodbye!");
+      twiml.hangup();
+    } else {
+      twiml.say(`You selected ${selectedLang}. Please record your message after the beep. Press the pound key when done.`);
+
+      twiml.record({
+        maxLength: 30,
+        finishOnKey: "#",
+        action: `/ivr/process-message?lang=${selectedLang}`,
+        method: "POST",
+      });
+    }
+
+    res.type("text/xml");
+    res.send(twiml.toString());
+  } catch (error) {
+    console.error("❌ Error in selectLanguage:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+// Final handler: get transcript → Gemini → audio → respond
+export const processMessage = async (req, res) => {
+  try {
+    const recordingUrl = req.body.RecordingUrl;
+    const lang = req.query.lang;
+    const twiml = new twilio.twiml.VoiceResponse();
+
+    console.log("🎙️ Message recorded at:", recordingUrl);
+    console.log("🌐 Language for processing:", lang);
+
+    // // Step 1: Convert audio to text
+    // const userText = await getTranscriptFromAssembly(recordingUrl, lang);
+    // console.log("📝 Transcript:", userText);
+
+    // // Step 2: Get Gemini response
+    // const geminiReply = await getResponseFromGemini(userText, lang);
+    // console.log("🤖 Gemini response:", geminiReply);
+
+    // // Step 3: Convert response to voice
+    // const voiceUrl = await getVoiceFromEleven(geminiReply, lang);
+    // console.log("🔊 Voice response URL:", voiceUrl);
+
+    const voiceUrl = 'https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Faudio_1744357350618.webm?alt=media&token=5c56babc-bef4-4db1-bf5e-909a2ad017bd';
+
+    // Respond with audio playback
+    twiml.play(voiceUrl);
+    twiml.hangup();
+
+    res.type("text/xml");
+    res.send(twiml.toString());
+  } catch (error) {
+    console.error("❌ Error in processMessage:", error);
+    const twiml = new twilio.twiml.VoiceResponse();
+    twiml.say("Sorry, there was a problem processing your request. Goodbye.");
+    twiml.hangup();
+    res.type("text/xml").send(twiml.toString());
+  }
 };
