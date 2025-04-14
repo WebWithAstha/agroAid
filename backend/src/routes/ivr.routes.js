@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 router.get('/start-call', startCall);
-router.get("/voice-menu", voiceMenu);
+router.post("/voice-menu", voiceMenu);
 router.post("/handle-input", handleInput);
 router.post('/handle-recording', handleRecording);
 
