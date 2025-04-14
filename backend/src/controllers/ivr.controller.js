@@ -104,7 +104,7 @@ export const voiceMenu = (req, res) => {
 
     const gather = twiml.gather({
       numDigits: 1,
-      action: "/ivr/select-language",
+      action: `${baseUrl}/ivr/select-language`,
       method: "POST",
     });
 
@@ -143,7 +143,7 @@ export const selectLanguage = (req, res) => {
       twiml.record({
         maxLength: 30,
         finishOnKey: "#",
-        action: `/ivr/process-message?lang=${selectedLang}`,
+        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         method: "POST",
       });
     }
