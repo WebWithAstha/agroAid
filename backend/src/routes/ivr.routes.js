@@ -4,9 +4,9 @@ const router = express.Router()
 
 
 router.get('/start-call', startCall);
-router.post("/ivr/voice-menu", voiceMenu);
-router.post("/ivr/select-language", selectLanguage);
-router.post("/ivr/process-message", processMessage);
+router.post("/voice-menu", voiceMenu);
+router.post("/select-language", selectLanguage);
+router.post("/process-message", processMessage);
 
 
 export default router;
