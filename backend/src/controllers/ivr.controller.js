@@ -12,7 +12,7 @@ export const startCall = async (req, res) => {
 
     twiml.say("Namaste! Apna sawal batayein. Hum jawab denge."); // Hindi prompt
     twiml.record({
-      action: "/ivr/handle-recording", // where Twilio will send the recording
+      action: "https://agroaid.onrender.com/api/ivr/handle-recording", // where Twilio will send the recording
       method: "POST",
       maxLength: 30, // seconds
       trim: "trim-silence"
