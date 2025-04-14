@@ -43,7 +43,6 @@ export const updateDetails = async (req, res) => {
   try {
     const { ...updates } = req.body;
 
-
     const user = await User.findById(req.user._id);
     if (!user) {
       return notFoundResponse(res, "User not found.");
@@ -51,9 +50,6 @@ export const updateDetails = async (req, res) => {
 
     // Define allowed fields to update
     const allowedFields = ['name', 'location', 'language', 'mainCrops', 'profile'];
-
-    console.log(updates);
-
 
     // Filter and assign only allowed fields
     for (const key of Object.keys(updates)) {
@@ -63,10 +59,8 @@ export const updateDetails = async (req, res) => {
         } else {
           user[key] = updates[key];
         }
-        
       }
     }
-
 
     await user.save();
 
