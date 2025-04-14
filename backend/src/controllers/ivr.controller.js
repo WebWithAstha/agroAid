@@ -2,8 +2,8 @@ import twilio from 'twilio';
 import { User } from '../models/userModel.js';
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
-const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
+// const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
+// const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
 
 // export const startCall = async (req, res) => {
 //   console.log("start call hit")
@@ -67,8 +67,12 @@ const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
 
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioNumber = 9475003036;
-const myNumber = 7489098294;
+
+const accountSid = "AC798d65b5b42ce1a7a29cecbae3d08877";
+const authToken = 'UPAWJD5KYRCMJJSTNKX8MGYD';
+
+const twilioNumber = '+19475003036';
+const myNumber = '+917489098294';
 const baseUrl = 'https://agroaid-bdsm.onrender.com/api';
 
 const client = twilio(accountSid, authToken);
