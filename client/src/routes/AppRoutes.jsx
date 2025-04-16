@@ -5,6 +5,9 @@ import LanguageSelect from '../components/partials/LanguageSelect';
 import OtpVerification from '../components/auth/OtpVerification';
 import Dashboard from '../components/dashboard/Dashboard';
 import CropPrices from '../components/pages/CropPrices';
+import Weather from '../components/pages/Weather.jsx';
+import Diagnosis from '../components/pages/Diagnosis.jsx';
+import GovernmentSchemes from '../components/pages/GovernmentSchems.jsx';
 
 const AppRoutes = () => {
   return (
@@ -14,6 +17,9 @@ const AppRoutes = () => {
         <Route element={<OtpVerification/>} path='/otp' />
         <Route element={<Dashboard/>} path='/dashboard' />
         <Route element={<CropPrices/>} path='/price'/>
+        <Route element={<Weather/>} path='/weather'/>
+        <Route element={<Diagnosis/>} path='/diagnosis'/>
+        <Route element={<GovernmentSchemes/>} path='/schemes'/>
     </Routes>
   )
 }

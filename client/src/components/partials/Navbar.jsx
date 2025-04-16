@@ -1,10 +1,10 @@
 import React from "react";
 import { Home, Search, Mic, User, Bell, CloudSun, Camera, IndianRupee } from "lucide-react";
-import { Link } from "react-router-dom"; // or use `<a href>` if not using React Router
+import { Link, NavLink } from "react-router-dom"; // or use `<a href>` if not using React Router
 
 const Navbar = () => {
   const navItems = [
-    { label: "Home", icon: <Home className="w-5 h-5" />, href: "/" },
+    { label: "Home", icon: <Home className="w-5 h-5" />, href: "/dashboard" },
     { label: "Search", icon: <Search className="w-5 h-5" />, href: "/search" },
     { label: "Speak", icon: <Mic className="w-5 h-5" />, href: "/voice" },
     { label: "Profile", icon: <User className="w-5 h-5" />, href: "/profile" },
@@ -17,6 +17,7 @@ const Navbar = () => {
         <div className="w-full h-10 bg-white"></div>
         <div className=" w-full flex items-center justify-between">
 
+<NavLink to={'/dashboard'}>
                <div className="flex items-center px-4 pb-3 rounded-br-xl bg-white">
                  <div className="mr-2 bg-emerald-500 text-white p-1 rounded-lg">
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +29,7 @@ const Navbar = () => {
                  </div>
                  <h1 className="text-xl font-bold text-emerald-800">AgroAid</h1>
                </div>
+               </NavLink>
                <div className="flex items-center gap-4 px-4 pb-3 rounded-bl-xl bg-white ">
                  <button className="relative p-1">
                    <Bell size={20} className="text-gray-600" />

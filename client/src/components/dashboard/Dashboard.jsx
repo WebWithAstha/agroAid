@@ -65,11 +65,12 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
   );
   const bg = () => (
     <div className="absolute z-[-2] bg-zinc-200 right-0  h-full bottom-0 w-full">
-      <img
+      {/* <img
         src="https://plus.unsplash.com/premium_photo-1661962499636-33ffabc4b060?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""
         className="w-full h-full object-cover object-center"
-      />
+      /> */}
+      <video className="w-full h-full object-cover object-center" autoPlay muted loop src="https://cdn.pixabay.com/video/2020/07/03/43760-436252269_large.mp4"></video>
     </div>
   );
 
@@ -86,6 +87,7 @@ const QuickStats = () => {
   const stats = [
     {
       icon: <Sunrise size={20} className="text-amber-500" />,
+      img:"https://www.weatherwizkids.com/wp-content/themes/weather-wiz-kids/img/nav_weather.png",
       label: "Today",
       value: "34°C",
       color: "amber",
@@ -129,13 +131,17 @@ const ServicesGrid = () => {
     {
       title: "Weather",
       desc: "5-day forecast",
+      position: "object-top",
+      img:"https://play-lh.googleusercontent.com/pCQw51XRP4UPr-FCYDjvNnEpFa0HDGJjjLDldN3rmw4KkwhqPu0PZXE8EopmAxzH9mQ",
       color: "amber",
       icon: <CloudSun size={44} className="text-amber-600" />,
-      link: "/price"
+      link: "/weather"
     },
     {
       title: "Crop Prices",
       desc: "Live updates",
+      position: "object-center",
+      img:"https://akm-img-a-in.tosshub.com/indiatoday/styles/medium_crop_simple/public/2024-06/msp-02.jpg?VersionId=d_DJkHEg0zYEcwwaCGCiYgEvFPTHEpB3&size=750:*",
       color: "green",
       icon: <IndianRupee size={44} className="text-green-600" />,
       link: "/price"
@@ -143,16 +149,20 @@ const ServicesGrid = () => {
     {
       title: "Crop Diagnosis",
       desc: "AI-powered analysis",
+      position: "object-top",
+      img:"https://s7d1.scene7.com/is/image/CENODS/09747-buscon2-plantix?$responsive$&wid=700&qlt=90,0&resMode=sharp2",
       color: "blue",
       icon: <Camera size={44} className="text-blue-600" />,
-      link: "/price"
+      link: "/diagnosis"
     },
     {
       title: "Govt Schemes",
       desc: "Latest benefits",
+      position: "object-top",
+      img:"https://akm-img-a-in.tosshub.com/indiatoday/images/story/201908/Add_a_subheading_1_.png?VersionId=MoNEvek00g1J_WpgxJkZkiQbvUs3SVU7",
       color: "purple",
       icon: <ScrollText size={44} className="text-purple-600" />,
-      link: "/price"
+      link: "/schemes"
     },
   ];
   return (
@@ -172,9 +182,11 @@ const ServicesGrid = () => {
               className="bg-white border border-emerald-600 p-4 rounded-xl shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all duration-300 cursor-pointer"
             >
               <div
-                className={`bg-${service.color}-100 w-full h-32 rounded-lg flex items-center justify-center mb-3`}
+                className={`bg-${service.color}-100 w-full overflow-hidden h-36 rounded-lg flex items-center justify-center mb-3`}
               >
-                {service.icon}
+                
+                <img className={`w-full h-full object-cover ${service.position}`} src={service.img} alt="" />
+                {/* {service.icon} */}
               </div>
               <h3 className="font-medium text-gray-800">{service.title}</h3>
               <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
