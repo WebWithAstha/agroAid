@@ -46,24 +46,6 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
     </>
   );
 
-  const greeting = () => (
-    <>
-      <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
-        Welcome, Rahul <span className="ml-2 text-xl">👋</span>
-      </h2>
-      <div className="mt-3 flex flex-wrap gap-2 text-sm text-gray-600">
-        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
-          Tuesday, April 8
-        </span>
-        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-          Rabi Season
-        </span>
-        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-          Navsari, Gujarat
-        </span>
-      </div>
-    </>
-  );
   const bg = () => (
     <div className="absolute z-[-2] bg-zinc-200 right-0  h-full bottom-0 w-full">
       {/* <img
@@ -77,7 +59,6 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
 
   return (
     <div className="mb-4 md:mt-0 mt-3 relative min-h-[60vh] z-[0] flex flex-col justify-end  rounded-2xl overflow-hidden bg-white border border-gray-100 px-6 py-5">
-      {/* {greeting()} */}
       {assitant()}
       {bg()}
     </div>
@@ -171,9 +152,11 @@ const FeaturedCard = () => (
         Sell your crops directly to buyers without middlemen
       </p>
     </div>
+    <Link to={"/market"}>
     <button className="mt-3 sm:mt-0 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition whitespace-nowrap">
       Get Started
     </button>
+    </Link>
   </div>
 );
 
