@@ -1,21 +1,6 @@
 import axios from 'axios';
 
-export const authAxios = axios.create({
+export const Axios = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
     withCredentials: true
 })
-export const weatherAxios = axios.create({
-    baseURL: "",
-    withCredentials: true
-})
-export const pesticidesAxios = axios.create({
-    baseURL: "",
-    withCredentials: true
-})
-export const agmarknetAxios = axios.create({
-    baseURL: "https://api.data.gov.in/resource/",
-
-    withCredentials: false
-})
-
-// agmarknet api  : 
