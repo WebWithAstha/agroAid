@@ -14,11 +14,10 @@ const Navbar = () => {
     <>
       {/* Top Navbar for desktop */}
       <header className="hidden md:block w-full fixed bg-rose-600/[0] top-0 z-10">
-        <div className="w-full h-10 bg-white"></div>
-        <div className=" w-full flex items-center justify-between">
+        <div className=" w-full flex items-center justify-between py-2.5 px-8 backdrop-blur-xl">
 
 <NavLink to={'/dashboard'}>
-               <div className="flex items-center px-4 pb-3 rounded-br-xl bg-white">
+               <div className="flex items-center rounded-br-xl">
                  <div className="mr-2 bg-emerald-500 text-white p-1 rounded-lg">
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M12 6.5C13.5 8 15.5 8 17 7.5C17 11.5 16 14 12 16C8 14 7 11.5 7 7.5C8.5 8 10.5 8 12 6.5Z" fill="white"/>
@@ -30,7 +29,7 @@ const Navbar = () => {
                  <h1 className="text-xl font-bold text-emerald-800">AgroAid</h1>
                </div>
                </NavLink>
-               <div className="flex items-center gap-4 px-4 pb-3 rounded-bl-xl bg-white ">
+               <div className="flex items-center gap-4 rounded-bl-xl ">
                  <button className="relative p-1">
                    <Bell size={20} className="text-gray-600" />
                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>

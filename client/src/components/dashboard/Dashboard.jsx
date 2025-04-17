@@ -14,6 +14,7 @@ import {
 import Navbar from "../partials/Navbar";
 import { Link } from "react-router-dom";
 import { getPrices } from "../../Services/agmarknet";
+import video from "../../assets/hero.mp4"
 
 const GreetingCard = ({ isRecording, toggleRecording }) => {
 
@@ -70,7 +71,7 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
         alt=""
         className="w-full h-full object-cover object-center"
       /> */}
-      <video className="w-full h-full object-cover object-center" autoPlay muted loop src="https://cdn.pixabay.com/video/2020/07/03/43760-436252269_large.mp4"></video>
+      <video className="w-full h-full object-cover object-center" autoPlay muted loop src={video}></video>
     </div>
   );
 
@@ -83,48 +84,6 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
   );
 };
 
-const QuickStats = () => {
-  const stats = [
-    {
-      icon: <Sunrise size={20} className="text-amber-500" />,
-      img:"https://www.weatherwizkids.com/wp-content/themes/weather-wiz-kids/img/nav_weather.png",
-      label: "Today",
-      value: "34°C",
-      color: "amber",
-    },
-    {
-      icon: <Droplet size={20} className="text-blue-500" />,
-      label: "Irrigation",
-      value: "Due",
-      color: "blue",
-    },
-    {
-      icon: <BarChart size={20} className="text-emerald-500" />,
-      label: "Wheat Price",
-      value: "₹2,500",
-      color: "emerald",
-    },
-  ];
-  return (
-    <>
-      <h3 className="text-lg font-bold text-gray-800 mb-4">Quicks updates</h3>
-      <div className="flex flex-wrap gap-3 mb-8">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className={`bg-white border shrink-0 w-40 aspect-square flex items-center justify-center flex-col border-emerald-600 p-4 rounded-full shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all duration-300 cursor-pointer`}
-          >
-            {stat.icon}
-            <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
-            <p className={`font-semibold text-${stat.color}-800`}>
-              {stat.value}
-            </p>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-};
 
 const ServicesGrid = () => {
   const services = [
@@ -200,7 +159,7 @@ const ServicesGrid = () => {
 };
 
 const FeaturedCard = () => (
-  <div className="bg-gradient-to-r from-emerald-50 via-green-50 to-white border border-emerald-600 rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4">
+  <div className="bg-gradient-to-r mb-4 from-emerald-50 via-green-50 to-white border border-emerald-600 rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4">
     <div className="bg-white rounded-lg p-3 w-16 h-16 flex items-center justify-center">
       <Store size={32} className="text-emerald-600" />
     </div>
@@ -234,16 +193,15 @@ const Dashboard = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen mt-14 bg-white">
       <Navbar />
       <main className="flex-1 px-3 pb-20 md:px-20 mx-auto w-full">
         <GreetingCard
           isRecording={isRecording}
           toggleRecording={toggleRecording}
         />
-        {/* <QuickStats /> */}
-        <ServicesGrid />
         <FeaturedCard />
+        <ServicesGrid />
       </main>
     </div>
   );
