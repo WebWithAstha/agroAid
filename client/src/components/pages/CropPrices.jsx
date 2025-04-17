@@ -1,10 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate} from 'react-router-dom'
+
 import {
   IndianRupee,
   ChevronDown,
   TrendingUp,
   ArrowUp,
   ArrowDown,
+  Leaf,
+  ArrowLeftSquare,
+  ArrowLeft,
+  ArrowLeftIcon,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -21,18 +27,49 @@ import { crops, marketData, marketTrends } from "../../data/cropPrices";
 
 // ================= Subcomponents =================
 
+{
+  /* <IndianRupee size={16} className="text-emerald-600 mr-1" /> */
+}
 const ChartToggleAndSelector = ({
   selectedCrop,
   setSelectedCrop,
   chartView,
   setChartView,
+  navigate
 }) => (
-  <div className="flex bg-zinc-200 rounded-lg p-1.5 justify-between items-center mb-3">
-    <h1 className="text-lg font-medium text-gray-800 flex items-center">
-      <IndianRupee size={16} className="text-emerald-600 mr-1" />
-      Crop Price Trends
-    </h1>
-    <div className="flex items-center space-x-2">
+  <div className="relative pt-14 bg-gradient-to-r from-green-800 to-green-600 text-white p-6 overflow-hidden flex justify-between items-center">
+    <div onClick={()=>navigate(-1)} className="absolute top-3 left-4 p-1">
+      <ArrowLeftIcon/>
+    </div>
+    <div className="absolute inset-0 opacity-10">
+      <svg width="100%" height="100%">
+        <pattern
+          id="leafPattern"
+          patternUnits="userSpaceOnUse"
+          width="60"
+          height="60"
+          patternTransform="rotate(45)"
+        >
+          <path
+            d="M30,5 C40,20 50,10 30,30 C10,50 20,40 5,30 C20,20 10,10 30,5"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#leafPattern)" />
+      </svg>
+    </div>
+    <div>
+      <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+        <Leaf className="text-green-300" />
+        Crop Price Trends
+      </h2>
+      <p className="text-green-100 mt-1">
+        Upload crop images for instant disease detection & treatment advice
+      </p>
+    </div>
+    <div className="flex relative z-99 items-center space-x-2">
       <div className="flex overflow-hidden rounded-md border border-gray-200">
         {["price", "volume"].map((view) => (
           <button
@@ -323,6 +360,8 @@ const CropPrices = () => {
   const currentPrice = marketData[selectedCrop].at(-1).price;
   const previousPrice = marketData[selectedCrop].at(-2).price;
   const priceChange = ((currentPrice - previousPrice) / previousPrice) * 100;
+  
+  const navigate = useNavigate();
 
   const combinedData = marketData[selectedCrop].map((item, index) => {
     const dataForMonth = { month: item.month };
@@ -333,16 +372,17 @@ const CropPrices = () => {
   });
 
   return (
-    <div className="md:h-screen flex pt-10 flex-col overflow-hidden">
-      <main className="flex-grow flex flex-col w-[90%] mx-auto px-4 py-3">
+    <div className="md:h-screen flex  flex-col overflow-hidden">
+      <main className="flex-grow flex flex-col ">
         <ChartToggleAndSelector
           selectedCrop={selectedCrop}
           setSelectedCrop={setSelectedCrop}
           chartView={chartView}
           setChartView={setChartView}
+          navigate={navigate}
         />
 
-        <div className="grid grid-cols-4 w-full gap-3 flex-grow">
+        <div className="grid grid-cols-4 p-4 w-full gap-3 flex-grow">
           <div className="space-y-2">
             {crops.map((crop) => (
               <CropCard
@@ -379,6 +419,3 @@ const CropPrices = () => {
 };
 
 export default CropPrices;
-
-
-
