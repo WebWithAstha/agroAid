@@ -2,40 +2,9 @@ import { useState } from 'react';
 import { useNavigate} from 'react-router-dom'
 import { Upload, X, Check, Leaf, AlertTriangle, Sprout, ShieldCheck, PlusCircle, Image, ArrowLeftIcon } from 'lucide-react';
 import diagnosisResult from '../../data/diagnosis';
+import Header from '../Header';
 
-// Header Component
-const DiagnosisHeader = ({navigate}) => {
-  return (
-    <div className="relative z-0 bg-gradient-to-r from-green-800 to-green-600 text-white p-6 pt-14 overflow-hidden">
-      <div onClick={()=>navigate(-1)} className="absolute top-3 left-4 p-1">
-      <ArrowLeftIcon/>
-    </div>
-      {/* Leaf pattern background */}
-      <div className="absolute z-[-1] inset-0 opacity-10">
-        <svg width="100%" height="100%">
-          <pattern id="leafPattern" patternUnits="userSpaceOnUse" width="60" height="60" patternTransform="rotate(45)">
-            <path d="M30,5 C40,20 50,10 30,30 C10,50 20,40 5,30 C20,20 10,10 30,5" 
-                  fill="none" stroke="#ffffff" strokeWidth="1" />
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#leafPattern)" />
-        </svg>
-      </div>
-      
-      <div className="relative z-10 flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Leaf className="text-green-300" />
-            Crop Health Diagnosis
-          </h2>
-          <p className="text-green-100 mt-1">Upload crop images for instant disease detection & treatment advice</p>
-        </div>
-        <div className="hidden md:block">
-          <ShieldCheck size={40} className="text-green-200" />
-        </div>
-      </div>
-    </div>
-  );
-};
+
 
 // Upload Section Component
 const UploadSection = ({ uploadedImage, isAnalyzing, handleImageUpload, resetDiagnosis }) => {
@@ -340,7 +309,6 @@ const Diagnosis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [showResults, setShowResults] = useState(false);
-  const navigate = useNavigate();
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -373,7 +341,7 @@ const Diagnosis = () => {
 
   return (
     <div className="bg-white overflow-hidden w-full h-screen mx-auto font-sans">
-      <DiagnosisHeader navigate={navigate} />
+      <Header title={"Crop Diagnosis"} des={"Upload crop images for instant disease detection & treatment advice"}/>
       
       <div className="grid grid-cols-1 md:grid-cols-3 h-[84%] overflow-hidden gap-6 p-4 bg-gradient-to-b from-green-50 to-white">
         <UploadSection 

@@ -3,6 +3,7 @@ import { Cloud, Droplets, Sun, Wind, Thermometer, CloudRain, Snowflake, Leaf, Su
 import Navbar from '../partials/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { dailyWeatherForecast } from '../../store/Actions/weatherAction';
+import Header from '../Header';
 
 const Weather = () => {
   const dispatch = useDispatch();
@@ -71,9 +72,9 @@ const Weather = () => {
 
   return forecast && (
     <>
-      <Navbar />
-      <div className="bg-green-50 pt-20 rounded-xl shadow-xl overflow-hidden border border-green-200 w-full max-w-4xl mx-auto font-sans relative">
+      <div className="bg-green-50 overflow-hidden w-full  font-sans relative">
         {/* Decorative Farm Elements */}
+        <Header title={"Weather Report"}/>
         <div className="absolute right-0 top-0 w-24 h-24 opacity-10">
           <svg viewBox="0 0 100 100" fill="currentColor" className="text-green-800">
             <path d="M30,10 C35,25 65,25 70,10 C70,35 100,35 100,60 C85,65 85,95 60,95 C65,80 35,80 40,95 C15,95 15,65 0,60 C0,35 30,35 30,10Z" />
