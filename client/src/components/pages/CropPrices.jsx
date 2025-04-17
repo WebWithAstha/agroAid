@@ -37,11 +37,11 @@ const ChartToggleAndSelector = ({
   setChartView,
   navigate
 }) => (
-  <div className="relative pt-14 bg-gradient-to-r from-green-800 to-green-600 text-white p-6 overflow-hidden flex justify-between items-center">
+  <div className="relative pt-14 z-0 bg-gradient-to-r from-green-800 to-green-600 text-white p-6 overflow-hidden flex justify-between items-center">
     <div onClick={()=>navigate(-1)} className="absolute top-3 left-4 p-1">
       <ArrowLeftIcon/>
     </div>
-    <div className="absolute inset-0 opacity-10">
+    <div className="absolute z-[-1] inset-0 opacity-10">
       <svg width="100%" height="100%">
         <pattern
           id="leafPattern"
