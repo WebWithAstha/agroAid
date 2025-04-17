@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   IndianRupee,
@@ -24,6 +25,7 @@ import {
 } from "recharts";
 import { crops, marketData, marketTrends } from "../../data/cropPrices";
 import Header from "../Header";
+import { fetchAgmarknetPrices } from "../../store/Actions/agmarknetAction";
 
 // ================= Subcomponents =================
 
@@ -34,78 +36,85 @@ const ChartToggleAndSelector = ({
   selectedCrop,
   setSelectedCrop,
   chartView,
+  crops,
   setChartView,
-}) => (
-  <div className="relative w-full ">
-    
-    <Header title={"Crop Price Trends"} des={"Upload crop images for instant disease detection & treatment advice"}/>
-    <div className="flex absolute right-4 bottom-8 z-99 items-center space-x-2">
-      <div className="flex overflow-hidden rounded-md border border-gray-200">
-        {["price", "volume"].map((view) => (
-          <button
-            key={view}
-            onClick={() => setChartView(view)}
-            className={`px-3 py-1 text-sm ${
-              chartView === view
-                ? "bg-green-800 text-white"
-                : "bg-white text-gray-600"
-            }`}
-          >
-            {view.charAt(0).toUpperCase() + view.slice(1)}
-          </button>
-        ))}
-      </div>
-      <div className="relative">
-        <select
-          value={selectedCrop}
-          onChange={(e) => setSelectedCrop(e.target.value)}
-          className="appearance-none bg-white border border-gray-200 rounded-md py-1 pl-2 pr-8 text-sm text-gray-700 focus:outline-none"
-        >
-          {crops.map((crop) => (
-            <option key={crop.name} value={crop.name}>
-              {crop.name}
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-          size={12}
-        />
-      </div>
-    </div>
-  </div>
-);
+}) => {
 
-const CropCard = ({ crop, selectedCrop, setSelectedCrop }) => {
-  const trend = marketTrends[crop.name];
-  const current = marketData[crop.name].at(-1).price;
+ 
 
   return (
+    <div className="relative w-full">
+      <Header
+        title={"Crop Price Trends"}
+        des={"Upload crop images for instant disease detection & treatment advice"}
+      />
+
+      <div className="flex absolute right-4 bottom-8 z-99 items-center space-x-2">
+        {/* Toggle Buttons */}
+        <div className="flex overflow-hidden rounded-md border border-gray-200">
+          {["price", "volume"].map((view) => (
+            <button
+              key={view}
+              onClick={() => setChartView(view)}
+              className={`px-3 py-1 text-sm ${chartView === view
+                  ? "bg-green-800 text-white"
+                  : "bg-white text-gray-600"
+                }`}
+            >
+              {view.charAt(0).toUpperCase() + view.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Crop Selector */}
+        <div className="relative">
+          <select
+            value={selectedCrop}
+            onChange={(e) => setSelectedCrop(e.target.value)}
+            className="appearance-none bg-white border border-gray-200 rounded-md py-1 pl-2 pr-8 text-sm text-gray-700 focus:outline-none"
+          >
+            {crops.map((crop) => (
+              <option key={crop.commodity} value={crop.commodity}>
+                {crop.commodity}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+            size={12}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const CropCard = ({ crop, selectedCrop, setSelectedCrop }) => {
+  return (
     <div
-      key={crop.name}
-      onClick={() => setSelectedCrop(crop.name)}
-      className={`cursor-pointer hover:bg-zinc-50 hover:text-black transition-all h-max rounded-md border border-transparent ${
-        selectedCrop === crop.name
+      key={crop.commodity}
+      onClick={() => setSelectedCrop(crop.commodity)}
+      className={`cursor-pointer hover:bg-zinc-50 hover:text-black transition-all h-max rounded-md border border-transparent ${selectedCrop === crop.commodity
           ? "border-l-2 border-l-emerald-500 bg-emerald-800 text-white"
           : "border-gray-100 bg-white hover:border-l-2 hover:border-l-gray-300"
-      }`}
+        }`}
     >
       <div className="p-2">
-        <p className="text-sm font-medium">{crop.name}</p>
+        <p className="text-sm font-medium">{crop.commodity}</p>
         <div className="flex items-center justify-between mt-1">
-          <p className="text-xs">₹{current}</p>
-          <div
-            className={`flex items-center text-xs bg-white px-1 rounded-xl ${
-              trend.change >= 0 ? "text-emerald-600" : "text-red-500"
-            }`}
-          >
-            {trend.change >= 0 ? (
+          <p className="text-xs">₹{crop.max_price}</p>
+          {/* <div
+            className={`flex items-center text-xs bg-white px-1 rounded-xl ${trend.change >= 0 ? "text-emerald-600" : "text-red-500"
+              }`}
+          > */}
+            {/* {trend.change >= 0 ? (
               <ArrowUp size={10} />
             ) : (
               <ArrowDown size={10} />
-            )}
-            <span>{Math.abs(trend.change).toFixed(1)}%</span>
-          </div>
+            )} */}
+            {/* <span>{Math.abs(trend.change).toFixed(1)}%</span> */}
+          {/* </div> */}
         </div>
       </div>
     </div>
@@ -135,9 +144,8 @@ const CropChart = ({
           <div className="flex items-center">
             <span className="text-md font-medium">₹{currentPrice}</span>
             <div
-              className={`flex items-center ml-2 ${
-                priceChange >= 0 ? "text-emerald-600" : "text-red-500"
-              }`}
+              className={`flex items-center ml-2 ${priceChange >= 0 ? "text-emerald-600" : "text-red-500"
+                }`}
             >
               {priceChange >= 0 ? (
                 <ArrowUp size={12} />
@@ -271,9 +279,8 @@ const ForecastCard = ({ selectedCrop }) => {
         <div className="flex items-center justify-between mt-1">
           <p className="text-2xl font-medium">₹{forecast.forecast}</p>
           <div
-            className={`flex items-center ${
-              forecast.change >= 0 ? "text-emerald-600" : "text-red-500"
-            }`}
+            className={`flex items-center ${forecast.change >= 0 ? "text-emerald-600" : "text-red-500"
+              }`}
           >
             {forecast.change >= 0 ? (
               <TrendingUp size={14} />
@@ -340,6 +347,22 @@ const CropPrices = () => {
     return dataForMonth;
   });
 
+  const dispatch = useDispatch();
+  const {data:cropPrices} = useSelector((state) => state.agmarknetReducer);
+  const get = async () => {
+    dispatch(fetchAgmarknetPrices())
+  }
+  useEffect(() => {
+    if(cropPrices.length == 0)get();
+  }, [cropPrices])
+
+  const uniqueCommodities = Array.from(
+    new Map(cropPrices.map((item) => [item.commodity, item])).values()
+  );
+
+
+
+
   return (
     <div className="md:h-screen flex  flex-col overflow-hidden">
       <main className="flex-grow flex flex-col ">
@@ -348,13 +371,14 @@ const CropPrices = () => {
           setSelectedCrop={setSelectedCrop}
           chartView={chartView}
           setChartView={setChartView}
+          crops={uniqueCommodities}
         />
 
         <div className="grid grid-cols-4 p-4 w-full gap-3 flex-grow">
-          <div className="space-y-2">
-            {crops.map((crop) => (
+          <div className="space-y-2 overflow-y-auto flex-col h-[77vh]">
+            {uniqueCommodities.map((crop,i) => (
               <CropCard
-                key={crop.name}
+                key={i}
                 crop={crop}
                 selectedCrop={selectedCrop}
                 setSelectedCrop={setSelectedCrop}

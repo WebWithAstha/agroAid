@@ -2,25 +2,30 @@ import axios from 'axios';
 import { config } from '../config/config.js';
 import { successResponse, errorResponse, badRequest } from '../utils/responseHandler.js';
 
+
 export const agmarknetController = async (req, res) => {
-    const { offset = 0 } = req.query;
+  const commodities = ["Wheat", "Barley", "Mustard", "Gram", "Rice", "Cotton"];
 
-    try {
-        const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
-            params: {
-                'api-key': config.agmarknetApiKey,
-                format: 'json',
-                offset,
-                limit: 10,
-            },
-        });
+  try {
+    const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
+      params: {
+        'api-key': config.AGMARKNET_API_KEY,
+        format: 'json',
+        limit: 50, 
+      },
+    });
 
-        return successResponse(res, response.data.records, 'Agmarknet data fetched successfully');
-    } catch (error) {
-        console.error('Agmarknet API Fetch Error:', error.message);
-        return errorResponse(res, 'Failed to fetch Agmarknet data', error);
-    }
+    // log
+    const filteredData = response.data.records.filter(record =>
+      commodities.includes(record.commodity)
+    );
+    return successResponse(res, response.data.records, 'Filtered Agmarknet data fetched successfully');
+  } catch (error) {
+    console.error('Agmarknet API Fetch Error:', error.message);
+    return errorResponse(res, 'Failed to fetch Agmarknet data', error.status);
+  }
 };
+
 
 export const weatherController = async (req, res) => {
     const { city = 'bhopal' } = req.query;
@@ -70,7 +75,7 @@ export const cropHealthController = async (req, res) => {
 
     try {
         const response = await axios(axiosConfig);
-        return successResponse(res, response.data.result.disease.suggestions[0], 'Crop health data fetched successfully');
+        return successResponse(res, response.data, 'Crop health data fetched successfully');
     } catch (error) {
         console.error('Crop Health API Error:', error.message);
         return errorResponse(res, 'Failed to fetch crop health data', error?.status);

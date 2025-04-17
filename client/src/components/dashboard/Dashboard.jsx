@@ -167,13 +167,13 @@ const Dashboard = () => {
     setIsRecording(!isRecording);
   };
 
-  const get =async  () => {
-    const data = await getPrices();
-    console.log(data);
-  }
-  useEffect(() => {
-    get();
-  }, [])
+  // const get =async  () => {
+  //   const data = await getPrices();
+  //   console.log(data);
+  // }
+  // useEffect(() => {
+  //   get();
+  // }, [])
 
   return (
     <div className="min-h-screen mt-14 bg-white">
