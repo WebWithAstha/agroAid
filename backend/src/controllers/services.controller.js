@@ -31,7 +31,7 @@ export const weatherController = async (req, res) => {
 
     try {
       
-        const response = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
+        const forecastResponse = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
             params: {
                 key: config.WEATHER_API_KEY,
                 q: city,
@@ -39,7 +39,15 @@ export const weatherController = async (req, res) => {
                 days:6
             },
         });
-        return successResponse(res, response.data, 'Weather data fetched successfully');
+        const currentResponse = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
+            params: {
+                key: config.WEATHER_API_KEY,
+                q: city,
+                aqi: 'no',
+            },
+        });
+
+        return successResponse(res, {forecastResponse : forecastResponse.data , currentResponse : currentResponse.data}, 'Weather data fetched successfully');
     } catch (error) {
         console.error('Weather API Error:', error.message);
         return errorResponse(res, 'Failed to fetch weather data', error.status);

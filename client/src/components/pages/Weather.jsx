@@ -61,7 +61,7 @@ const Weather = () => {
     <div className="grid grid-cols-5 gap-3">
       {forecastData?.fiveDayForecast?.map((day, index) => ( // Added optional chaining
         <div key={index} className="flex flex-col items-center p-3 rounded-xl bg-gradient-to-b from-sky-50 to-sky-100 shadow-sm border border-sky-100 hover:shadow-md transition-all">
-          <div className="font-medium text-gray-700">{ (new Date(Date.now() + (index+1) * 24 * 60 * 60 * 1000)).toLocaleDateString('en-US', { weekday: 'short' })}</div>
+          <div className="font-medium text-gray-700">{ (new Date(Date.now() + (index+1) * 24 * 60 * 60 * 1000)).toLocaleDateString('pb-IN', { weekday: 'long' })}</div>
           <div className="my-3">{getWeatherIcon(day.condition)}</div>
           <div className="text-lg font-semibold text-sky-800">{day.temperature}°C</div>
         </div>
@@ -167,40 +167,6 @@ const Weather = () => {
             5-Day Forecast
           </h3>
           {renderFiveDayForecast(forecast)}
-        </div>
-
-        {/* Footer with Soil Moisture Indicator - Enhanced */}
-        <div className="bg-gradient-to-r from-amber-50 to-amber-100 p-6 border-t border-amber-200">
-          <div className="mb-3">
-            <div className="flex justify-between mb-2">
-              <span className="font-medium text-amber-800 flex items-center gap-1">
-                <Droplets size={16} />
-                Soil Moisture Level
-              </span>
-              <span className="font-bold text-amber-800">{localWeatherData.soilMoisture}%</span>
-            </div>
-            <div className="w-full bg-white rounded-full h-3 p-0.5 shadow-inner">
-              <div
-                className="bg-gradient-to-r from-red-400 via-yellow-400 to-green-500 h-2 rounded-full shadow-sm"
-                style={{ width: `${localWeatherData.soilMoisture}%` }}
-              ></div>
-            </div>
-            <div className="flex justify-between text-xs font-medium mt-2">
-              <span className="text-red-600">Dry</span>
-              <span className="text-yellow-600">Moderate</span>
-              <span className="text-green-600">Optimal</span>
-            </div>
-          </div>
-
-          {/* Additional Decorative Element */}
-          <div className="flex justify-center mt-4">
-            <div className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L8 6H4v4l-2 4 2 4v4h4l4 2 4-2h4v-4l2-4-2-4V6h-4L12 2z" />
-              </svg>
-              <span>Weather data optimized for agricultural decisions</span>
-            </div>
-          </div>
         </div>
       </div>
     </>
