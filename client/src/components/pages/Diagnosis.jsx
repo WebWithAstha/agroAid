@@ -5,6 +5,10 @@ import diagnosisResult from '../../data/diagnosis';
 import Header from '../Header';
 
 
+import { useDispatch } from 'react-redux';
+import { fetchPesticides } from '../../store/Actions/pesticidesAction';
+
+
 
 // Upload Section Component
 const UploadSection = ({ uploadedImage, isAnalyzing, handleImageUpload, resetDiagnosis }) => {
@@ -309,20 +313,33 @@ const Diagnosis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setUploadedImage(URL.createObjectURL(file));
       setIsAnalyzing(true);
-      
-      // Simulate analysis delay
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setShowResults(true);
-      }, 2000);
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result.split(',')[1]; 
+        const imagesArray = [base64String]; 
+  
+        dispatch(fetchPesticides(imagesArray));
+  
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setShowResults(true);
+        }, 2000);
+      };
+  
+      reader.readAsDataURL(file);
     }
   };
+  
+  
 
   const resetDiagnosis = () => {
     setUploadedImage(null);

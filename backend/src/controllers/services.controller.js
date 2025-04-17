@@ -61,7 +61,7 @@ export const cropHealthController = async (req, res) => {
         method: 'post',
         url: 'https://crop.kindwise.com/api/v1/identification',
         headers: {
-            'Api-Key': config.cropHealthApiKey,
+            'Api-Key': config.CROP_HEALTH_API_KEY,
             'Content-Type': 'application/json',
         },
         data: requestData,
@@ -70,10 +70,10 @@ export const cropHealthController = async (req, res) => {
 
     try {
         const response = await axios(axiosConfig);
-        return successResponse(res, response.data, 'Crop health data fetched successfully');
+        return successResponse(res, response.data.result.disease.suggestions[0], 'Crop health data fetched successfully');
     } catch (error) {
         console.error('Crop Health API Error:', error.message);
-        return errorResponse(res, 'Failed to fetch crop health data', error?.response?.data || error.message);
+        return errorResponse(res, 'Failed to fetch crop health data', error?.status);
     }
 };
 
