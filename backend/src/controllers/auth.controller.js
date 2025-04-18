@@ -47,11 +47,8 @@ export const updateDetails = async (req, res) => {
     if (!user) {
       return notFoundResponse(res, "User not found.");
     }
-
-    // Define allowed fields to update
     const allowedFields = ['name', 'location', 'language', 'mainCrops', 'profile'];
-
-    // Filter and assign only allowed fields
+    if (!user.isCompleted) allowedFields.push('isCompleted');
     for (const key of Object.keys(updates)) {
       if (allowedFields.includes(key)) {
         if (key === 'mainCrops' && Array.isArray(updates[key])) {
@@ -117,7 +114,7 @@ export const verifyOtpAndAuthenticate = async (req, res) => {
 export const fethcUser = async (req, res) => {
   try {
     const user = req.user;
-    if(!user)user = await User.findById("67fccf1dd19811b34b9daee9");
+    if (!user) user = await User.findById("67fccf1dd19811b34b9daee9");
     return successResponse(res, user, "User details fetched successfully.");
   } catch (error) {
     console.log(error);

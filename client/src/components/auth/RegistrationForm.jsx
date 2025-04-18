@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateDetails } from '../../store/Actions/authAction';
 
 export default function RegistrationForm() {
+    const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     mainCrops: [],
@@ -101,12 +104,11 @@ export default function RegistrationForm() {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would send the data to your API
-    console.log('Submitting form data:', {
-      ...formData,
-      location: `${formData.city}, ${formData.state}`
-    });
-    alert('Registration successful!');
+    dispatch(updateDetails( {
+        ...formData,
+        location: `${formData.city}, ${formData.state}`,
+        isCompleted:true
+      }))
   };
   
   return (

@@ -23,8 +23,7 @@ export const signinAndSignup = (phoneNumber) => async (dispatch) => {
 export const verifyOtpAndAuthenticate = (phoneNumber, otp, navigate) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
-        const data = await verifyOtpService(phoneNumber, otp);
-        console.log(data);
+        const {data} = await verifyOtpService(phoneNumber, otp);
         dispatch(setUser(data));
         dispatch(setLoading(false));
         if(user.isCompleted)navigate('/dashboard')
@@ -40,6 +39,8 @@ export const updateDetails = (userData) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
         const data = await updateDetailsService(userData);
+        console.log(data);
+        
         dispatch(setUser(data.updatedUser || data.user));
         dispatch(setLoading(false));
         return data;

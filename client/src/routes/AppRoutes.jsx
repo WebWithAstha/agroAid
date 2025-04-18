@@ -10,6 +10,7 @@ import Market from '../components/pages/market/farmer/Market.jsx';
 import GovernmentSchemes from '../components/pages/GovernmentSchems.jsx';
 import DirectMarket from '../components/pages/market/customer/DirectMarket.jsx';
 import Diagnosis from '../components/pages/Diagnosis.jsx';
+import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 
 const AppRoutes = () => {
   return (
