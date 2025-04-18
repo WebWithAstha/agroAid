@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Cloud, Droplets, Sun, Wind, Thermometer, CloudRain, Snowflake, Leaf, Sunrise, Sunset } from 'lucide-react';
-import Navbar from '../partials/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { dailyWeatherForecast } from '../../store/Actions/weatherAction';
 import Header from '../Header';
+import Loading from '../partials/Loading.jsx'
+
 
 const Weather = () => {
   const dispatch = useDispatch();
-  const forecast = useSelector((state) => state.weatherReducer.forecast);
+  const {forecast,loading} = useSelector((state) => state.weatherReducer);
 
   // useCallback to memoize the function, preventing unnecessary re-renders
   const displayWeatherData = useCallback(() => {
@@ -70,8 +71,9 @@ const Weather = () => {
     </div>
   ), [getWeatherIcon]);
 
-  return forecast && (
-    <>
+  return  (
+    loading ? <Loading/> :(
+    forecast && 
       <div className="bg-green-50 overflow-hidden w-full  font-sans relative">
         {/* Decorative Farm Elements */}
         <Header title={"Weather Report"}/>
@@ -170,7 +172,7 @@ const Weather = () => {
           {renderFiveDayForecast(forecast)}
         </div>
       </div>
-    </>
+    )
   );
 }
 

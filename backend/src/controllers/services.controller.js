@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { config } from '../config/config.js';
 import { successResponse, errorResponse, badRequest } from '../utils/responseHandler.js';
+import { Diagnosis } from '../models/diagonsis.model.js';
+import { getDiseaseDetailByGemini } from '../services/gemini.diagnosis.service.js';
 
 
 export const agmarknetController = async (req, res) => {
@@ -25,7 +27,6 @@ export const agmarknetController = async (req, res) => {
     return errorResponse(res, 'Failed to fetch Agmarknet data', error.status);
   }
 };
-
 
 export const weatherController = async (req, res) => {
     const { city = 'bhopal' } = req.query;
@@ -72,13 +73,41 @@ export const cropHealthController = async (req, res) => {
         data: requestData,
         maxBodyLength: Infinity,
     };
-
+    
     try {
         const response = await axios(axiosConfig);
-        return successResponse(res, response.data, 'Crop health data fetched successfully');
+        // console.log(response.data.result.is_plant)
+        if(response.data.result.is_plant.probability < 0.03 ) 
+            return errorResponse(res, 'Only crop images allowed.', 404);
+        // console.log(response.data.result.disease.suggestions[0].similar_images)
+        const {name,scientific_name:scientificName,probability} = response.data.result.disease.suggestions[0]
+        const similarImages = response.data.result.disease.suggestions[0].similar_images.map(img => img.url);
+
+        // console.log(response.data.result.disease.suggestions[0].similarImages)
+        const {description,treatment,symptoms,preventions} = await getDiseaseDetailByGemini(name,scientificName);
+        const diagnosis = await Diagnosis.create({
+            userId:'67fccf1dd19811b34b9daee9',
+            disease:name,
+            scientificName,
+            description,treatment,symptoms,preventions,
+            severity:probability,
+            similarImages,
+            image:response.data.input.images[0],
+        }) 
+        // console.log(diagnosis)
+        return successResponse(res, diagnosis, 'Crop health data fetched successfully');
     } catch (error) {
         console.error('Crop Health API Error:', error.message);
         return errorResponse(res, 'Failed to fetch crop health data', error?.status);
     }
 };
 
+export const getAllDiagnosis = async(req,res)=>{
+    try {
+        const allDiagnosis = await Diagnosis.find({userId:'67fccf1dd19811b34b9daee9'})
+        return successResponse(res, allDiagnosis, 'All diagnosis fetched!'); 
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, 'Failed to fetch crop health data', error?.status);
+    }
+}

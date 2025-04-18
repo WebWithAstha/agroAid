@@ -1,11 +1,12 @@
 import express from 'express';
-import { agmarknetController, cropHealthController, weatherController } from '../controllers/services.controller.js';
+import { agmarknetController, cropHealthController, weatherController,getAllDiagnosis } from '../controllers/services.controller.js';
 const router = express.Router()
 
 
 router.get('/agmarknet', agmarknetController);
 router.get('/weather', weatherController);
-router.post('/crop-health', cropHealthController);
+router.post('/diagnosis', cropHealthController);
+router.get('/all-diagnosis', getAllDiagnosis);
 
 
 export default router;

@@ -7,9 +7,10 @@ import Dashboard from '../components/dashboard/Dashboard';
 import CropPrices from '../components/pages/CropPrices';
 import Weather from '../components/pages/Weather.jsx';
 import Market from '../components/pages/market/farmer/Market.jsx';
-import Diagnosis from '../components/pages/Diagnosis.jsx';
+// import Diagnosis from '../components/pages/diagnosis/Diagnosis.jsx';
 import GovernmentSchemes from '../components/pages/GovernmentSchems.jsx';
 import DirectMarket from '../components/pages/market/customer/DirectMarket.jsx';
+import Diagnosis from '../components/pages/Diagnosis.jsx';
 
 const AppRoutes = () => {
   return (
