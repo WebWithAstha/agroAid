@@ -28,7 +28,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    diagonosis: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Diagnosis' }],
+    type: {
+      type: String,
+      default: "farmer",
+      enum: ["farmer", "buyer"]
+    },
+    AccountId:String,
     location: String,
     refreshToken: String
   },

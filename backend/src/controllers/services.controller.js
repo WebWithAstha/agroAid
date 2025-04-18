@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { config } from '../config/config.js';
 import { successResponse, errorResponse, badRequest } from '../utils/responseHandler.js';
-import { formatCrops } from '../utils/agmarknetHelper.js';
 import marketModel from '../models/market.model.js';
 
 // controller
@@ -13,7 +12,7 @@ export const agmarknetController = async (req, res) => {
             params: {
                 'api-key': config.AGMARKNET_API_KEY,
                 format: 'json',
-                limit: 50,
+                limit: 100,
             },
         });
         const crops = response.data.records;

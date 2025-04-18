@@ -6,6 +6,7 @@ import { forbiddenResponse, serverError, unauthorizedResponse } from "../utils/r
 export const isAuthenticated = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = req.cookies;
+
         if (!accessToken) {
             if (!refreshToken) {
                 return unauthorizedResponse(res);
@@ -26,7 +27,9 @@ export const isAuthenticated = async (req, res, next) => {
         }
         try {
             const decoded = jwt.verify(accessToken, config.JWT_SECRET);
-            req.user = await User.findById(decoded.id);
+            const user = await User.findById(decoded.id);
+            if (!user) return forbiddenResponse(res)
+            req.user = user;
             next();
         } catch (accessError) {
             return unauthorizedResponse(res);
@@ -41,14 +44,14 @@ export const setCookies = async (res, accessToken, refreshToken) => {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
-        maxAge:Number( config.JWT_COOKIE_EXPIRES_IN),
+        maxAge: Number(config.JWT_COOKIE_EXPIRES_IN),
     });
-    
+
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
-        maxAge:Number(config.REFRESH_COOKIE_EXPIRES_IN),
+        maxAge: Number(config.REFRESH_COOKIE_EXPIRES_IN),
     });
 };
 
