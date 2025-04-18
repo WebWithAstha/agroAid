@@ -47,10 +47,6 @@ export const agmarknetController = async (req, res) => {
     }
 };
 
-
-
-
-
 export const weatherController = async (req, res) => {
     const { city = 'bhopal' } = req.query;
 
