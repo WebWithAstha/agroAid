@@ -19,14 +19,13 @@ If the disease name or scientific name is invalid or unknown, return:
 { "error": "Invalid disease or crop name provided." }
 `;
 
-export const getDiseaseDetailByGemini = async ({ name, scientificName, lan="english" }) => {
+export const getDiseaseDetailByGemini = async (name, scientificName, lan = "english" ) => {
   try {
     const model = genai.getGenerativeModel({
       model: "gemini-2.0-flash",
       systemInstruction,
     });
 
-    // Building user query
     const userQuery = `
 Provide information about the crop disease:
 - Name: ${name}
@@ -53,12 +52,14 @@ Format the output as a JSON object with these fields:
       return { error: "Invalid response from Gemini API." };
     }
 
-    // Try parsing to JSON
+    // Remove code block markers if present (e.g., ```json ... ```)
+    const cleaned = result.replace(/```(?:json)?\s*([\s\S]*?)\s*```/, "$1").trim();
+
     try {
-      const parsed = JSON.parse(result);
+      const parsed = JSON.parse(cleaned);
       return parsed;
     } catch (parseError) {
-      console.error("Failed to parse Gemini response as JSON:", result);
+      console.error("Failed to parse Gemini response as JSON:", cleaned);
       return { error: "Failed to parse response. Response may not be in correct format." };
     }
   } catch (err) {

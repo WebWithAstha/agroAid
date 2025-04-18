@@ -1,50 +1,81 @@
 import mongoose from "mongoose";
 
-const diagnosisSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  cropName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  imageUrl: {
-    type: String,
-    required: true, 
-  },
-  similarImages:[{String}],
-  diagnosisResult: {
+const diagnosisSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     disease: {
       type: String,
       required: true,
       trim: true,
     },
-    confidence: {
+    cropName: {
+      type: String,
+      default:"Sample Crop",
+      required: true,
+      trim: true,
+    },
+    scientificName: {
+      type: String,
+      trim: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    similarImages: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    description: {
+      type: String,
+      trim: true,
+    },
+    symptoms: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    preventions: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    treatment: {
+      organic: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+      chemical: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+    },
+    severity: {
       type: Number,
       min: 0,
-      max: 100,
-      default: 100, // in case you're using an AI model that returns confidence %
+      max: 1,
+    },
+    language: {
+      type: String,
+      enum: ["en", "hi", "pa"],
+      default: "en",
     },
   },
-  solution: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  additionalTips: {
-    type: String,
-    default: "",
-    trim: true,
-  },
-  language: {
-    type: String,
-    enum: ["en", "hi", "pa"],
-    default: "en",
-  },
-
-}, { timestamps: true });
+  {
+    timestamps: true,
+  }
+);
 
 export const Diagnosis = mongoose.model("Diagnosis", diagnosisSchema);
