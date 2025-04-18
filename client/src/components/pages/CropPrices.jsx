@@ -40,7 +40,7 @@ const ChartToggleAndSelector = ({
   setChartView,
 }) => {
 
- 
+
 
   return (
     <div className="relative w-full">
@@ -57,8 +57,8 @@ const ChartToggleAndSelector = ({
               key={view}
               onClick={() => setChartView(view)}
               className={`px-3 py-1 text-sm ${chartView === view
-                  ? "bg-green-800 text-white"
-                  : "bg-white text-gray-600"
+                ? "bg-green-800 text-white"
+                : "bg-white text-gray-600"
                 }`}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}
@@ -74,8 +74,8 @@ const ChartToggleAndSelector = ({
             className="appearance-none bg-white border border-gray-200 rounded-md py-1 pl-2 pr-8 text-sm text-gray-700 focus:outline-none"
           >
             {crops.map((crop) => (
-              <option key={crop.commodity} value={crop.commodity}>
-                {crop.commodity}
+              <option key={crop.name} value={crop.name}>
+                {crop.name}
               </option>
             ))}
           </select>
@@ -93,28 +93,17 @@ const ChartToggleAndSelector = ({
 const CropCard = ({ crop, selectedCrop, setSelectedCrop }) => {
   return (
     <div
-      key={crop.commodity}
-      onClick={() => setSelectedCrop(crop.commodity)}
+      key={crop._id}
+      onClick={() => setSelectedCrop(crop.name)}
       className={`cursor-pointer hover:bg-zinc-50 hover:text-black transition-all h-max rounded-md border border-transparent ${selectedCrop === crop.commodity
-          ? "border-l-2 border-l-emerald-500 bg-emerald-800 text-white"
-          : "border-gray-100 bg-white hover:border-l-2 hover:border-l-gray-300"
+        ? "border-l-2 border-l-emerald-500 bg-emerald-800 text-white"
+        : "border-gray-100 bg-white hover:border-l-2 hover:border-l-gray-300"
         }`}
     >
       <div className="p-2">
-        <p className="text-sm font-medium">{crop.commodity}</p>
+        <p className="text-sm font-medium">{crop.name}</p>
         <div className="flex items-center justify-between mt-1">
-          <p className="text-xs">₹{crop.max_price}</p>
-          {/* <div
-            className={`flex items-center text-xs bg-white px-1 rounded-xl ${trend.change >= 0 ? "text-emerald-600" : "text-red-500"
-              }`}
-          > */}
-            {/* {trend.change >= 0 ? (
-              <ArrowUp size={10} />
-            ) : (
-              <ArrowDown size={10} />
-            )} */}
-            {/* <span>{Math.abs(trend.change).toFixed(1)}%</span> */}
-          {/* </div> */}
+          <p className="text-xs">₹{crop.prices[crop.prices.length - 1].min_price} - ₹{crop.prices[crop.prices.length - 1].max_price}</p>
         </div>
       </div>
     </div>
@@ -267,45 +256,16 @@ const CropChart = ({
   </div>
 );
 
-const ForecastCard = ({ selectedCrop }) => {
-  const forecast = marketTrends[selectedCrop];
-  return (
-    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3">
-      <h2 className="text-sm font-medium text-gray-800 mb-2">
-        Market Forecast
-      </h2>
-      <div>
-        <p className="text-xs text-gray-500">Forecasted Price (May)</p>
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-2xl font-medium">₹{forecast.forecast}</p>
-          <div
-            className={`flex items-center ${forecast.change >= 0 ? "text-emerald-600" : "text-red-500"
-              }`}
-          >
-            {forecast.change >= 0 ? (
-              <TrendingUp size={14} />
-            ) : (
-              <ArrowDown size={14} />
-            )}
-            <span className="ml-1 text-2xl">
-              {Math.abs(forecast.change).toFixed(1)}%
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-const CropCompare = ({ crops, selectedCrop, marketData }) => {
+const CropCompare = ({currentPrice, crops, selectedCrop, marketData }) => {
   return (
     <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
-      <h2 className="text-sm font-medium text-gray-800 mb-2">
+      <h2 className="text-xl font-medium text-gray-800 mb-3">
         Price Comparison
       </h2>
       <div className="space-y-2">
         {crops
           .filter((c) => c.name !== selectedCrop)
-          .slice(0, 3)
+          .slice(0, 5)
           .map((crop, index) => (
             <div
               key={index}
@@ -314,12 +274,14 @@ const CropCompare = ({ crops, selectedCrop, marketData }) => {
               <div className="flex items-center">
                 <div
                   className="w-1 h-6 rounded-full mr-2"
-                  style={{ backgroundColor: crop.color }}
+                  style={{
+                    backgroundColor: `rgb(${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+10}, ${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+100}, ${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+50})`
+                  }}
                 ></div>
                 <p className="text-sm font-medium text-gray-800">{crop.name}</p>
               </div>
               <p className="text-sm font-medium">
-                ₹{marketData[crop.name].at(-1).price}
+                ₹{crop.prices[crop.prices.length-1].max_price}
               </p>
             </div>
           ))}
@@ -333,34 +295,44 @@ const CropCompare = ({ crops, selectedCrop, marketData }) => {
 const CropPrices = () => {
   const [selectedCrop, setSelectedCrop] = useState("Wheat");
   const [chartView, setChartView] = useState("price");
+  const [currentPrice, setCurrentPrice] = useState(0);
+  const [previousPrice, setPreviousPrice] = useState(0);
+  const [priceChange, setPriceChange] = useState(0);
 
-  const currentPrice = marketData[selectedCrop].at(-1).price;
-  const previousPrice = marketData[selectedCrop].at(-2).price;
-  const priceChange = ((currentPrice - previousPrice) / previousPrice) * 100;
 
-
-  const combinedData = marketData[selectedCrop].map((item, index) => {
-    const dataForMonth = { month: item.month };
-    crops.forEach((crop) => {
-      dataForMonth[crop.name] = marketData[crop.name][index]?.price || 0;
-    });
-    return dataForMonth;
-  });
+  const combinedData = () => {
+    return cropPrices.find((c) => c.name === selectedCrop).prices.map((price) => {});
+  }
 
   const dispatch = useDispatch();
-  const {data:cropPrices} = useSelector((state) => state.agmarknetReducer);
+  const { data: cropPrices } = useSelector((state) => state.agmarknetReducer);
   const get = async () => {
     dispatch(fetchAgmarknetPrices())
   }
   useEffect(() => {
-    if(cropPrices.length == 0)get();
+    if (cropPrices.length == 0) get();
   }, [cropPrices])
 
   const uniqueCommodities = Array.from(
-    new Map(cropPrices.map((item) => [item.commodity, item])).values()
+    new Map(cropPrices.map((item) => [item.name, item])).values()
   );
 
+  useEffect(() => {
+    const crop = cropPrices.find((c) => c.name === selectedCrop);
+    if (crop && crop.prices.length >= 2) {
+      const lastPrice = crop.prices[crop.prices.length - 1].max_price;
+      const secondLastPrice = crop.prices[crop.prices.length - 2].max_price;
 
+      setCurrentPrice(lastPrice);
+      setPreviousPrice(secondLastPrice);
+
+      const change = ((lastPrice - secondLastPrice) / secondLastPrice) * 100;
+      setPriceChange(change);
+    }
+  }, [selectedCrop, cropPrices]);
+
+  console.log(cropPrices);
+  
 
 
   return (
@@ -376,7 +348,7 @@ const CropPrices = () => {
 
         <div className="grid grid-cols-4 p-4 w-full gap-3 flex-grow">
           <div className="space-y-2 overflow-y-auto flex-col h-[77vh]">
-            {uniqueCommodities.map((crop,i) => (
+            {uniqueCommodities.map((crop, i) => (
               <CropCard
                 key={i}
                 crop={crop}
@@ -397,11 +369,11 @@ const CropPrices = () => {
           </div>
 
           <div className="space-y-3 h-max">
-            <ForecastCard selectedCrop={selectedCrop} />
             <CropCompare
               selectedCrop={selectedCrop}
-              crops={crops}
+              crops={uniqueCommodities}
               marketData={marketData}
+              currentPrice={currentPrice}
             />
           </div>
         </div>

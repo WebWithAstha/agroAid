@@ -16,25 +16,31 @@ const userSchema = new mongoose.Schema(
     },
     language: {
       type: String,
-      enum: ["en", "hi", "pa","ta"], // "en" for English, "hi" for Hindi, "pa" for Punjabi
+      enum: ["en", "hi", "pa", "ta"], // "en" for English, "hi" for Hindi, "pa" for Punjabi
       default: "en",
     },
-    profile:{
-      type:String,
-      default:"https://res.cloudinary.com/dnokci0nm/image/upload/v1744530135/d4ea3f6e-f259-416e-8a29-aec0356272ac_vverx8.png"
+    profile: {
+      type: String,
+      default: "https://res.cloudinary.com/dnokci0nm/image/upload/v1744530135/d4ea3f6e-f259-416e-8a29-aec0356272ac_vverx8.png"
     },
-    mainCrops:[String],
-    isCompleted :{
-      type:Boolean,
-      default:false
+    mainCrops: [String],
+    isCompleted: {
+      type: Boolean,
+      default: false
     },
-    location:String,
+    type: {
+      type: String,
+      default: "farmer",
+      enum: ["farmer", "buyer"]
+    },
+    AccountId:String,
+    location: String,
     refreshToken: String
   },
   { timestamps: true }
 );
 
-userSchema.methods.generateTokens =  async function () {
+userSchema.methods.generateTokens = async function () {
   const accessToken = jwt.sign({ id: this._id }, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });
   const refreshToken = jwt.sign({ id: this._id }, config.REFRESH_TOKEN_SECRET, { expiresIn: config.REFRESH_TOKEN_EXPIRES_IN });
   this.refreshToken = refreshToken;

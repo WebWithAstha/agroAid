@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes.js';
 import servicesRoutes from './routes/services.routes.js';
 import assistRoutes from './routes/assist.routes.js';
 import ivrRoutes from './routes/ivr.routes.js';
+import cropRoutes from './routes/crop.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { config } from './config/config.js';
@@ -34,6 +35,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/services' , servicesRoutes)
 app.use('/api/assist' , assistRoutes)
 app.use('/api/ivr' , ivrRoutes)
+app.use('/api/crop' , cropRoutes)
 
 app.use("/", (req, res) => {
     res.status(404).json({

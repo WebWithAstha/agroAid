@@ -3,29 +3,49 @@ import { config } from '../config/config.js';
 import { successResponse, errorResponse, badRequest } from '../utils/responseHandler.js';
 import { Diagnosis } from '../models/diagonsis.model.js';
 import { getDiseaseDetailByGemini } from '../services/gemini.diagnosis.service.js';
+import marketModel from '../models/market.model.js';
 
-
+// controller
 export const agmarknetController = async (req, res) => {
-  const commodities = ["Wheat", "Barley", "Mustard", "Gram", "Rice", "Cotton"];
-
-  try {
-    const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
-      params: {
-        'api-key': config.AGMARKNET_API_KEY,
-        format: 'json',
-        limit: 50, 
-      },
-    });
-
-    // log
-    const filteredData = response.data.records.filter(record =>
-      commodities.includes(record.commodity)
-    );
-    return successResponse(res, response.data.records, 'Filtered Agmarknet data fetched successfully');
-  } catch (error) {
-    console.error('Agmarknet API Fetch Error:', error.message);
-    return errorResponse(res, 'Failed to fetch Agmarknet data', error.status);
-  }
+    try {
+        const today = new Date();
+        const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+        const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
+            params: {
+                'api-key': config.AGMARKNET_API_KEY,
+                format: 'json',
+                limit: 100,
+            },
+        });
+        const crops = response.data.records;
+        for (const crop of crops) {
+            const { commodity: name, market, max_price, min_price } = crop;
+            const existing = await marketModel.findOne({ name, market });
+            if (existing) {
+                const isTodayInserted = existing.prices.some(p => p.date === formattedDate);
+                if (!isTodayInserted) {
+                    existing.prices.push({ max_price, min_price, date: formattedDate });
+                    if (existing.prices.length > 5) {
+                        existing.prices = existing.prices
+                            .sort((a, b) => new Date(b.date.split('/').reverse().join('/')) - new Date(a.date.split('/').reverse().join('/')))
+                            .slice(0, 5);
+                    }
+                    await existing.save();
+                }
+            } else {
+                await marketModel.create({
+                    name,
+                    market,
+                    prices: [{ max_price, min_price, date: formattedDate }],
+                });
+            }
+        }
+        const updatedData = await marketModel.find({})
+        return successResponse(res, updatedData, 'Agmarknet data saved successfully.');
+    } catch (error) {
+        console.error('Agmarknet Error:', error.message);
+        return errorResponse(res, 'Failed to fetch Agmarknet data', error.status);
+    }
 };
 
 export const weatherController = async (req, res) => {
@@ -36,13 +56,13 @@ export const weatherController = async (req, res) => {
     }
 
     try {
-      
+
         const forecastResponse = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
             params: {
                 key: config.WEATHER_API_KEY,
                 q: city,
                 aqi: 'no',
-                days:6
+                days: 6
             },
         });
         const currentResponse = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
@@ -53,7 +73,7 @@ export const weatherController = async (req, res) => {
             },
         });
 
-        return successResponse(res, {forecastResponse : forecastResponse.data , currentResponse : currentResponse.data}, 'Weather data fetched successfully');
+        return successResponse(res, { forecastResponse: forecastResponse.data, currentResponse: currentResponse.data }, 'Weather data fetched successfully');
     } catch (error) {
         console.error('Weather API Error:', error.message);
         return errorResponse(res, 'Failed to fetch weather data', error.status);
