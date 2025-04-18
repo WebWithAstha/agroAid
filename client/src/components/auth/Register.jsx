@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import {useNavigate} from 'react-router-dom'
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom'
+import { signinAndSignup } from "../../store/Actions/authAction";
 
 
 const Register = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [phone, setphone] = useState("");
+  const dispatch = useDispatch();
 
-    const handleSubmit = (e)=> {
-        e.preventDefault();
-        navigate('/otp')
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(signinAndSignup(phone))
+    navigate('/otp', { state: { phone } })
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-100 to-white px-4 py-8">
@@ -40,21 +45,6 @@ const Register = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name Field */}
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              placeholder="Enter your name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-            />
-          </div>
 
           {/* Phone Field */}
           <div>
@@ -65,17 +55,20 @@ const Register = () => {
               Phone No.
             </label>
             <PhoneInput
+              value={phone}
+              onChange={(value) => setphone(value)} // <- set your phone state here
               inputStyle={{
                 width: "91%",
                 padding: "20px",
-                marginLeft:"35px",
-                flex :"grow",
+                marginLeft: "35px",
+                flex: "grow",
                 borderRadius: "0.5rem",
                 border: "1px solid #d1d5db",
               }}
               country={"in"}
               enableSearch
             />
+
           </div>
 
           {/* Submit Button */}
@@ -83,7 +76,7 @@ const Register = () => {
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 text-white py-2.5 rounded-lg text-sm font-semibold shadow-md"
           >
-            Submit
+            Send OTP
           </button>
         </form>
       </div>

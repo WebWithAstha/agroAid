@@ -1,12 +1,20 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { verifyOtpAndAuthenticate } from "../../store/Actions/authAction";
+import { Loader2 } from "lucide-react";
+
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
+  const { phone } = useLocation().state;
   const inputsRef = useRef([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading } = useSelector(store => store.authReducer);
 
-  const correctOtp = "123456"; // This should ideally come from backend/session
+
+  const correctOtp = "123456";
 
   const handleChange = (value, index) => {
     if (isNaN(value)) return;
@@ -42,11 +50,7 @@ const OtpVerification = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
-    if (enteredOtp === correctOtp) {
-      navigate("/dashboard");
-    } else {
-      navigate("/register");
-    }
+    dispatch(verifyOtpAndAuthenticate(phone, enteredOtp,navigate))
   };
 
   return (
@@ -77,9 +81,14 @@ const OtpVerification = () => {
 
           <button
             type="submit"
-            className="w-full bg-emerald-600 hover:bg-emerald-700 transition text-white py-2.5 rounded-lg text-sm font-semibold shadow-md"
+            disabled={loading}
+            className="w-full disabled:bg-gray-200 disabled:text-gray-400 bg-emerald-600 hover:bg-emerald-700 transition text-white py-2.5 rounded-lg text-sm font-semibold shadow-md flex items-center justify-center"
           >
-            Verify
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              "Verify"
+            )}
           </button>
         </form>
       </div>

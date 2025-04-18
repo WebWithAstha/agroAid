@@ -36,6 +36,7 @@ const cropSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  description:String
 }, {
   timestamps: true
 });

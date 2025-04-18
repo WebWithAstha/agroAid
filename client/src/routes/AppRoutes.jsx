@@ -10,12 +10,14 @@ import Market from '../components/pages/market/farmer/Market.jsx';
 import Diagnosis from '../components/pages/Diagnosis.jsx';
 import GovernmentSchemes from '../components/pages/GovernmentSchems.jsx';
 import DirectMarket from '../components/pages/market/customer/DirectMarket.jsx';
+import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 
 const AppRoutes = () => {
   return (
     <Routes>
-        <Route element={<Register/>} path='/register' />
-        <Route element={<LanguageSelect/>} path='/' />
+        <Route element={<Register/>} path='/' />
+        <Route element={<RegistrationForm/>} path='/register' />
+        <Route element={<LanguageSelect/>} path='/lang' />
         <Route element={<OtpVerification/>} path='/otp' />
         <Route element={<Dashboard/>} path='/dashboard' />
         <Route element={<CropPrices/>} path='/price'/>

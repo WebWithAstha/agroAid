@@ -33,4 +33,8 @@ export const validateCreateCrop = [
   body("deliveryAvailable")
     .optional()
     .isBoolean().withMessage("Delivery available must be a boolean."),
+
+  body("description")
+    .optional()
+    .isString().withMessage("description  must be a String."),
 ];

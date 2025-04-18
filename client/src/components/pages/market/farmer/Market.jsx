@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Pencil,
   Trash2,
@@ -10,11 +10,21 @@ import {
 } from "lucide-react";
 import { farmerData, initialCrops } from "../../../../data/farmerCrops";
 import Header from "../../../Header";
+import { useDispatch, useSelector } from "react-redux";
+import { createCrop, fetchMyCrops } from "../../../../store/Actions/cropActions";
 
 const FarmerDashboard = () => {
-  const [crops, setCrops] = useState(initialCrops);
+  const [crops, setCrops] = useState([]);
+  const {myCrops}  = useSelector(store => store.cropReducer);
+  console.log(myCrops);
+
+  useEffect(()=>{
+    if(myCrops?.length == 0) dispatch(fetchMyCrops())
+  },[])
+  
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [editingCrop, setEditingCrop] = useState(null);
+  const dispatch = useDispatch();
 
   const handleDeleteCrop = (cropId) => {
     if (confirm("Are you sure you want to remove this crop listing?")) {
@@ -33,21 +43,8 @@ const FarmerDashboard = () => {
   };
 
   const handleSaveCrop = (updatedCrop) => {
-    if (updatedCrop.id) {
-      // Update existing crop
-      setCrops(
-        crops.map((crop) => (crop.id === updatedCrop.id ? updatedCrop : crop))
-      );
-    } else {
-      // Add new crop with generated ID
-      const newCrop = {
-        ...updatedCrop,
-        id: "0x" + Math.random().toString(16).slice(2, 10),
-        verified: false,
-        status: "pending",
-      };
-      setCrops([newCrop, ...crops]);
-    }
+    dispatch(createCrop(updatedCrop));
+    setCrops([updatedCrop, ...crops]);
     setShowUploadForm(false);
   };
 
@@ -95,12 +92,12 @@ const FarmerDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              {initialCrops.map((crop) => (
+              {myCrops.map((crop) => (
                 <CropListingCard
-                  key={crop.id}
+                  key={crop._id}
                   crop={crop}
                   onEdit={() => handleEditCrop(crop)}
-                  onDelete={() => handleDeleteCrop(crop.id)}
+                  onDelete={() => handleDeleteCrop(crop._id)}
                 />
               ))}
             </div>
@@ -119,21 +116,21 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
           <div className="relative h-full">
             <div className="h-48">
               <img
-                src={crop.imageUrl}
+                src={crop.image}
                 alt={crop.name}
                 className="w-full h-48 md:h-full object-contain"
               />
             </div>
-            {crop.status === "low_stock" && (
+            {/* {crop.status === "low_stock" && (
               <div className="absolute bottom-2 left-2 bg-yellow-500 text-white text-xs font-bold rounded-full px-2 py-1">
                 Low Stock
               </div>
-            )}
-            {crop.status === "pending" && (
+            )} */}
+            {/* {crop.status === "pending" && (
               <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs font-bold rounded-full px-2 py-1">
                 Pending Verification
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -144,7 +141,7 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
                 {crop.name}
               </h3>
               <div className="text-lg font-bold text-green-600">
-                {crop.price} ETH
+                {crop.perQuintalPrice} ETH
               </div>
             </div>
 
@@ -152,9 +149,9 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div>
-                <div className="text-xs text-gray-500">Available Quantity</div>
+                <div className="text-xs text-gray-500">Available totalQuantity</div>
                 <div className="font-medium">
-                  {crop.quantity} {crop.quantityUnit}
+                  {crop.totalQuantity} {crop.totalQuantityUnit}
                 </div>
               </div>
 
@@ -170,13 +167,6 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
                 <div className="font-medium">
                   {crop.deliveryAvailable ? "Available" : "Pickup only"}
                 </div>
-              </div>
-            </div>
-
-            <div className="mt-4 text-xs text-gray-500">
-              <div>Blockchain ID: {crop.id}</div>
-              <div>
-                Verification Status: {crop.verified ? "Verified" : "Pending"}
               </div>
             </div>
           </div>
@@ -203,19 +193,35 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
 };
 
 const CropForm = ({ initialData, onSave, onCancel }) => {
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState(null);
   const [formData, setFormData] = useState(
     initialData || {
       name: "",
       description: "",
-      price: "",
-      quantity: "",
-      quantityUnit: "kg",
+      perQuintalPrice: "",
+      totalQuantity: "",
       location: farmerData.farm + ", " + farmerData.location,
       harvestDate: new Date().toISOString().split("T")[0],
       deliveryAvailable: true,
-      imageUrl: "/api/placeholder/400/320",
+      image: imageFiles,
     }
   );
+
+  const handleFileChange = (e) => {
+    const files = e.target.files[0];
+
+    const newPreviews = URL.createObjectURL(files);
+
+    setImageFiles(files);
+    setImagePreviews(newPreviews);
+    setFormData((prev) => ({
+      ...prev,
+      image: files,
+    }));
+
+  };
+
 
   const [errors, setErrors] = useState({});
 
@@ -241,14 +247,14 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
     if (!formData.name.trim()) newErrors.name = "Crop name is required";
     if (!formData.description.trim())
       newErrors.description = "Description is required";
-    if (!formData.price || isNaN(formData.price) || formData.price <= 0)
-      newErrors.price = "Valid price is required";
+    if (!formData.perQuintalPrice || isNaN(formData.perQuintalPrice) || formData.perQuintalPrice <= 0)
+      newErrors.perQuintalPrice = "Valid perQuintalPrice is required";
     if (
-      !formData.quantity ||
-      isNaN(formData.quantity) ||
-      formData.quantity <= 0
+      !formData.totalQuantity ||
+      isNaN(formData.totalQuantity) ||
+      formData.totalQuantity <= 0
     )
-      newErrors.quantity = "Valid quantity is required";
+      newErrors.totalQuantity = "Valid totalQuantity is required";
     if (!formData.harvestDate)
       newErrors.harvestDate = "Harvest date is required";
 
@@ -258,16 +264,27 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (validateForm()) {
-      // Convert numeric strings to numbers
-      const processedData = {
+      const formDataToSend = {
         ...formData,
-        price: parseFloat(formData.price),
-        quantity: parseInt(formData.quantity),
+        perQuintalPrice: parseFloat(formData.perQuintalPrice),
+        images: imageFiles,
+        totalQuantity: parseInt(formData.totalQuantity),
       };
-      onSave(processedData);
+      console.log(formDataToSend);
+      onSave(formDataToSend)
     }
   };
+
+
+
+  const fileInputRef = useRef(null);
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -289,18 +306,39 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Crop Image
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center">
-              <img
-                src={formData.imageUrl}
-                alt="Crop preview"
-                className="w-32 h-32 object-cover mb-4"
-              />
-              <div className="flex items-center justify-center bg-gray-50 text-gray-500 rounded-md px-4 py-2">
+
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center w-full">
+              {imagePreviews ?
+                (<div className="flex gap-4 flex-wrap justify-center items-center mb-4">
+                  <img
+                    src={imagePreviews}
+                    alt={imagePreviews}
+                    className="w-32 h-32 object-cover rounded"
+                  />
+                </div>
+                ) : (
+              <button
+                type="button"
+                onClick={handleFileClick}
+                className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md px-4 py-2 transition"
+              >
                 <Upload size={16} className="mr-2" />
                 <span>Upload Image</span>
-              </div>
-              <p className="mt-2 text-xs text-gray-500">
-                (Image upload constality would be implemented here)
+              </button>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              <p className="mt-2 text-xs text-gray-500 text-center">
+                {imagePreviews
+                  ? "(You can upload multiple images)"
+                  : "(Images uploaded successfully!)"}
               </p>
             </div>
           </div>
@@ -314,9 +352,8 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.name ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="e.g., Organic Wheat"
             />
             {errors.name && (
@@ -333,9 +370,8 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
               name="harvestDate"
               value={formData.harvestDate}
               onChange={handleChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.harvestDate ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.harvestDate ? "border-red-500" : "border-gray-300"
+                }`}
             />
             {errors.harvestDate && (
               <p className="mt-1 text-xs text-red-500">{errors.harvestDate}</p>
@@ -351,9 +387,8 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
               value={formData.description}
               onChange={handleChange}
               rows="3"
-              className={`w-full p-2 border rounded-md ${
-                errors.description ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.description ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="Describe your crop, growing methods, and quality"
             ></textarea>
             {errors.description && (
@@ -363,55 +398,42 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Price (ETH)*
+              perQuintalPrice (ETH)*
             </label>
             <input
               type="number"
-              name="price"
-              value={formData.price}
+              name="perQuintalPrice"
+              value={formData.perQuintalPrice}
               onChange={handleChange}
               step="0.001"
               min="0.001"
-              className={`w-full p-2 border rounded-md ${
-                errors.price ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.perQuintalPrice ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="0.025"
             />
-            {errors.price && (
-              <p className="mt-1 text-xs text-red-500">{errors.price}</p>
+            {errors.perQuintalPrice && (
+              <p className="mt-1 text-xs text-red-500">{errors.perQuintalPrice}</p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Quantity Available*
+              totalQuantity Available*
             </label>
             <div className="flex">
               <input
                 type="number"
-                name="quantity"
-                value={formData.quantity}
+                name="totalQuantity"
+                value={formData.totalQuantity}
                 onChange={handleChange}
                 min="1"
-                className={`w-full p-2 border rounded-l-md ${
-                  errors.quantity ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full p-2 border rounded-l-md ${errors.totalQuantity ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="50"
               />
-              <select
-                name="quantityUnit"
-                value={formData.quantityUnit}
-                onChange={handleChange}
-                className="p-2 border border-l-0 rounded-r-md border-gray-300 bg-gray-50"
-              >
-                <option value="kg">kg</option>
-                <option value="lbs">lbs</option>
-                <option value="bushels">bushels</option>
-                <option value="units">units</option>
-              </select>
             </div>
-            {errors.quantity && (
-              <p className="mt-1 text-xs text-red-500">{errors.quantity}</p>
+            {errors.totalQuantity && (
+              <p className="mt-1 text-xs text-red-500">{errors.totalQuantity}</p>
             )}
           </div>
 
