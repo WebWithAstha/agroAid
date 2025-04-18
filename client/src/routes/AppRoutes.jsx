@@ -11,6 +11,7 @@ import Market from '../components/pages/market/farmer/Market.jsx';
 import GovernmentSchemes from '../components/pages/GovernmentSchems.jsx';
 import DirectMarket from '../components/pages/market/customer/DirectMarket.jsx';
 import Diagnosis from '../components/pages/Diagnosis.jsx';
+import Assistant from '../components/pages/Assistant.jsx';
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
         <Route element={<GovernmentSchemes/>} path='/schemes'/>
         <Route element={<Market/>} path='/market'/>
         <Route element={<DirectMarket/>} path='/directmarket'/>
+        <Route element={<Assistant/>} path='/assistant'/>
 
     </Routes>
   )
