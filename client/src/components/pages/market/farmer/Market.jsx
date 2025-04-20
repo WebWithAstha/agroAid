@@ -8,23 +8,34 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
-import { farmerData, initialCrops } from "../../../../data/farmerCrops";
+import { farmerData } from "../../../../data/farmerCrops";
 import Header from "../../../Header";
 import { useDispatch, useSelector } from "react-redux";
-import { createCrop, fetchMyCrops } from "../../../../store/Actions/cropActions";
+import { connectWallet, fetchAllCrops, listCrop } from "../../../../store/Actions/blockchainAction";
+import { useNavigate } from "react-router-dom";
+import { uploadFile } from "../../../../Services/fileUpload";
+
 
 const FarmerDashboard = () => {
-  const [crops, setCrops] = useState([]);
-  const {myCrops}  = useSelector(store => store.cropReducer);
-  console.log(myCrops);
+  const { myCrops } = useSelector(store => store.cropReducer);
+  const { account, balance } = useSelector(store => store.blockchainReducer);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(myCrops?.length == 0) dispatch(fetchMyCrops())
-  },[])
-  
+  const conWalletAndFetch = async () => {
+    await dispatch(connectWallet());
+    if (!myCrops) await dispatch(fetchAllCrops(true))
+  }
+
+
+  useEffect(() => {
+    conWalletAndFetch()
+  }, []);
+
+
+
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [editingCrop, setEditingCrop] = useState(null);
-  const dispatch = useDispatch();
 
   const handleDeleteCrop = (cropId) => {
     if (confirm("Are you sure you want to remove this crop listing?")) {
@@ -43,9 +54,7 @@ const FarmerDashboard = () => {
   };
 
   const handleSaveCrop = (updatedCrop) => {
-    dispatch(createCrop(updatedCrop));
-    setCrops([updatedCrop, ...crops]);
-    setShowUploadForm(false);
+    dispatch(listCrop(updatedCrop, setShowUploadForm));
   };
 
   return (
@@ -58,8 +67,8 @@ const FarmerDashboard = () => {
         <div className="bg-white p-4 absolute right-4 bottom-4 rounded-lg shadow-sm">
           <div className="flex items-center">
             <div className="mr-4">
-              <div className="font-bold text-lg">{farmerData.name}</div>
-              <div className="text-gray-600">{farmerData.farm}</div>
+              <div className="font-bold text-lg">{account && account.substring(0, 10) + "..."}</div>
+              <div className="text-gray-600">{balance} ETH</div>
             </div>
             {farmerData.verified && (
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
@@ -92,9 +101,9 @@ const FarmerDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              {myCrops.map((crop) => (
+              {myCrops && myCrops.map((crop, index) => (
                 <CropListingCard
-                  key={crop._id}
+                  key={index}
                   crop={crop}
                   onEdit={() => handleEditCrop(crop)}
                   onDelete={() => handleDeleteCrop(crop._id)}
@@ -193,7 +202,6 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
 };
 
 const CropForm = ({ initialData, onSave, onCancel }) => {
-  const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState(null);
   const [formData, setFormData] = useState(
     initialData || {
@@ -204,20 +212,18 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
       location: farmerData.farm + ", " + farmerData.location,
       harvestDate: new Date().toISOString().split("T")[0],
       deliveryAvailable: true,
-      image: imageFiles,
+      image: "",
     }
   );
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = e.target.files[0];
-
     const newPreviews = URL.createObjectURL(files);
-
-    setImageFiles(files);
     setImagePreviews(newPreviews);
+    const { data } = await uploadFile(files);
     setFormData((prev) => ({
       ...prev,
-      image: files,
+      image: data.url,
     }));
 
   };
@@ -269,10 +275,10 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
       const formDataToSend = {
         ...formData,
         perQuintalPrice: parseFloat(formData.perQuintalPrice),
-        images: imageFiles,
         totalQuantity: parseInt(formData.totalQuantity),
       };
       console.log(formDataToSend);
+
       onSave(formDataToSend)
     }
   };
@@ -317,15 +323,15 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
                   />
                 </div>
                 ) : (
-              <button
-                type="button"
-                onClick={handleFileClick}
-                className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md px-4 py-2 transition"
-              >
-                <Upload size={16} className="mr-2" />
-                <span>Upload Image</span>
-              </button>
-              )}
+                  <button
+                    type="button"
+                    onClick={handleFileClick}
+                    className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md px-4 py-2 transition"
+                  >
+                    <Upload size={16} className="mr-2" />
+                    <span>Upload Image</span>
+                  </button>
+                )}
 
               <input
                 ref={fileInputRef}

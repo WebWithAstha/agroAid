@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Clock, MapPin, Truck, User, ShoppingCart } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllCrops } from '../../../../store/Actions/cropActions';
-import { ethers } from "ethers";
+import { buyCrop, connectWallet, fetchAllCrops } from '../../../../store/Actions/blockchainAction';
 
 
 
@@ -11,10 +10,16 @@ const DirectMarket = () => {
   const [selectedCrop, setSelectedCrop] = useState(null);
   const dispatch = useDispatch();
   const sampleCrops = useSelector(store => store.cropReducer.allCrops);
+  const { account } = useSelector(store => store.blockchainReducer);
+
+  const conWalletAndFetch = async () => {
+    if (!account) await dispatch(connectWallet());
+    if (!sampleCrops) await dispatch(fetchAllCrops(false))
+  }
 
   useEffect(() => {
-    if (sampleCrops.length == 0) dispatch(fetchAllCrops())
-  }, [])
+    conWalletAndFetch()
+  }, []);
 
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
@@ -25,11 +30,11 @@ const DirectMarket = () => {
         </header>
 
         {selectedCrop ? (
-          <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} />
+          <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} setSelectedCrop={setSelectedCrop} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sampleCrops.map(crop => (
-              <CropCard key={crop._id} crop={crop} onClick={() => setSelectedCrop(crop)} />
+            {sampleCrops && sampleCrops.map(crop => (
+              <CropCard key={crop.id} crop={crop} onClick={() => setSelectedCrop(crop)} />
             ))}
           </div>
         )}
@@ -106,50 +111,14 @@ const CropCard = ({ crop, onClick }) => {
   );
 }
 
-const CropDetail = ({ crop, onBack }) => {
+const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
 
-  const handlePurchase = async () => {
-    if (typeof window.ethereum === "undefined") {
-      alert("MetaMask is not installed");
-      return;
-    }
-
-    console.log("🟢 handlePurchase triggered");
-
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      
-      try {
-        await provider.send("eth_requestAccounts", []);
-        console.log("✅ MetaMask connected");
-      } catch (err) {
-        console.log("❌ MetaMask connection rejected:", err);
-        return;
-      }
-      
-      await window.ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
-      // Step-by-step logs
-      const signer = provider.getSigner();
-      console.log("👤 Signer object:", signer);
-
-      const address = await signer.getAddress();
-      console.log("📫 Address:", address);
-
-      const network = await provider.getNetwork();
-      console.log("🌐 Network:", network);
-      try {
-        const balance = await provider.getBalance(address);
-        console.log("💰 Balance (ETH):", ethers.utils.formatEther(balance));
-      } catch (err) {
-        console.error("❌ Failed to fetch balance:", err);
-      }
-
-    } catch (error) {
-      console.error("❌ Error in handlePurchase:", error);
-      alert("Something went wrong while connecting wallet.");
-    }
+  const handlePurchase = (e) => {
+    e.preventDefault();
+    console.log('Purchase initiated for', quantity, 'units of', crop.name);
+    dispatch(buyCrop(crop.id, quantity,setSelectedCrop));
   };
 
 
@@ -174,13 +143,13 @@ const CropDetail = ({ crop, onBack }) => {
           />
         </div>
 
-        <div className="p-6 md:w-2/3">
+        <form onSubmit={handlePurchase} className="p-6 md:w-2/3">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="text-2xl font-bold text-gray-800">{crop.name}</h3>
               <div className="flex items-center mt-1">
                 <User size={16} className="text-gray-500 mr-1" />
-                <span className="text-gray-600 text-sm">By {crop.user.phone} (ID: {crop.user._id.substring(0, 8)})</span>
+                <span className="text-gray-600 text-sm">By {crop.user}</span>
               </div>
             </div>
             <div className="text-2xl font-bold text-green-600">{crop.perQuintalPrice} ETH</div>
@@ -229,6 +198,7 @@ const CropDetail = ({ crop, onBack }) => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center border rounded-md overflow-hidden">
               <button
+              type='button'
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
               >
@@ -238,10 +208,12 @@ const CropDetail = ({ crop, onBack }) => {
                 type="number"
                 className="w-16 text-center border-l border-r p-2"
                 value={quantity}
+                max={crop.totalQuantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 min="1"
               />
               <button
+              type='button'
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(quantity + 1)}
               >
@@ -249,12 +221,12 @@ const CropDetail = ({ crop, onBack }) => {
               </button>
             </div>
 
-            <button onClick={handlePurchase} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
               <ShoppingCart size={18} className="mr-2" />
               Purchase Now ({(crop.perQuintalPrice * quantity).toFixed(3)} ETH)
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

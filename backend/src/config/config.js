@@ -25,6 +25,12 @@ const _config = {
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
   REFRESH_COOKIE_EXPIRES_IN: process.env.REFRESH_COOKIE_EXPIRES_IN || "7d",
+
+  imageKit: {
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
+  }
 };
 
 export const config = Object.freeze(_config);

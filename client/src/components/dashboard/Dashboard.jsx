@@ -12,6 +12,7 @@ import Navbar from "../partials/Navbar";
 import { Link } from "react-router-dom";
 import video from "../../assets/hero.mp4"
 import Btn from "../partials/Btn";
+import { uploadFile } from "../../Services/fileUpload";
 
 const GreetingCard = () => {
   const assitant = () => (
@@ -60,7 +61,7 @@ const ServicesGrid = () => {
       title: "Weather",
       desc: "5-day forecast",
       position: "object-top",
-      img:"https://play-lh.googleusercontent.com/pCQw51XRP4UPr-FCYDjvNnEpFa0HDGJjjLDldN3rmw4KkwhqPu0PZXE8EopmAxzH9mQ",
+      img: "https://play-lh.googleusercontent.com/pCQw51XRP4UPr-FCYDjvNnEpFa0HDGJjjLDldN3rmw4KkwhqPu0PZXE8EopmAxzH9mQ",
       color: "amber",
       icon: <CloudSun size={44} className="text-amber-600" />,
       link: "/weather"
@@ -69,7 +70,7 @@ const ServicesGrid = () => {
       title: "Crop Prices",
       desc: "Live updates",
       position: "object-center",
-      img:"https://akm-img-a-in.tosshub.com/indiatoday/styles/medium_crop_simple/public/2024-06/msp-02.jpg?VersionId=d_DJkHEg0zYEcwwaCGCiYgEvFPTHEpB3&size=750:*",
+      img: "https://akm-img-a-in.tosshub.com/indiatoday/styles/medium_crop_simple/public/2024-06/msp-02.jpg?VersionId=d_DJkHEg0zYEcwwaCGCiYgEvFPTHEpB3&size=750:*",
       color: "green",
       icon: <IndianRupee size={44} className="text-green-600" />,
       link: "/price"
@@ -78,7 +79,7 @@ const ServicesGrid = () => {
       title: "Crop Diagnosis",
       desc: "AI-powered analysis",
       position: "object-top",
-      img:"https://s7d1.scene7.com/is/image/CENODS/09747-buscon2-plantix?$responsive$&wid=700&qlt=90,0&resMode=sharp2",
+      img: "https://s7d1.scene7.com/is/image/CENODS/09747-buscon2-plantix?$responsive$&wid=700&qlt=90,0&resMode=sharp2",
       color: "blue",
       icon: <Camera size={44} className="text-blue-600" />,
       link: "/diagnosis"
@@ -87,7 +88,7 @@ const ServicesGrid = () => {
       title: "Govt Schemes",
       desc: "Latest benefits",
       position: "object-top",
-      img:"https://akm-img-a-in.tosshub.com/indiatoday/images/story/201908/Add_a_subheading_1_.png?VersionId=MoNEvek00g1J_WpgxJkZkiQbvUs3SVU7",
+      img: "https://akm-img-a-in.tosshub.com/indiatoday/images/story/201908/Add_a_subheading_1_.png?VersionId=MoNEvek00g1J_WpgxJkZkiQbvUs3SVU7",
       color: "purple",
       icon: <ScrollText size={44} className="text-purple-600" />,
       link: "/schemes"
@@ -112,7 +113,7 @@ const ServicesGrid = () => {
               <div
                 className={`bg-${service.color}-100 w-full overflow-hidden h-36 rounded-lg flex items-center justify-center mb-3`}
               >
-                
+
                 <img className={`w-full h-full object-cover ${service.position}`} src={service.img} alt="" />
                 {/* {service.icon} */}
               </div>
@@ -148,6 +149,7 @@ const FeaturedCard = () => (
 
 const Dashboard = () => {
   
+
 
   return (
     <div className="min-h-screen mt-14 bg-white">
