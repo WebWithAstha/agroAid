@@ -7,22 +7,16 @@ const querySlice = createSlice({
     botTyping: false,
   },
   reducers: {
-    setQueriesFromStorageOrAPI: (state, action) => {
+    loadQueries: (state, action) => {
       state.queries = action.payload;
+      state.botTyping = false;
     },
     addTempQuery: (state, action) => {
       state.queries.push(action.payload);
       state.botTyping = true;
-    },
-    updateQueryWithResponse: (state, action) => {
-      const {queryWithResponse,tempId} = action.payload;
-      state.queries = state.queries.map(q =>
-        q.id === tempId ? queryWithResponse : q
-      );
-      state.botTyping = false;
-    },
+    }
   },
 });
 
-export const { setQueriesFromStorageOrAPI, addTempQuery, updateQueryWithResponse } = querySlice.actions;
+export const { loadQueries, addTempQuery } = querySlice.actions;
 export default querySlice.reducer;

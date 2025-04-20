@@ -16,7 +16,7 @@ import {
   Users,
   ChevronDown,
 } from "lucide-react";
-import Header from "../Header";
+import Header from '../partials/Header';
 import { schemes,categories,regions,statuses } from "../../data/govSchemes";
 
 const GovernmentSchemes = () => {

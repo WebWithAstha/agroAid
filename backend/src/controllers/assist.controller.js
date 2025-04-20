@@ -18,10 +18,14 @@ export const assistQuery = async (req, res) => {
   const user = await User.findById(req.user._id);
   try {
     if (isVoice) {
-      data = await getTranscript(data,user.language);
+      data = await getTranscript(data,'hi');
+      // data = "I am hungry"
+      // console.log("transcripted : " , data)
     }
+    // console.log(data)
     const textResponse = await callGeminiApi(data);
-    const audioUrl = await getVoice(textResponse);
+    // console.log("text response : " , textResponse)
+    // const audioUrl = await getVoice(textResponse);
 
     const newQuery = await Query.create({
       userId: user._id,
@@ -29,7 +33,8 @@ export const assistQuery = async (req, res) => {
       isVoice,
       language:user.lan,
       response: {
-        audioUrl,
+        // audioUrl,
+        audioUrl :inp,
         text:textResponse,
       },
     })

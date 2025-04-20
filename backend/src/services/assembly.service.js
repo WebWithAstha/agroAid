@@ -18,7 +18,6 @@ export const getTranscript = async (audioUrl, lan = 'en') => {
       audio: audioUrl,
       language_code: lan,
     });
-    console.log(transcript)
     return transcript.text;
   } catch (error) {
     console.error('Error while fetching transcript:', error);

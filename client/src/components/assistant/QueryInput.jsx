@@ -1,5 +1,6 @@
 import { Clock, Mic, MicOff, Send } from "lucide-react";
 import { useRef, useState } from "react";
+import {uploadFile} from '../../Services/fileUpload.js'
 
 const QueryInput = ({ handleSendQuery }) => {
   const [inputText, setInputText] = useState("");
@@ -25,10 +26,20 @@ const QueryInput = ({ handleSendQuery }) => {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/webm",
+          type: "audio/mp3",
         });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        handleSendQuery(audioUrl, true);
+
+        const file = new File([audioBlob], "recording.mp3", {
+          type: "audio/mp3",
+        });
+
+        try {
+          const uploadResponse = await uploadFile(file);
+          const publicUrl = uploadResponse.data.url
+        handleSendQuery(publicUrl, true);
+        } catch (err) {
+          console.error("Upload failed:", err);
+        }
         // trigger the parent fn
         setRecordingTime(0);
       };

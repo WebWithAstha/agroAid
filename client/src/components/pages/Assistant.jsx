@@ -1,9 +1,9 @@
 import {useDispatch, useSelector } from 'react-redux';
 
-import Header from '../Header';
+import Header from '../partials/Header';
 import QueryList from '../assistant/QueryList';
 import QueryInput from '../assistant/QueryInput';
-import { loadQueries, sendUserQuery } from '../../store/actions/queryAction';
+import { loadUserQueries, sendUserQuery } from '../../store/actions/queryAction';
 import { useEffect } from 'react';
 
 const Assistant = () => {
@@ -14,7 +14,7 @@ const Assistant = () => {
     // Only dispatch if queries list is empty
     if (!queries) {
       // console.log("no queries found about to dispatch action")
-      dispatch(loadQueries());
+      dispatch(loadUserQueries());
     }
   }, [dispatch]);
 

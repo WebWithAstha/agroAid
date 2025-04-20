@@ -1,27 +1,27 @@
 import { Axios } from "../../utils/axios";
 import {
-  setQueriesFromStorageOrAPI,
+  loadQueries,
   addTempQuery,
-  updateQueryWithResponse
 } from '../slices/querySlice.jsx';
 
 const SESSION_KEY = "farming-queries";
 
 // Load queries on initial page load
-export const loadQueries = () => async (dispatch) => {
+export const loadUserQueries = () => async (dispatch) => {
   const cached = sessionStorage.getItem(SESSION_KEY);
-  console.log("cached data ",cached)
   if (cached) {
-    dispatch(setQueriesFromStorageOrAPI(JSON.parse(cached)));
+    dispatch(loadQueries(JSON.parse(cached)));
+    console.log("queries fetch from cache")
   } else {
     try {
         console.log("hello")
       const res = await Axios.get('/assist/user-queries'); // your GET API
-      console.log(res)
-      dispatch(setQueriesFromStorageOrAPI(res.data));
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(res.data));
+      dispatch(loadQueries(res.data.data));
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(res.data.data));
+      console.log("queries fetch from bk")
     } catch (err) {
-        console.log(err)
+      console.log(err)
+      console.log("Failed to fetch queries")
       console.error("Failed to load queries", err);
     }
   }
@@ -32,7 +32,7 @@ export const sendUserQuery = (queryText, isVoice = false) => async (dispatch, ge
   const tempId = Date.now();
 
   const tempQuery = {
-    id: tempId,
+    _id: tempId,
     query: queryText,
     isVoice,
     createdAt: new Date().toISOString(),
@@ -46,26 +46,16 @@ export const sendUserQuery = (queryText, isVoice = false) => async (dispatch, ge
       data: queryText,
       isVoice,
     });
+    const curQueries = getState().queryReducer.queries;
 
-    const queryWithResponse = res.data;
+    const queryWithResponse = res.data.data;
+    console.log(res.data.data)
+    const updatedQueries = curQueries.map(q=> q._id === tempId ? queryWithResponse :q)
+    dispatch(loadQueries(updatedQueries))
 
-    dispatch(updateQueryWithResponse(queryWithResponse,tempId));
-
-    // ✅ Update sessionStorage too
-    const updatedQueries = getState().queries.queries;
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedQueries));
   } catch (error) {
     console.error('Query error:', error);
-    const fallback = {
-      ...tempQuery,
-      response: {
-        text: "Something went wrong. Please try again later.",
-        audioUrl: null,
-      },
-    };
-    dispatch(updateQueryWithResponse(fallback));
-
-    const updatedQueries = getState().queries.queries;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedQueries));
+    console.log("err getting response for wuery")
   }
 };

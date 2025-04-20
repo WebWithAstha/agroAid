@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Cloud, Droplets, Sun, Wind, Thermometer, CloudRain, Snowflake, Leaf, Sunrise, Sunset } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { dailyWeatherForecast } from '../../store/Actions/weatherAction';
-import Header from '../Header';
+import Header from '../partials/Header';
 import Loading from '../partials/Loading.jsx'
 
 

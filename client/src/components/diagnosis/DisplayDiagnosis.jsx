@@ -11,7 +11,7 @@ const DisplayDiagnosis = ({
   setActiveTab,
   getSeverityColor,
 }) => {
-  console.log(selectedDiagnosis)
+  // console.log(selectedDiagnosis)
   return (
    selectedDiagnosis &&
     <div className="bg-white rounded-lg overflow-y-auto h-full shadow-md">

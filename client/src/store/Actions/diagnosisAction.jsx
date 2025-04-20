@@ -21,7 +21,7 @@ export const uploadForDiagnosisAction = (file) => async (dispatch,getState) => {
         images: Array.isArray(file) ? file : [file],
         "similar_images" :true // ensure it's always an array
     });
-    console.log(response.data)
+    console.log("diagnosed data fetched")
     let allDiagnosis = getState().diagnosisReducer.allDiagnosis;
     let copyAllDia = [...allDiagnosis,response.data.data]
     dispatch(setAllDiagnosis(copyAllDia));
