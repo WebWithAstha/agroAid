@@ -8,16 +8,17 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
-import { farmerData} from "../../../../data/farmerCrops";
+import { farmerData } from "../../../../data/farmerCrops";
 import Header from "../../../Header";
 import { useDispatch, useSelector } from "react-redux";
 import { connectWallet, fetchAllCrops, listCrop } from "../../../../store/Actions/blockchainAction";
 import { useNavigate } from "react-router-dom";
+import { uploadFile } from "../../../../Services/fileUpload";
 
 
 const FarmerDashboard = () => {
   const { myCrops } = useSelector(store => store.cropReducer);
-  const {account , balance} = useSelector(store => store.blockchainReducer);
+  const { account, balance } = useSelector(store => store.blockchainReducer);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ const FarmerDashboard = () => {
   };
 
   const handleSaveCrop = (updatedCrop) => {
-    dispatch(listCrop(updatedCrop,setShowUploadForm));
+    dispatch(listCrop(updatedCrop, setShowUploadForm));
   };
 
   return (
@@ -66,7 +67,7 @@ const FarmerDashboard = () => {
         <div className="bg-white p-4 absolute right-4 bottom-4 rounded-lg shadow-sm">
           <div className="flex items-center">
             <div className="mr-4">
-              <div className="font-bold text-lg">{account && account.substring(0,10)+ "..."}</div>
+              <div className="font-bold text-lg">{account && account.substring(0, 10) + "..."}</div>
               <div className="text-gray-600">{balance} ETH</div>
             </div>
             {farmerData.verified && (
@@ -201,7 +202,6 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
 };
 
 const CropForm = ({ initialData, onSave, onCancel }) => {
-  const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState(null);
   const [formData, setFormData] = useState(
     initialData || {
@@ -216,16 +216,14 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
     }
   );
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = e.target.files[0];
-
     const newPreviews = URL.createObjectURL(files);
-
-    setImageFiles(newPreviews);
     setImagePreviews(newPreviews);
+    const { data } = await uploadFile(files);
     setFormData((prev) => ({
       ...prev,
-      image: newPreviews,
+      image: data.url,
     }));
 
   };

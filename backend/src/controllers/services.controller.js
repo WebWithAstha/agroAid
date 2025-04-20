@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { config } from '../config/config.js';
-import { successResponse, errorResponse, badRequest } from '../utils/responseHandler.js';
+import { successResponse, errorResponse, badRequest, serverError } from '../utils/responseHandler.js';
 import { Diagnosis } from '../models/diagonsis.model.js';
 import { getDiseaseDetailByGemini } from '../services/gemini.diagnosis.service.js';
 import marketModel from '../models/market.model.js';
+import ImageKit from "imagekit";
+
 
 // controller
 export const agmarknetController = async (req, res) => {
@@ -93,27 +95,27 @@ export const cropHealthController = async (req, res) => {
         data: requestData,
         maxBodyLength: Infinity,
     };
-    
+
     try {
         const response = await axios(axiosConfig);
         // console.log(response.data.result.is_plant)
-        if(response.data.result.is_plant.probability < 0.03 ) 
+        if (response.data.result.is_plant.probability < 0.03)
             return errorResponse(res, 'Only crop images allowed.', 404);
         // console.log(response.data.result.disease.suggestions[0].similar_images)
-        const {name,scientific_name:scientificName,probability} = response.data.result.disease.suggestions[0]
+        const { name, scientific_name: scientificName, probability } = response.data.result.disease.suggestions[0]
         const similarImages = response.data.result.disease.suggestions[0].similar_images.map(img => img.url);
 
         // console.log(response.data.result.disease.suggestions[0].similarImages)
-        const {description,treatment,symptoms,preventions} = await getDiseaseDetailByGemini(name,scientificName);
+        const { description, treatment, symptoms, preventions } = await getDiseaseDetailByGemini(name, scientificName);
         const diagnosis = await Diagnosis.create({
-            userId:'67fccf1dd19811b34b9daee9',
-            disease:name,
+            userId: '67fccf1dd19811b34b9daee9',
+            disease: name,
             scientificName,
-            description,treatment,symptoms,preventions,
-            severity:probability,
+            description, treatment, symptoms, preventions,
+            severity: probability,
             similarImages,
-            image:response.data.input.images[0],
-        }) 
+            image: response.data.input.images[0],
+        })
         // console.log(diagnosis)
         return successResponse(res, diagnosis, 'Crop health data fetched successfully');
     } catch (error) {
@@ -122,12 +124,41 @@ export const cropHealthController = async (req, res) => {
     }
 };
 
-export const getAllDiagnosis = async(req,res)=>{
+export const getAllDiagnosis = async (req, res) => {
     try {
-        const allDiagnosis = await Diagnosis.find({userId:'67fccf1dd19811b34b9daee9'})
-        return successResponse(res, allDiagnosis, 'All diagnosis fetched!'); 
+        const allDiagnosis = await Diagnosis.find({ userId: '67fccf1dd19811b34b9daee9' })
+        return successResponse(res, allDiagnosis, 'All diagnosis fetched!');
     } catch (error) {
         console.log(error)
         return errorResponse(res, 'Failed to fetch crop health data', error?.status);
     }
 }
+
+export const uploadFileController = async (req, res) => {
+    if (!req.files || !req.files.data) {
+      return badRequest(res, 'No file uploaded. Please upload an image file.');
+    }
+    const data = req.files.data;
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif','.mp3'];
+    const fileExtension = data.name.slice(((data.name.lastIndexOf(".") - 1) >>> 0) + 2);
+    if (!allowedExtensions.includes(`.${fileExtension.toLowerCase()}`)) {
+      return badRequest(res, 'Invalid file type. Only files (.jpg, .jpeg, .png, .gif , .mp3) are allowed.');
+    }
+    const imagekit = new ImageKit({
+      publicKey: config.imageKit.publicKey,
+      privateKey: config.imageKit.privateKey,
+      urlEndpoint: config.imageKit.urlEndpoint,
+    });
+  
+    try {
+      const response = await imagekit.upload({
+        file: data.data,           
+        fileName: data.name,       
+        useUniqueFileName: true,   
+      });
+      return successResponse(res, response, 'File uploaded successfully.');
+    } catch (error) {
+      console.error('Error uploading file to ImageKit:', error);
+      return serverError(res, 'Failed to upload file to ImageKit.');
+    }
+  };
