@@ -44,82 +44,29 @@ const Assistant = () => {
       duration: "0:08",
     }
   ]);
-
+  const [newQuery,setNewQuery] = useState();
+ const [isVoiceQuery, setIsVoiceQuery] = useState(false)
   
   
-    // Handle text input submission
-    const handleSendMessage = () => {
-      if (inputText.trim() === '') return;
-    
-      // Create new query in new schema format
-      const newQuery = {
+    // Handle query (text or voice) submission
+    const handleSendQuery = (queryText, isVoice = false) => {
+      const newQuerySchema = {
         _id: queries.length + 1,
-        userId: "user123", // replace with actual user ID
-        query: inputText,
-        isVoice: false,
+        userId: "user123",
+        query: queryText,
+        isVoice: isVoice,
         language: "en",
         response: {
-          text: "", // AI will respond after delay
-          audioUrl: "",
+          text: "Hi jim!!",
+          audioUrl: "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fhi-jim-85869.mp3?alt=media&token=5015b912-adc2-4eb5-8209-3e14ba98cfeb",
         },
         createdAt: "Just now",
       };
     
-      setQueries([...queries, newQuery]);
-      setInputText('');
-    
-      // Simulate assistant response
-      setTimeout(() => {
-        const updatedResponse = {
-          ...newQuery,
-          _id: queries.length + 2,
-          response: {
-            text:
-              "Thank you for your question. I'll need more specific information about your crop issue to provide accurate advice. Could you please describe the symptoms in more detail? Information such as the affected plant parts, how long you've noticed the issue, and any recent changes in weather or farming practices would be helpful.",
-            audioUrl: "", // optionally add TTS-generated audio link here
-          },
-          createdAt: "Just now",
-        };
-    
-        setQueries(prevQueries => [...prevQueries, updatedResponse]);
-      }, 1500);
+      setQueries(prev => [...prev, newQuerySchema]);
     };
+    
 
-    
-    // Toggle play state for voice queries
-    const togglePlay = (id) => {
-      setQueries(queries.map(query => {
-        if (query.id === id) {
-          return { ...query, isPlaying: !query.isPlaying };
-        }
-        // Pause any other playing query
-        if (query.isPlaying) {
-          return { ...query, isPlaying: false };
-        }
-        return query;
-      }));
-      
-      // Auto-stop after duration
-      const query = queries.find(m => m.id === id);
-      if (query && !query.isPlaying) {
-        const durationInSecs = parseInt(query.duration.split(':')[1]);
-        setTimeout(() => {
-          setQueries(prevqueries => prevqueries.map(m => 
-            m.id === id ? { ...m, isPlaying: false } : m
-          ));
-        }, durationInSecs * 1000);
-      }
-    };
-  
-    // Toggle expanded text for assistant queries
-    const toggleExpanded = (id) => {
-      setQueries(queries.map(query => {
-        if (query.id === id) {
-          return { ...query, isExpanded: !query.isExpanded };
-        }
-        return query;
-      }));
-    };
   
     return (
         <div className="flex flex-col h-screen bg-gray-50">
@@ -128,7 +75,11 @@ const Assistant = () => {
           queries={queries} 
         />
         <ChatInput
-          handleSendMessage={handleSendMessage}
+          setQueries={setQueries}
+          newQuery={newQuery}
+          setNewQuery={setNewQuery}
+          setIsVoiceQuery={setIsVoiceQuery}
+          handleSendQuery={handleSendQuery}
         />
       </div>
     );
