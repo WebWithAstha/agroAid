@@ -9,11 +9,15 @@ const client = new AssemblyAI({
 /**
  * Fetches transcript text from an audio URL using AssemblyAI
  * @param {string} audioUrl - The public URL of the audio file to transcribe
+ * @param {string} lan - The language code (e.g., 'en', 'hi', 'pb')
  * @returns {Promise<string>} - The transcribed text
  */
-export const getTranscript = async (audioUrl) => {
+export const getTranscript = async (audioUrl, lan = 'en') => {
   try {
-    const transcript = await client.transcripts.transcribe({ audio: audioUrl });
+    const transcript = await client.transcripts.transcribe({
+      audio: audioUrl,
+      language_code: lan,
+    });
     console.log(transcript)
     return transcript.text;
   } catch (error) {

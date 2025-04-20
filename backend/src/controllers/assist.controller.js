@@ -5,6 +5,12 @@ import { callGeminiApi } from "../services/Gemini.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
 import { Query } from "../models/query.model.js";
 import { User } from "../models/userModel.js";
+import {
+  successResponse,
+  badRequest,
+  serverError,
+  notFoundResponse,
+} from "../utils/responseHandler.js";
 
 export const assistQuery = async (req, res) => {
   let { data, isVoice } = req.body;
@@ -12,7 +18,7 @@ export const assistQuery = async (req, res) => {
   const user = await User.findById(req.user._id);
   try {
     if (isVoice) {
-      data = await getTranscript(data);
+      data = await getTranscript(data,user.language);
     }
     const textResponse = await callGeminiApi(data);
     const audioUrl = await getVoice(textResponse);
@@ -32,6 +38,20 @@ export const assistQuery = async (req, res) => {
       .status(202)
       .json({ message: "Voice response!",data:newQuery, success: true });
   } catch (error) {
-    console.log(error);
+    console.error("Error getting response details:", error);
+        return serverError(res, error);
+  }
+};
+
+export const getAllQuery = async (req, res) => {
+  try {
+      const queries = await Query.find({userId:req.user._id})
+
+    res
+      .status(202)
+      .json({ message: "Queries fetched!",data:queries, success: true });
+  } catch (error) {
+    console.error("Error fetching user queries:", error);
+        return notFoundResponse(res, "No queries found!");
   }
 };
