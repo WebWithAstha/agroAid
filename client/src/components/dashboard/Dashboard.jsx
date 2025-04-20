@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Mic,
   CloudSun,
@@ -7,34 +7,26 @@ import {
   ScrollText,
   Store,
   ChevronRight,
-  Sunrise,
-  BarChart,
-  Droplet,
 } from "lucide-react";
 import Navbar from "../partials/Navbar";
 import { Link } from "react-router-dom";
-import { getPrices } from "../../Services/agmarknet";
 import video from "../../assets/hero.mp4"
+import Btn from "../partials/Btn";
 
-const GreetingCard = ({ isRecording, toggleRecording }) => {
-
-
-
+const GreetingCard = () => {
   const assitant = () => (
     <>
-      <div className="p-4 border backdrop-blur-xl relative w-max text-white rounded-2xl mt-6">
+      <div className="p-4 border border-white/[.1] backdrop-blur-xl bg-white/[.2] relative w-max text-white rounded-2xl mt-6">
         <div className="w-max absolute top-1/2 -translate-y-1/2 md:translate-x-1/2 right-2 md:right-0">
+        <Link to={'/assistant'} >
           <button
-            onClick={toggleRecording}
-            className={`flex items-center justify-center w-20 h-20 rounded-full  transition-all duration-300 ${isRecording
-              ? "bg-red-600 border-red-700 animate-pulse"
-              : "backdrop-blur-3xl bg-amber-300"
-              }`}
-          >
+            className={`flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-300 to-rose-500 backdrop-blur-2xl cursor-pointer rounded-full  transition-all duration-1000`}
+            >
             <Mic size={24} className="text-white" />
           </button>
+            </Link>
         </div>
-        <div className="w-[70%]">
+        <div className="w-[70%] mb-4">
           <h2 className="text-2xl md:text-3xl font-semibold flex items-center gap-2">
             Ask Any Farming Query
           </h2>
@@ -42,17 +34,13 @@ const GreetingCard = ({ isRecording, toggleRecording }) => {
             Voice-powered assistant for instant answers
           </p>
         </div>
+        <Btn title={"IVR Demo"}/>
       </div>
     </>
   );
 
   const bg = () => (
     <div className="absolute z-[-2] bg-zinc-200 right-0  h-full bottom-0 w-full">
-      {/* <img
-        src="https://plus.unsplash.com/premium_photo-1661962499636-33ffabc4b060?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt=""
-        className="w-full h-full object-cover object-center"
-      /> */}
       <video className="w-full h-full object-cover object-center" autoPlay muted loop src={video}></video>
     </div>
   );
@@ -153,36 +141,19 @@ const FeaturedCard = () => (
       </p>
     </div>
     <Link to={"/market"}>
-    <button className="mt-3 sm:mt-0 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition whitespace-nowrap">
-      Get Started
-    </button>
+    <Btn title={"Get Started"}/>
     </Link>
   </div>
 );
 
 const Dashboard = () => {
-  const [isRecording, setIsRecording] = useState(false);
-
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
-
-  // const get =async  () => {
-  //   const data = await getPrices();
-  //   console.log(data);
-  // }
-  // useEffect(() => {
-  //   get();
-  // }, [])
+  
 
   return (
     <div className="min-h-screen mt-14 bg-white">
       <Navbar />
       <main className="flex-1 px-3 pb-20 md:px-20 mx-auto w-full">
-        <GreetingCard
-          isRecording={isRecording}
-          toggleRecording={toggleRecording}
-        />
+        <GreetingCard/>
         <FeaturedCard />
         <ServicesGrid />
       </main>

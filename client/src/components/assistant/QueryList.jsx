@@ -12,7 +12,7 @@ useEffect(() => {
   return (
   <div className="flex-1 overflow-y-auto p-4">
     <div className="container mx-auto max-w-3xl">
-      {queries.map((query,i) => (
+      {queries?.map((query,i) => (
         <MessageCard 
           key={i} 
           query={query} 

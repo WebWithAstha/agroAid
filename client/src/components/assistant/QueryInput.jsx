@@ -1,8 +1,8 @@
 import { Clock, Mic, MicOff, Send } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const QueryInput = ({ handleSendQuery }) => {
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const recordingTimerRef = useRef(null);
@@ -23,11 +23,13 @@ const QueryInput = ({ handleSendQuery }) => {
         }
       };
 
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
         const audioUrl = URL.createObjectURL(audioBlob);
-handleSendQuery(audioUrl, true);
- // trigger the parent fn
+        handleSendQuery(audioUrl, true);
+        // trigger the parent fn
         setRecordingTime(0);
       };
 
@@ -35,7 +37,7 @@ handleSendQuery(audioUrl, true);
       setIsRecording(true);
 
       recordingTimerRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch (error) {
       console.error("Error accessing microphone:", error);
@@ -54,12 +56,10 @@ handleSendQuery(audioUrl, true);
   };
 
   const onTextSend = () => {
-    if (inputText.trim() === '') return;
+    if (inputText.trim() === "") return;
     handleSendQuery(inputText, false);
-    setInputText('');
+    setInputText("");
   };
-  
-  
 
   return (
     <div className="border-t border-gray-200 bg-white p-4">
@@ -69,14 +69,20 @@ handleSendQuery(audioUrl, true);
             <div className="bg-red-100 text-red-700 px-3 py-2 rounded-lg flex items-center mr-3">
               <span className="inline-block w-2 h-2 bg-red-600 rounded-full mr-2 animate-pulse"></span>
               <Clock size={16} className="mr-1" />
-              <span>{recordingTime < 10 ? `0:0${recordingTime}` : `0:${recordingTime}`}</span>
+              <span>
+                {recordingTime < 10
+                  ? `0:0${recordingTime}`
+                  : `0:${recordingTime}`}
+              </span>
             </div>
           )}
 
           <div className="flex-1 bg-gray-100 rounded-lg flex items-center overflow-hidden">
             <input
               type="text"
-              placeholder={isRecording ? "Recording..." : "Type your question..."}
+              placeholder={
+                isRecording ? "Recording..." : "Type your question..."
+              }
               className="flex-1 px-4 py-3 bg-transparent focus:outline-none"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -88,7 +94,9 @@ handleSendQuery(audioUrl, true);
             <button
               onClick={toggleRecording}
               className={`w-10 h-10 rounded-full flex items-center justify-center mr-2 ${
-                isRecording ? "bg-red-500 text-white hover:bg-red-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                isRecording
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
@@ -108,7 +116,9 @@ handleSendQuery(audioUrl, true);
         </div>
 
         <p className="text-xs text-gray-500 mt-2 text-center">
-          {isRecording ? "Click the microphone icon again to stop recording" : "Ask any farming questions by voice or text"}
+          {isRecording
+            ? "Click the microphone icon again to stop recording"
+            : "Ask any farming questions by voice or text"}
         </p>
       </div>
     </div>
