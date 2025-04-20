@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    allCrops: [],
-    myCrops:[],
+    allCrops: null,
+    myCrops:null,
     loading: false,
 };
 
@@ -11,6 +11,7 @@ const cropSlice = createSlice({
     initialState,
     reducers: {
         setallCrops: (state, action) => {
+            console.log(action.payload);
             state.allCrops = action.payload;
         },
         addAllCrop: (state, action) => {
