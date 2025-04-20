@@ -12,6 +12,7 @@ import DirectMarket from '../components/pages/market/customer/DirectMarket.jsx';
 import Diagnosis from '../components/pages/Diagnosis.jsx';
 import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 import Assistant from '../components/pages/Assistant.jsx';
+import IvrSystem from '../components/pages/IvrSystem.jsx';
 
 const AppRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const AppRoutes = () => {
         <Route element={<Market/>} path='/market'/>
         <Route element={<DirectMarket/>} path='/directmarket'/>
         <Route element={<Assistant/>} path='/assistant'/>
+        <Route element={<IvrSystem/>} path='/ivr'/>
 
     </Routes>
   )
