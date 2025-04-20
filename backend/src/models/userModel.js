@@ -35,7 +35,10 @@ const userSchema = new mongoose.Schema(
     },
     AccountId:String,
     location: String,
-    refreshToken: String
+    refreshToken:{
+      type :String,
+      select:false
+    }
   },
   { timestamps: true }
 );

@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Clock, MapPin, Truck, User, ShoppingCart } from 'lucide-react';
-import { sampleCrops } from '../../../../data/customerCrops';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllCrops } from '../../../../store/Actions/cropActions';
+import { ethers } from "ethers";
 
 
 
-const DirectMarket = ()=> {
+
+const DirectMarket = () => {
   const [selectedCrop, setSelectedCrop] = useState(null);
-  
+  const dispatch = useDispatch();
+  const sampleCrops = useSelector(store => store.cropReducer.allCrops);
+
+  useEffect(() => {
+    if (sampleCrops.length == 0) dispatch(fetchAllCrops())
+  }, [])
+
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
       <div className="max-w-6xl mx-auto">
@@ -14,13 +23,13 @@ const DirectMarket = ()=> {
           <h1 className="text-3xl font-bold text-green-800">FarmChain Marketplace</h1>
           <p className="text-gray-600">Direct from farm to table, verified on blockchain</p>
         </header>
-        
+
         {selectedCrop ? (
           <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sampleCrops.map(crop => (
-              <CropCard key={crop.id} crop={crop} onClick={() => setSelectedCrop(crop)} />
+              <CropCard key={crop._id} crop={crop} onClick={() => setSelectedCrop(crop)} />
             ))}
           </div>
         )}
@@ -31,53 +40,53 @@ const DirectMarket = ()=> {
 
 export default DirectMarket;
 
-const CropCard=({ crop, onClick })=> {
+const CropCard = ({ crop, onClick }) => {
   return (
-    <div 
+    <div
       className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
       onClick={onClick}
     >
       <div className="relative">
         <div className="h-48">
 
-        <img
-          src={crop.imageUrl}
-          alt={crop.name}
-          className="w-full h-48 object-contain"
+          <img
+            src={crop.image[0]}
+            alt={crop.name}
+            className="w-full h-48 object-contain"
           />
-          </div>
+        </div>
         {crop.verified && (
           <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold rounded-full px-2 py-1">
             Verified
           </div>
         )}
       </div>
-      
+
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h2 className="text-xl font-semibold text-gray-800">{crop.name}</h2>
-          <div className="text-lg font-bold text-green-600">{crop.price} ETH</div>
+          <div className="text-lg font-bold text-green-600">{crop.perQuintalPrice}$/quintal</div>
         </div>
-        
+
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{crop.description}</p>
-        
+
         <div className="flex items-center text-sm text-gray-500 mb-2">
           <User size={16} className="mr-1" />
-          <span>{crop.farmer}</span>
+          <span>{crop.user.phone}</span>
         </div>
-        
+
         <div className="flex items-center text-sm text-gray-500 mb-2">
           <MapPin size={16} className="mr-1" />
           <span>{crop.location}</span>
         </div>
-        
+
         <div className="flex items-center text-sm text-gray-500">
           <Clock size={16} className="mr-1" />
           <span>Harvested: {new Date(crop.harvestDate).toLocaleDateString()}</span>
         </div>
-        
+
         <div className="mt-4 flex justify-between items-center">
-          <div className="text-sm font-medium">{crop.quantity} available</div>
+          <div className="text-sm font-medium">{crop.totalQuantity} available</div>
           {crop.deliveryAvailable && (
             <div className="flex items-center text-green-600 text-sm">
               <Truck size={16} className="mr-1" />
@@ -86,9 +95,9 @@ const CropCard=({ crop, onClick })=> {
           )}
         </div>
       </div>
-      
+
       <div className="px-4 py-3 bg-gray-50 flex justify-between items-center">
-        <div className="text-xs text-gray-500">ID: {crop.id.substring(0, 8)}</div>
+        {/* <div className="text-xs text-gray-500">ID: {crop.id.substring(0, 8)}</div> */}
         <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center text-sm font-medium transition-colors duration-300">
           <ShoppingCart size={16} className="mr-2" /> Purchase
         </button>
@@ -99,42 +108,86 @@ const CropCard=({ crop, onClick })=> {
 
 const CropDetail = ({ crop, onBack }) => {
   const [quantity, setQuantity] = useState(1);
-  
+
+  const handlePurchase = async () => {
+    if (typeof window.ethereum === "undefined") {
+      alert("MetaMask is not installed");
+      return;
+    }
+
+    console.log("🟢 handlePurchase triggered");
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      
+      try {
+        await provider.send("eth_requestAccounts", []);
+        console.log("✅ MetaMask connected");
+      } catch (err) {
+        console.log("❌ MetaMask connection rejected:", err);
+        return;
+      }
+      
+      await window.ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
+      // Step-by-step logs
+      const signer = provider.getSigner();
+      console.log("👤 Signer object:", signer);
+
+      const address = await signer.getAddress();
+      console.log("📫 Address:", address);
+
+      const network = await provider.getNetwork();
+      console.log("🌐 Network:", network);
+      try {
+        const balance = await provider.getBalance(address);
+        console.log("💰 Balance (ETH):", ethers.utils.formatEther(balance));
+      } catch (err) {
+        console.error("❌ Failed to fetch balance:", err);
+      }
+
+    } catch (error) {
+      console.error("❌ Error in handlePurchase:", error);
+      alert("Something went wrong while connecting wallet.");
+    }
+  };
+
+
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-4 bg-green-700 text-white flex justify-between items-center">
         <h2 className="text-xl font-bold">Crop Details</h2>
-        <button 
+        <button
           onClick={onBack}
           className="bg-white text-green-700 px-3 py-1 rounded-md hover:bg-green-50 transition-colors duration-300"
         >
           Back to Marketplace
         </button>
       </div>
-      
+
       <div className="md:flex">
         <div className="md:w-1/3">
           <img
-            src={crop.imageUrl}
+            src={crop.image[0]}
             alt={crop.name}
             className="w-full h-64 object-cover"
           />
         </div>
-        
+
         <div className="p-6 md:w-2/3">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="text-2xl font-bold text-gray-800">{crop.name}</h3>
               <div className="flex items-center mt-1">
                 <User size={16} className="text-gray-500 mr-1" />
-                <span className="text-gray-600 text-sm">By {crop.farmer} (ID: {crop.farmerId.substring(0, 8)})</span>
+                <span className="text-gray-600 text-sm">By {crop.user.phone} (ID: {crop.user._id.substring(0, 8)})</span>
               </div>
             </div>
-            <div className="text-2xl font-bold text-green-600">{crop.price} ETH</div>
+            <div className="text-2xl font-bold text-green-600">{crop.perQuintalPrice} ETH</div>
           </div>
-          
+
           <p className="text-gray-700 mb-6">{crop.description}</p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="bg-gray-50 p-3 rounded-md">
               <div className="text-sm text-gray-500">Location</div>
@@ -143,7 +196,7 @@ const CropDetail = ({ crop, onBack }) => {
                 {crop.location}
               </div>
             </div>
-            
+
             <div className="bg-gray-50 p-3 rounded-md">
               <div className="text-sm text-gray-500">Harvest Date</div>
               <div className="font-medium flex items-center">
@@ -151,12 +204,12 @@ const CropDetail = ({ crop, onBack }) => {
                 {new Date(crop.harvestDate).toLocaleDateString()}
               </div>
             </div>
-            
+
             <div className="bg-gray-50 p-3 rounded-md">
               <div className="text-sm text-gray-500">Available Quantity</div>
-              <div className="font-medium">{crop.quantity}</div>
+              <div className="font-medium">{crop.totalQuantity}</div>
             </div>
-            
+
             <div className="bg-gray-50 p-3 rounded-md">
               <div className="text-sm text-gray-500">Delivery</div>
               <div className="font-medium flex items-center">
@@ -165,42 +218,40 @@ const CropDetail = ({ crop, onBack }) => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <div className="font-medium mb-2">Blockchain Verification</div>
             <div className="text-sm text-gray-600">
-              <p>Crop ID: {crop.id}</p>
-              <p>Farmer ID: {crop.farmerId}</p>
-              <p>Verified: {crop.verified ? 'Yes' : 'Pending'}</p>
+              <p>Verified: {crop.user ? 'Yes' : 'Pending'}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="flex items-center border rounded-md overflow-hidden">
-              <button 
+              <button
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
               >
                 -
               </button>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 className="w-16 text-center border-l border-r p-2"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 min="1"
               />
-              <button 
+              <button
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
               </button>
             </div>
-            
-            <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
+
+            <button onClick={handlePurchase} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
               <ShoppingCart size={18} className="mr-2" />
-              Purchase Now ({(crop.price * quantity).toFixed(3)} ETH)
+              Purchase Now ({(crop.perQuintalPrice * quantity).toFixed(3)} ETH)
             </button>
           </div>
         </div>

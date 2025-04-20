@@ -35,7 +35,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/services' , servicesRoutes)
 app.use('/api/assist' , assistRoutes)
 app.use('/api/ivr' , ivrRoutes)
-app.use('/api/crop' , cropRoutes)
+app.use('/api/crops' , cropRoutes)
 
 app.use("/", (req, res) => {
     res.status(404).json({
