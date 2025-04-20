@@ -44,8 +44,6 @@ const Assistant = () => {
       duration: "0:08",
     }
   ]);
-  const [newQuery,setNewQuery] = useState();
- const [isVoiceQuery, setIsVoiceQuery] = useState(false)
   
   
     // Handle query (text or voice) submission
@@ -75,10 +73,6 @@ const Assistant = () => {
           queries={queries} 
         />
         <ChatInput
-          setQueries={setQueries}
-          newQuery={newQuery}
-          setNewQuery={setNewQuery}
-          setIsVoiceQuery={setIsVoiceQuery}
           handleSendQuery={handleSendQuery}
         />
       </div>
