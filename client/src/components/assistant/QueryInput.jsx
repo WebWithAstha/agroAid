@@ -1,7 +1,7 @@
 import { Clock, Mic, MicOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const ChatInput = ({ handleSendQuery }) => {
+const QueryInput = ({ handleSendQuery }) => {
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -115,4 +115,4 @@ handleSendQuery(audioUrl, true);
   );
 };
 
-export default ChatInput;
+export default QueryInput;
