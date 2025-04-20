@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import Header from '../Header';
-import ChatMessages from '../assistant/QueryList';
-import ChatInput from '../assistant/QueryInput';
+import QueryList from '../assistant/QueryList';
+import QueryInput from '../assistant/QueryInput';
 
 const Assistant = () => {
   const [queries, setQueries] = useState([
@@ -44,10 +44,23 @@ const Assistant = () => {
       duration: "0:08",
     }
   ]);
+  const [botTyping, setBotTyping] = useState(false);
   
   
     // Handle query (text or voice) submission
     const handleSendQuery = (queryText, isVoice = false) => {
+
+      const newQuery = {
+        id: Date.now(), // Temporary ID
+        query: queryText,
+        isVoice,
+        createdAt: new Date().toISOString(),
+        response: null,
+      };
+    
+      setQueries(prev => [...prev, newQuery]);
+      setBotTyping(true); // Show bot is typing
+
       const newQuerySchema = {
         _id: queries.length + 1,
         userId: "user123",
@@ -60,8 +73,14 @@ const Assistant = () => {
         },
         createdAt: "Just now",
       };
-    
-      setQueries(prev => [...prev, newQuerySchema]);
+      setTimeout(() => {
+        setQueries(prev =>
+          prev.map(q =>
+            q.id === newQuery.id ? newQuerySchema : q
+          )
+        );
+        setBotTyping(false);
+      }, 2000);
     };
     
 
@@ -69,10 +88,11 @@ const Assistant = () => {
     return (
         <div className="flex flex-col h-screen bg-gray-50">
         <Header title="Farming Assistant" />
-        <ChatMessages 
+        <QueryList 
           queries={queries} 
+          botTyping={botTyping}
         />
-        <ChatInput
+        <QueryInput
           handleSendQuery={handleSendQuery}
         />
       </div>

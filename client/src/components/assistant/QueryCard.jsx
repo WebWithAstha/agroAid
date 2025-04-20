@@ -17,6 +17,7 @@ const FarmerQuery = ({ query }) => (
 );
 
 const AssistantResponse = ({ response, createdAt }) => (
+  response &&
   <div className="flex justify-start">
     <div className="bg-white border w-3/5 border-gray-200 rounded-lg max-w-3/4 shadow-sm">
       <QueryHeader sender="bot" time={createdAt} />

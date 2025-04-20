@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import MessageCard from "./QueryCard";
 
-const QueryList = ({ queries, togglePlay, toggleExpanded }) => {
+const QueryList = ({ queries, togglePlay, toggleExpanded, botTyping }) => {
   const messagesEndRef = useRef(null);
 
 useEffect(() => {
@@ -20,6 +20,7 @@ useEffect(() => {
           toggleExpanded={toggleExpanded} 
         />
       ))}
+    {botTyping && <BotTyping />}
     </div>
     <div ref={messagesEndRef} />
 
@@ -27,3 +28,16 @@ useEffect(() => {
 )};
 
 export default QueryList;
+
+const BotTyping = () => (
+  
+  <div className="container-2 mx-auto max-w-3xl">
+  <div className="flex items-center">
+    <div className="animate-pulse w-2 h-2 rounded-full bg-gray-400 mr-1"></div>
+    <div className="animate-pulse w-2 h-2 rounded-full bg-gray-400 mr-1"></div>
+    <div className="animate-pulse w-2 h-2 rounded-full bg-gray-400"></div>
+  </div>
+  </div>
+);
+
+
