@@ -8,6 +8,7 @@ export const isAuthenticated = async (req, res, next) => {
         const { accessToken, refreshToken } = req.cookies;
 
         if (!accessToken) {
+            console.log("jk");
             
             if (!refreshToken) {
                 return unauthorizedResponse(res);

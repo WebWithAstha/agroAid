@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import Register from '../components/auth/Register';
 import LanguageSelect from '../components/partials/LanguageSelect';
 import OtpVerification from '../components/auth/OtpVerification';
@@ -14,7 +13,8 @@ import Diagnosis from '../components/pages/Diagnosis.jsx';
 import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 import Assistant from '../components/pages/Assistant.jsx';
 import IvrSystem from '../components/pages/IvrSystem.jsx';
-import ProtectedRoute from '../components/routes/ProtectedRoute.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
+import NotFound from '../components/pages/NotFound.jsx';
 
 const AppRoutes = () => {
 
@@ -22,11 +22,11 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Register />} />
-      <Route path="/register" element={<RegistrationForm />} />
       <Route path="/lang" element={<LanguageSelect />} />
       <Route path="/otp" element={<OtpVerification />} />
 
       {/* Protected Routes */}
+      <Route path="/register" element={<ProtectedRoute><RegistrationForm /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/price" element={<ProtectedRoute><CropPrices /></ProtectedRoute>} />
       <Route path="/weather" element={<ProtectedRoute><Weather /></ProtectedRoute>} />
@@ -36,6 +36,8 @@ const AppRoutes = () => {
       <Route path="/directmarket" element={<ProtectedRoute><DirectMarket /></ProtectedRoute>} />
       <Route path="/assistant" element={<ProtectedRoute><Assistant /></ProtectedRoute>} />
       <Route path="/ivr" element={<ProtectedRoute><IvrSystem /></ProtectedRoute>} />
+
+      <Route path='*' element={<NotFound />} />
     </Routes>
   );
 };

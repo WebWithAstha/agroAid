@@ -4,7 +4,6 @@ import {
   Droplets,
   Sun,
   Wind,
-  Thermometer,
   CloudRain,
   Snowflake,
   Leaf,
@@ -14,7 +13,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { dailyWeatherForecast } from "../../store/Actions/weatherAction";
 import Header from "../partials/Header";
-import Loading from "../partials/Loading.jsx";
 import WeatherLoading from "../loading/WeatherLoading.jsx";
 
 const Weather = () => {
