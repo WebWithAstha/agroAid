@@ -1,4 +1,4 @@
-import { getPrices } from "../../Services/agmarknet";
+import { getPrices } from "../../Services/agmarknet.service.js";
 import { setAgmarknetData, setAgmarknetLoading, resetAgmarknet } from "../slices/agarmarknetSlice";
 
 export const fetchAgmarknetPrices = (page) => async (dispatch) => {

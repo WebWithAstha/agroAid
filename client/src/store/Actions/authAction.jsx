@@ -3,7 +3,7 @@ import {
     verifyOtpAndAuthenticate as verifyOtpService,
     updateDetails as updateDetailsService,
     fetchCurrentUser as fetchCurrentUserService,
-} from "../../Services/authService.js";
+} from "../../Services/auth.service.js";
 import { setUser, setLoading, logout } from "../slices/authSlice.jsx";
 
 export const signinAndSignup = (phoneNumber) => async (dispatch) => {
@@ -53,8 +53,9 @@ export const updateDetails = (userData) => async (dispatch) => {
 export const fetchCurrentUser = () => async (dispatch) => {
     try {
         dispatch(setLoading(true));
-        const data = await fetchCurrentUserService();
-        dispatch(setUser(data.user));
+        const {data} = await fetchCurrentUserService();
+        console.log(data);
+        dispatch(setUser(data));
         dispatch(setLoading(false));
         return data;
     } catch (error) {
