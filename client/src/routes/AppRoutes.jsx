@@ -13,6 +13,7 @@ import Diagnosis from '../components/pages/Diagnosis.jsx';
 import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 import Assistant from '../components/pages/Assistant.jsx';
 import IvrSystem from '../components/pages/IvrSystem.jsx';
+import DashboardLoading from '../components/loading/DashboardLoading.jsx';
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
         <Route element={<RegistrationForm/>} path='/register' />
         <Route element={<LanguageSelect/>} path='/lang' />
         <Route element={<OtpVerification/>} path='/otp' />
+        <Route element={<DashboardLoading/>} path='/dload' />
         <Route element={<Dashboard/>} path='/dashboard' />
         <Route element={<CropPrices/>} path='/price'/>
         <Route element={<Weather/>} path='/weather'/>

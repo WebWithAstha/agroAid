@@ -5,11 +5,11 @@ import { useNavigate} from 'react-router-dom'
 const Header = ({title,des}) => {
 const navigate = useNavigate();
   return (
-    <div className="relative pt-10 z-0 bg-gradient-to-r from-green-800 to-green-600 text-white p-6 overflow-hidden flex justify-between items-center">
-      <div onClick={() => navigate(-1)} className="absolute top-3 left-4 p-1">
-        <ArrowLeftIcon />
+    <div className="relative  z-0  border-b border-black/[.2] bg-white  md:px-24 py-5  overflow-hidden flex justify-between items-center">
+      <div onClick={() => navigate(-1)} className="absolute bg-green-600 rounded-full p-2 text-white top-1/2 -translate-y-1/2  md:left-8 left-3">
+        <ArrowLeftIcon className="" />
       </div>
-      <div className="absolute z-[-1] inset-0 opacity-10">
+      <div className="absolute hidden z-[-1] inset-0 opacity-10">
         <svg width="100%" height="100%">
           <pattern
             id="leafPattern"
@@ -28,13 +28,14 @@ const navigate = useNavigate();
           <rect width="100%" height="100%" fill="url(#leafPattern)" />
         </svg>
       </div>
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Leaf className="text-green-300" />
+      <div className=" flex flex-col">
+        <h2 className="text-2xl  font-bold tracking-tight flex items-center gap-2">
+          
           {title}
+          <Leaf className="text-green-600" />
         </h2>
-        <p className="text-green-100 mt-1">
-          {des}
+        <p className="text-sm text-sky-700 rounded">
+                              {des ? des : "xyz hellp"}
         </p>
       </div>
     </div>

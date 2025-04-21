@@ -89,7 +89,7 @@ const GovernmentSchemes = () => {
 
       
  {/* Search Bar */}
- <div className="p-4">
+ <div className="p-4 md:px-20">
  <div className="relative ">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search size={20} className="text-gray-700" />
@@ -104,7 +104,7 @@ const GovernmentSchemes = () => {
           </div>
           </div>
       {/* Filters Section */}
-      <div className="border-b border-gray-200 bg-gray-50">
+      <div className="border-b md:mx-20 border-gray-200 bg-gray-50">
         <div className="p-4 flex justify-between items-center">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -185,7 +185,7 @@ const GovernmentSchemes = () => {
       </div>
 
       {/* Main Content - Schemes List */}
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y p-4 md:px-20 divide-gray-200">
         {filteredSchemes.length > 0 ? (
           filteredSchemes.map((scheme) => (
             <div
