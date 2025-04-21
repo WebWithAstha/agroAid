@@ -9,11 +9,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { farmerData } from "../../../../data/farmerCrops";
-import Header from "../../../Header";
 import { useDispatch, useSelector } from "react-redux";
 import { connectWallet, fetchAllCrops, listCrop } from "../../../../store/Actions/blockchainAction";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../../../../Services/fileUpload";
+import Header from "../../../partials/Header";
 
 
 const FarmerDashboard = () => {

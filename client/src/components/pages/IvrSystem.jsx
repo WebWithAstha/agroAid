@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import Header from '../Header';
 import Intro from '../ivr/Intro';
 import IVRCard from '../ivr/IVRCard';
 import WhatToExpect from '../ivr/Expect';
 import BenefitsSection from '../ivr/Benefits';
 import HowItWorksSection from '../ivr/Working';
 import FeaturesSection from '../ivr/Features';
+import Header from '../partials/Header';
 
 const IvrSystem = () => {
   const [expandedSection, setExpandedSection] = useState('');

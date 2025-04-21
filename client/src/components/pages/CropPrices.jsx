@@ -24,7 +24,7 @@ import {
   Area,
 } from "recharts";
 import { crops, marketData, marketTrends } from "../../data/cropPrices";
-import Header from "../Header";
+import Header from '../partials/Header';
 import { fetchAgmarknetPrices } from "../../store/Actions/agmarknetAction";
 
 // ================= Subcomponents =================

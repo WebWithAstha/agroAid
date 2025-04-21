@@ -4,7 +4,7 @@ import { useDispatch,useSelector } from 'react-redux';
 import { fetchAllDiagnosisAction,selectDiagnosisAction ,uploadForDiagnosisAction} from '../../store/Actions/diagnosisAction.jsx';
 import UploadList from '../diagnosis/UploadList.jsx';
 import DisplayDiagnosis from '../diagnosis/DisplayDiagnosis.jsx';
-import Header from '../Header.jsx'
+import Header from '../partials/Header';
 import Loading from '../partials/Loading.jsx'
 
 

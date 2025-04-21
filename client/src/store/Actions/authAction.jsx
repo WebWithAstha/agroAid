@@ -39,7 +39,7 @@ export const updateDetails = (userData) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
         const data = await updateDetailsService(userData);
-        console.log(data);
+        // console.log(data);
         
         dispatch(setUser(data.updatedUser || data.user));
         dispatch(setLoading(false));

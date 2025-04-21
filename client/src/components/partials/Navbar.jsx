@@ -13,12 +13,12 @@ const Navbar = () => {
   return (
     <>
       {/* Top Navbar for desktop */}
-      <header className="hidden md:block w-full fixed bg-rose-600/[0] top-0 z-10">
-        <div className=" w-full flex items-center justify-between py-2.5 px-8 backdrop-blur-xl">
+      <header className="hidden md:block w-full  md:px-20 fixed bg-rose-600/[0] top-0 z-10">
+        <div className=" w-full flex items-center justify-between py-2.5 backdrop-blur-xl">
 
 <NavLink to={'/dashboard'}>
                <div className="flex items-center rounded-br-xl">
-                 <div className="mr-2 bg-emerald-500 text-white p-1 rounded-lg">
+                 <div className="mr-2 bg-emerald-500 text-white rounded-lg">
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M12 6.5C13.5 8 15.5 8 17 7.5C17 11.5 16 14 12 16C8 14 7 11.5 7 7.5C8.5 8 10.5 8 12 6.5Z" fill="white"/>
                      <path d="M12 16C8 14 7 11.5 7 7.5C8.5 8 10.5 8 12 6.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
