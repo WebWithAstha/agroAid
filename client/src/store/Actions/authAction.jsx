@@ -26,8 +26,7 @@ export const verifyOtpAndAuthenticate = (phoneNumber, otp, navigate) => async (d
         const {data} = await verifyOtpService(phoneNumber, otp);
         dispatch(setUser(data));
         dispatch(setLoading(false));
-        // console.log(data)
-        if(user.isCompleted)navigate('/dashboard')
+        if(data.isCompleted)navigate('/dashboard')
         else navigate('/detail')
         return data;
     } catch (error) {

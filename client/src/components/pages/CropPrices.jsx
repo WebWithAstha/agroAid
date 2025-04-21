@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -50,22 +50,6 @@ const ChartToggleAndSelector = ({
       />
 
       <div className="flex absolute right-4 bottom-8 z-99 items-center space-x-2">
-        {/* Toggle Buttons */}
-        <div className="flex overflow-hidden rounded-md border border-gray-200">
-          {["price", "volume"].map((view) => (
-            <button
-              key={view}
-              onClick={() => setChartView(view)}
-              className={`px-3 py-1 text-sm ${chartView === view
-                ? "bg-green-800 text-white"
-                : "bg-white text-gray-600"
-                }`}
-            >
-              {view.charAt(0).toUpperCase() + view.slice(1)}
-            </button>
-          ))}
-        </div>
-
         {/* Crop Selector */}
         <div className="relative">
           <select
@@ -116,119 +100,78 @@ const CropChart = ({
   combinedData,
   currentPrice,
   priceChange,
-}) => (
-  <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
-    <div className="flex items-center justify-between mb-2">
-      <div className="flex items-center">
-        <div
-          className="mr-2 w-1 h-8 rounded-full"
-          style={{
-            backgroundColor: crops.find((c) => c.name === selectedCrop)?.color,
-          }}
-        ></div>
-        <div>
-          <h2 className="text-base font-medium text-gray-800">
-            {selectedCrop}
-          </h2>
-          <div className="flex items-center">
-            <span className="text-md font-medium">₹{currentPrice}</span>
-            <div
-              className={`flex items-center ml-2 ${priceChange >= 0 ? "text-emerald-600" : "text-red-500"
+}) => {
+  const chartData = useMemo(() => {
+    const crop = combinedData.find((item) => item.name === selectedCrop);
+    if (!crop || !crop.prices) return [];
+
+    return crop.prices
+      .filter((priceObj) => {
+        const [day, month, year] = priceObj.date.split('/');
+        return !isNaN(new Date(`${year}-${month}-${day}`));
+      })
+      .map((priceObj) => {
+        const [day, month, year] = priceObj.date.split('/');
+        const dateObj = new Date(`${year}-${month}-${day}`);
+
+        return {
+          date: dateObj.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+          }),
+          max_price: priceObj.max_price,
+          min_price: priceObj.min_price,
+        };
+      });
+  }, [combinedData, selectedCrop]);
+
+  const cropColor =
+    crops.find((c) => c.name === selectedCrop)?.color || "#0ea5e9";
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <div
+            className="mr-2 w-1 h-8 rounded-full"
+            style={{ backgroundColor: cropColor }}
+          ></div>
+          <div>
+            <h2 className="text-base font-medium text-gray-800">{selectedCrop}</h2>
+            <div className="flex items-center">
+              <span className="text-md font-medium">₹{currentPrice}</span>
+              <div
+                className={`flex items-center ml-2 ${
+                  priceChange >= 0 ? "text-emerald-600" : "text-red-500"
                 }`}
-            >
-              {priceChange >= 0 ? (
-                <ArrowUp size={12} />
-              ) : (
-                <ArrowDown size={12} />
-              )}
-              <span className="ml-px text-md">
-                {Math.abs(priceChange).toFixed(1)}%
-              </span>
+              >
+                {priceChange >= 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                <span className="ml-px text-md">
+                  {Math.abs(priceChange).toFixed(1)}%
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <ResponsiveContainer width="100%" height="100%" minHeight={210}>
-      {chartView === "price" ? (
-        <LineChart
-          data={combinedData}
-          margin={{ top: 30, right: 20, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#f1f5f9"
-            vertical={false}
-          />
+
+      <ResponsiveContainer width="100%" height="100%" minHeight={210}>
+        <AreaChart data={chartData} margin={{ top: 30, right: 20, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+          
           <XAxis
-            dataKey="month"
+            dataKey="date"
             tick={{ fill: "#64748b", fontSize: 12 }}
             axisLine={{ stroke: "#f1f5f9" }}
             tickLine={false}
           />
+          
           <YAxis
             tick={{ fill: "#64748b", fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip
-            content={({ payload, label }) => {
-              if (!payload || !payload.length) return null;
-              return (
-                <div className="bg-white p-2 rounded-md shadow-lg border border-gray-100 text-xs">
-                  <p className="text-gray-700 font-medium">{label}</p>
-                  {payload.map((data, idx) => (
-                    <p
-                      key={idx}
-                      className="text-gray-800 flex items-center gap-1"
-                    >
-                      <span
-                        className="w-1 h-1 rounded-full inline-block"
-                        style={{ backgroundColor: data.color }}
-                      ></span>
-                      {data.name}:{" "}
-                      <span className="font-medium">₹{data.value}</span>
-                    </p>
-                  ))}
-                </div>
-              );
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey={selectedCrop}
-            stroke={crops.find((c) => c.name === selectedCrop)?.color}
-            strokeWidth={2}
-            dot={{
-              r: 3,
-              stroke: "#fff",
-              strokeWidth: 1,
-              fill: crops.find((c) => c.name === selectedCrop)?.color,
-            }}
-            activeDot={{ r: 5 }}
-          />
-        </LineChart>
-      ) : (
-        <AreaChart
-          data={marketData[selectedCrop]}
-          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#f1f5f9"
-            vertical={false}
-          />
-          <XAxis
-            dataKey="month"
-            tick={{ fill: "#64748b", fontSize: 12 }}
-            axisLine={{ stroke: "#f1f5f9" }}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fill: "#64748b", fontSize: 10 }}
-            axisLine={false}
-            tickLine={false}
-          />
+
           <Tooltip
             content={({ payload, label }) => {
               if (!payload || !payload.length) return null;
@@ -236,27 +179,46 @@ const CropChart = ({
                 <div className="bg-white p-2 rounded-md shadow-lg border border-gray-100 text-xs">
                   <p className="text-gray-700 font-medium">{label}</p>
                   <p className="text-gray-800">
-                    Volume:{" "}
-                    <span className="font-medium">{payload[0].value}</span>{" "}
-                    quintals
+                    Max Price: <span className="font-medium">₹{payload[0]?.payload?.max_price}</span>
+                  </p>
+                  <p className="text-gray-800">
+                    Min Price: <span className="font-medium">₹{payload[0]?.payload?.min_price}</span>
                   </p>
                 </div>
               );
             }}
           />
+
+          {/* Max Price Area */}
           <Area
             type="monotone"
-            dataKey="volume"
-            stroke={crops.find((c) => c.name === selectedCrop)?.color}
-            fill={crops.find((c) => c.name === selectedCrop)?.color + "20"}
+            dataKey="max_price"
+            stroke={cropColor}
+            fill={cropColor + "20"}
+            strokeWidth={2}
+            dot={{ r: 2 }}
+            activeDot={{ r: 4 }}
+            name="Max Price"
+          />
+
+          {/* Min Price Area */}
+          <Area
+            type="monotone"
+            dataKey="min_price"
+            stroke="#f87171"
+            fill="#f8717120"
+            strokeWidth={2}
+            dot={{ r: 2 }}
+            activeDot={{ r: 4 }}
+            name="Min Price"
           />
         </AreaChart>
-      )}
-    </ResponsiveContainer>
-  </div>
-);
+      </ResponsiveContainer>
+    </div>
+  );
+};
 
-const CropCompare = ({currentPrice, crops, selectedCrop, marketData }) => {
+const CropCompare = ({ currentPrice, crops, selectedCrop, marketData }) => {
   return (
     <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
       <h2 className="text-xl font-medium text-gray-800 mb-3">
@@ -275,13 +237,13 @@ const CropCompare = ({currentPrice, crops, selectedCrop, marketData }) => {
                 <div
                   className="w-1 h-6 rounded-full mr-2"
                   style={{
-                    backgroundColor: `rgb(${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+10}, ${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+100}, ${(Math.abs(crop.prices[crop.prices.length-1].max_price - currentPrice)/255)+50})`
+                    backgroundColor: `rgb(${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 10}, ${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 100}, ${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 50})`
                   }}
                 ></div>
                 <p className="text-sm font-medium text-gray-800">{crop.name}</p>
               </div>
               <p className="text-sm font-medium">
-                ₹{crop.prices[crop.prices.length-1].max_price}
+                ₹{crop.prices[crop.prices.length - 1].max_price}
               </p>
             </div>
           ))}
@@ -293,7 +255,7 @@ const CropCompare = ({currentPrice, crops, selectedCrop, marketData }) => {
 // ================= Main Component =================
 
 const CropPrices = () => {
-  const [selectedCrop, setSelectedCrop] = useState("Wheat");
+  const [selectedCrop, setSelectedCrop] = useState("");
   const [chartView, setChartView] = useState("price");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [previousPrice, setPreviousPrice] = useState(0);
@@ -301,11 +263,12 @@ const CropPrices = () => {
 
 
   const combinedData = () => {
-    return cropPrices.find((c) => c.name === selectedCrop).prices.map((price) => {});
+    return cropPrices.find((c) => c.name === selectedCrop).prices.map((price) => { });
   }
 
   const dispatch = useDispatch();
-  const { data: cropPrices } = useSelector((state) => state.agmarknetReducer);
+  const { data: cropPrices, pagination } = useSelector((state) => state?.agmarknetReducer.data);
+  
   const get = async () => {
     dispatch(fetchAgmarknetPrices())
   }
@@ -322,17 +285,34 @@ const CropPrices = () => {
     if (crop && crop.prices.length >= 2) {
       const lastPrice = crop.prices[crop.prices.length - 1].max_price;
       const secondLastPrice = crop.prices[crop.prices.length - 2].max_price;
-
       setCurrentPrice(lastPrice);
       setPreviousPrice(secondLastPrice);
-
       const change = ((lastPrice - secondLastPrice) / secondLastPrice) * 100;
       setPriceChange(change);
     }
   }, [selectedCrop, cropPrices]);
 
-  console.log(cropPrices.length);
+
+  const handleNextPage = () => {
+    if (pagination?.hasNextPage) {
+      dispatch(fetchAgmarknetPrices(pagination.page + 1));
+    }
+  };
   
+  const handlePrevPage = () => {
+    if (pagination?.hasPrevPage) {
+      dispatch(fetchAgmarknetPrices(pagination.page - 1));
+    }
+  };
+
+  useEffect(() => {
+    if (uniqueCommodities.length > 0) {
+      if (!uniqueCommodities.some((crop) => crop.name === selectedCrop)) {
+        setSelectedCrop(uniqueCommodities[0].name);  // Set the first crop by default if current selection is unavailable
+      }
+    }
+  }, [uniqueCommodities, selectedCrop]);
+
 
 
   return (
@@ -356,13 +336,21 @@ const CropPrices = () => {
                 setSelectedCrop={setSelectedCrop}
               />
             ))}
+          <div className="flex gap-2">
+          <button disabled={!pagination?.hasPrevPage} onClick={handlePrevPage} className="bg-emerald-600 disabled:bg-zinc-100 hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200">
+              Prev
+            </button>
+            <button disabled={!pagination?.hasNextPage} onClick={handleNextPage} className="bg-emerald-600 disabled:bg-zinc-100 hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200">
+              Next
+            </button>
+          </div>
           </div>
 
           <div className="col-span-2 h-max flex flex-1 flex-col">
             <CropChart
               selectedCrop={selectedCrop}
               chartView={chartView}
-              combinedData={combinedData}
+              combinedData={cropPrices}
               currentPrice={currentPrice}
               priceChange={priceChange}
             />

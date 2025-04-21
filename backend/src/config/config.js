@@ -30,7 +30,11 @@ const _config = {
     publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
     privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
-  }
+  },
+
+  redisHost:process.env.REDIS_HOST,
+  redisPort: process.env.REDIS_PORT,
+  redisPassword: process.env.REDIS_PASSWORD,
 };
 
 export const config = Object.freeze(_config);

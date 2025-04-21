@@ -5,33 +5,41 @@ import { Diagnosis } from '../models/diagonsis.model.js';
 import { getDiseaseDetailByGemini } from '../services/gemini.diagnosis.service.js';
 import marketModel from '../models/market.model.js';
 import ImageKit from "imagekit";
+import redis from '../services/redis.service.js';
 
 
 // controller
 export const agmarknetController = async (req, res) => {
     try {
         const today = new Date();
-        const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-        const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
+        const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
+
+        // Pagination params from query (default page 1, limit 10)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        // Fetch data from API
+        const { data } = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
             params: {
                 'api-key': config.AGMARKNET_API_KEY,
                 format: 'json',
                 limit: 100,
             },
         });
-        const crops = response.data.records;
-        for (const crop of crops) {
-            const { commodity: name, market, max_price, min_price } = crop;
+
+        const crops = data.records;
+
+        await Promise.all(crops.map(async ({ commodity: name, market, max_price, min_price }) => {
             const existing = await marketModel.findOne({ name, market });
+
             if (existing) {
-                const isTodayInserted = existing.prices.some(p => p.date === formattedDate);
-                if (!isTodayInserted) {
+                const alreadyExists = existing.prices.some(p => p.date === formattedDate);
+                if (!alreadyExists) {
                     existing.prices.push({ max_price, min_price, date: formattedDate });
-                    if (existing.prices.length > 5) {
-                        existing.prices = existing.prices
-                            .sort((a, b) => new Date(b.date.split('/').reverse().join('/')) - new Date(a.date.split('/').reverse().join('/')))
-                            .slice(0, 5);
-                    }
+                    existing.prices = existing.prices
+                        .sort((a, b) => new Date(b.date.split('/').reverse().join('/')) - new Date(a.date.split('/').reverse().join('/')))
+                        .slice(0, 5);
                     await existing.save();
                 }
             } else {
@@ -41,14 +49,29 @@ export const agmarknetController = async (req, res) => {
                     prices: [{ max_price, min_price, date: formattedDate }],
                 });
             }
-        }
-        const updatedData = await marketModel.find({})
-        return successResponse(res, updatedData, 'Agmarknet data saved successfully.');
+        }));
+
+        // Paginated response
+        const total = await marketModel.countDocuments();
+        const updatedData = await marketModel.find().skip(skip).limit(limit);
+
+        return successResponse(res, {
+            data: updatedData,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page * limit < total,
+                hasPrevPage: page > 1,
+            }
+        }, 'Agmarknet data fetched successfully.');
     } catch (error) {
         console.error('Agmarknet Error:', error.message);
-        return errorResponse(res, 'Failed to fetch Agmarknet data', error.status);
+        return errorResponse(res, 'Failed to fetch Agmarknet data', error.status || 500);
     }
 };
+
 
 export const weatherController = async (req, res) => {
     const { city = 'bhopal' } = req.query;
@@ -58,7 +81,17 @@ export const weatherController = async (req, res) => {
     }
 
     try {
-
+        const forecastCache = await redis.get(`${city}-forecast`);
+        const currentCache = await redis.get(`${city}-current`);
+        
+        if (forecastCache && currentCache) {
+            const parsedForecast = JSON.parse(forecastCache);
+            const parsedCurrent = JSON.parse(currentCache);
+            return successResponse(res, {
+                forecastResponse: parsedForecast,
+                currentResponse: parsedCurrent
+            }, 'Weather data fetched successfully from cache');
+        }
         const forecastResponse = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
             params: {
                 key: config.WEATHER_API_KEY,
@@ -74,13 +107,18 @@ export const weatherController = async (req, res) => {
                 aqi: 'no',
             },
         });
-
-        return successResponse(res, { forecastResponse: forecastResponse.data, currentResponse: currentResponse.data }, 'Weather data fetched successfully');
+        await redis.set(`${city}-forecast`, JSON.stringify(forecastResponse.data), 'EX', 3600);
+        await redis.set(`${city}-current`, JSON.stringify(currentResponse.data), 'EX', 3600);
+        return successResponse(res, {
+            forecastResponse: forecastResponse.data,
+            currentResponse: currentResponse.data
+        }, 'Weather data fetched successfully from API');
     } catch (error) {
         console.error('Weather API Error:', error.message);
-        return errorResponse(res, 'Failed to fetch weather data', error.status);
+        return errorResponse(res, 'Failed to fetch weather data', error.response?.status || 500);
     }
 };
+
 
 export const cropHealthController = async (req, res) => {
     const requestData = req.body;
@@ -136,29 +174,29 @@ export const getAllDiagnosis = async (req, res) => {
 
 export const uploadFileController = async (req, res) => {
     if (!req.files || !req.files.data) {
-      return badRequest(res, 'No file uploaded. Please upload an image file.');
+        return badRequest(res, 'No file uploaded. Please upload an image file.');
     }
     const data = req.files.data;
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif','.mp3'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.mp3'];
     const fileExtension = data.name.slice(((data.name.lastIndexOf(".") - 1) >>> 0) + 2);
     if (!allowedExtensions.includes(`.${fileExtension.toLowerCase()}`)) {
-      return badRequest(res, 'Invalid file type. Only files (.jpg, .jpeg, .png, .gif , .mp3) are allowed.');
+        return badRequest(res, 'Invalid file type. Only files (.jpg, .jpeg, .png, .gif , .mp3) are allowed.');
     }
     const imagekit = new ImageKit({
-      publicKey: config.imageKit.publicKey,
-      privateKey: config.imageKit.privateKey,
-      urlEndpoint: config.imageKit.urlEndpoint,
+        publicKey: config.imageKit.publicKey,
+        privateKey: config.imageKit.privateKey,
+        urlEndpoint: config.imageKit.urlEndpoint,
     });
-  
+
     try {
-      const response = await imagekit.upload({
-        file: data.data,           
-        fileName: data.name,       
-        useUniqueFileName: true,   
-      });
-      return successResponse(res, response, 'File uploaded successfully.');
+        const response = await imagekit.upload({
+            file: data.data,
+            fileName: data.name,
+            useUniqueFileName: true,
+        });
+        return successResponse(res, response, 'File uploaded successfully.');
     } catch (error) {
-      console.error('Error uploading file to ImageKit:', error);
-      return serverError(res, 'Failed to upload file to ImageKit.');
+        console.error('Error uploading file to ImageKit:', error);
+        return serverError(res, 'Failed to upload file to ImageKit.');
     }
-  };
+};

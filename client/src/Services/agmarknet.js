@@ -1,8 +1,8 @@
 import { Axios } from "../utils/axios";
 
-export const getPrices = async (offset) => {
+export const getPrices = async (page=0) => {
     try {
-        const response = await Axios.get('/services/agmarknet?offset=0');
+        const response = await Axios.get(`/services/agmarknet?page=${page}`);
         return response;
     } catch (error) {
         console.error("Error fetching prices:", error);
