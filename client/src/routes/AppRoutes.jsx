@@ -1,5 +1,6 @@
-import React from 'react'
-import {Routes,Route} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Register from '../components/auth/Register';
 import LanguageSelect from '../components/partials/LanguageSelect';
 import OtpVerification from '../components/auth/OtpVerification';
@@ -13,28 +14,30 @@ import Diagnosis from '../components/pages/Diagnosis.jsx';
 import RegistrationForm from '../components/auth/RegistrationForm.jsx';
 import Assistant from '../components/pages/Assistant.jsx';
 import IvrSystem from '../components/pages/IvrSystem.jsx';
-import DashboardLoading from '../components/loading/DashboardLoading.jsx';
+import ProtectedRoute from '../components/routes/ProtectedRoute.jsx';
 
 const AppRoutes = () => {
+
+
   return (
     <Routes>
-        <Route element={<Register/>} path='/' />
-        <Route element={<RegistrationForm/>} path='/register' />
-        <Route element={<LanguageSelect/>} path='/lang' />
-        <Route element={<OtpVerification/>} path='/otp' />
-        <Route element={<DashboardLoading/>} path='/dload' />
-        <Route element={<Dashboard/>} path='/dashboard' />
-        <Route element={<CropPrices/>} path='/price'/>
-        <Route element={<Weather/>} path='/weather'/>
-        <Route element={<Diagnosis/>} path='/diagnosis'/>
-        <Route element={<GovernmentSchemes/>} path='/schemes'/>
-        <Route element={<Market/>} path='/market'/>
-        <Route element={<DirectMarket/>} path='/directmarket'/>
-        <Route element={<Assistant/>} path='/assistant'/>
-        <Route element={<IvrSystem/>} path='/ivr'/>
+      <Route path="/" element={<Register />} />
+      <Route path="/register" element={<RegistrationForm />} />
+      <Route path="/lang" element={<LanguageSelect />} />
+      <Route path="/otp" element={<OtpVerification />} />
 
+      {/* Protected Routes */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/price" element={<ProtectedRoute><CropPrices /></ProtectedRoute>} />
+      <Route path="/weather" element={<ProtectedRoute><Weather /></ProtectedRoute>} />
+      <Route path="/diagnosis" element={<ProtectedRoute><Diagnosis /></ProtectedRoute>} />
+      <Route path="/schemes" element={<ProtectedRoute><GovernmentSchemes /></ProtectedRoute>} />
+      <Route path="/market" element={<ProtectedRoute><Market /></ProtectedRoute>} />
+      <Route path="/directmarket" element={<ProtectedRoute><DirectMarket /></ProtectedRoute>} />
+      <Route path="/assistant" element={<ProtectedRoute><Assistant /></ProtectedRoute>} />
+      <Route path="/ivr" element={<ProtectedRoute><IvrSystem /></ProtectedRoute>} />
     </Routes>
-  )
-}
+  );
+};
 
-export default AppRoutes
+export default AppRoutes;

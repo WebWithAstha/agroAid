@@ -1,4 +1,4 @@
-import { dailyWeatherForecastService } from "../../Services/weatherService";
+import { dailyWeatherForecastService } from "../../Services/weather.Service.js";
 import { Axios } from "../../utils/axios";
 import { setWeatherLoading, setForecast, resetWeather } from "../slices/weatherSlice";
 

@@ -1,6 +1,6 @@
 import { Clock, Mic, MicOff, Send } from "lucide-react";
 import { useRef, useState } from "react";
-import {uploadFile} from '../../Services/fileUpload.js'
+import {uploadFile} from '../../Services/fileUpload.service.js'
 
 const QueryInput = ({ handleSendQuery }) => {
   const [inputText, setInputText] = useState("");
