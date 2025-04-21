@@ -24,7 +24,7 @@ import {
   Area,
 } from "recharts";
 import { crops, marketData, marketTrends } from "../../data/cropPrices";
-import Header from '../partials/Header';
+import Header from "../partials/Header";
 import { fetchAgmarknetPrices } from "../../store/Actions/agmarknetAction";
 
 // ================= Subcomponents =================
@@ -39,26 +39,18 @@ const ChartToggleAndSelector = ({
   crops,
   setChartView,
 }) => {
-
-
-
   return (
     <div className="relative w-full">
-      <Header
-        title={"Crop Price Trends"}
-        des={"Upload crop images for instant disease detection & treatment advice"}
-      />
-
       <div className="flex absolute right-4 bottom-8 z-99 items-center space-x-2">
         {/* Crop Selector */}
         <div className="relative">
           <select
             value={selectedCrop}
             onChange={(e) => setSelectedCrop(e.target.value)}
-            className="appearance-none bg-white border border-gray-200 rounded-md py-1 pl-2 pr-8 text-sm text-gray-700 focus:outline-none"
+            className="appearance-none bg-emerald-700 text-white border border-gray-200 rounded-md py-1 pl-2 pr-8 text-sm text-gray-700 focus:outline-none"
           >
             {crops.map((crop) => (
-              <option key={crop.name} value={crop.name}>
+              <option className="bg-zinc-50 text-emerald-800 hover:bg-emerald-300" key={crop.name} value={crop.name}>
                 {crop.name}
               </option>
             ))}
@@ -73,21 +65,24 @@ const ChartToggleAndSelector = ({
   );
 };
 
-
 const CropCard = ({ crop, selectedCrop, setSelectedCrop }) => {
   return (
     <div
       key={crop._id}
       onClick={() => setSelectedCrop(crop.name)}
-      className={`cursor-pointer hover:bg-zinc-50 hover:text-black transition-all h-max rounded-md border border-transparent ${selectedCrop === crop.commodity
-        ? "border-l-2 border-l-emerald-500 bg-emerald-800 text-white"
-        : "border-gray-100 bg-white hover:border-l-2 hover:border-l-gray-300"
-        }`}
+      className={`cursor-pointer hover:bg-green-50 px-2 hover:text-black transition-all h-max rounded-md border border-transparent ${
+        selectedCrop === crop.commodity
+          ? "border-l-2 border-l-emerald-500 bg-emerald-800 text-white"
+          : "border-gray-100 bg-white hover:border-l-2 hover:border-l-gray-300"
+      }`}
     >
       <div className="p-2">
         <p className="text-sm font-medium">{crop.name}</p>
         <div className="flex items-center justify-between mt-1">
-          <p className="text-xs">₹{crop.prices[crop.prices.length - 1].min_price} - ₹{crop.prices[crop.prices.length - 1].max_price}</p>
+          <p className="text-xs">
+            ₹{crop.prices[crop.prices.length - 1].min_price} - ₹
+            {crop.prices[crop.prices.length - 1].max_price}
+          </p>
         </div>
       </div>
     </div>
@@ -107,11 +102,11 @@ const CropChart = ({
 
     return crop.prices
       .filter((priceObj) => {
-        const [day, month, year] = priceObj.date.split('/');
+        const [day, month, year] = priceObj.date.split("/");
         return !isNaN(new Date(`${year}-${month}-${day}`));
       })
       .map((priceObj) => {
-        const [day, month, year] = priceObj.date.split('/');
+        const [day, month, year] = priceObj.date.split("/");
         const dateObj = new Date(`${year}-${month}-${day}`);
 
         return {
@@ -129,7 +124,7 @@ const CropChart = ({
     crops.find((c) => c.name === selectedCrop)?.color || "#0ea5e9";
 
   return (
-    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
+    <div className="h-full w-full m-auto border border-gray-100 rounded-lg shadow-sm p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
           <div
@@ -137,7 +132,9 @@ const CropChart = ({
             style={{ backgroundColor: cropColor }}
           ></div>
           <div>
-            <h2 className="text-base font-medium text-gray-800">{selectedCrop}</h2>
+            <h2 className="text-sm font-bold bg-sky-400 mb-1 px-4 py-1.5 rounded-xl text-gray-600">
+              {selectedCrop}
+            </h2>
             <div className="flex items-center">
               <span className="text-md font-medium">₹{currentPrice}</span>
               <div
@@ -145,7 +142,11 @@ const CropChart = ({
                   priceChange >= 0 ? "text-emerald-600" : "text-red-500"
                 }`}
               >
-                {priceChange >= 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                {priceChange >= 0 ? (
+                  <ArrowUp size={12} />
+                ) : (
+                  <ArrowDown size={12} />
+                )}
                 <span className="ml-px text-md">
                   {Math.abs(priceChange).toFixed(1)}%
                 </span>
@@ -155,17 +156,24 @@ const CropChart = ({
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%" minHeight={210}>
-        <AreaChart data={chartData} margin={{ top: 30, right: 20, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-          
+      <ResponsiveContainer width="100%" height="80%" minHeight={150}>
+        <AreaChart
+          data={chartData}
+          margin={{ top: 40, right: 10, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#888888"
+            vertical={false}
+          />
+
           <XAxis
             dataKey="date"
             tick={{ fill: "#64748b", fontSize: 12 }}
-            axisLine={{ stroke: "#f1f5f9" }}
+            axisLine={{ stroke: "#888888" }}
             tickLine={false}
           />
-          
+
           <YAxis
             tick={{ fill: "#64748b", fontSize: 12 }}
             axisLine={false}
@@ -179,10 +187,16 @@ const CropChart = ({
                 <div className="bg-white p-2 rounded-md shadow-lg border border-gray-100 text-xs">
                   <p className="text-gray-700 font-medium">{label}</p>
                   <p className="text-gray-800">
-                    Max Price: <span className="font-medium">₹{payload[0]?.payload?.max_price}</span>
+                    Max Price:{" "}
+                    <span className="font-medium">
+                      ₹{payload[0]?.payload?.max_price}
+                    </span>
                   </p>
                   <p className="text-gray-800">
-                    Min Price: <span className="font-medium">₹{payload[0]?.payload?.min_price}</span>
+                    Min Price:{" "}
+                    <span className="font-medium">
+                      ₹{payload[0]?.payload?.min_price}
+                    </span>
                   </p>
                 </div>
               );
@@ -221,13 +235,13 @@ const CropChart = ({
 const CropCompare = ({ currentPrice, crops, selectedCrop, marketData }) => {
   return (
     <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-3 flex-grow">
-      <h2 className="text-xl font-medium text-gray-800 mb-3">
+      <h2 className="text-lg font-medium text-gray-800 mb-3">
         Price Comparison
       </h2>
-      <div className="space-y-2">
+      <div className="space-y-2 grid gap-3 grid-cols-3">
         {crops
           .filter((c) => c.name !== selectedCrop)
-          .slice(0, 5)
+          .slice(0, 3)
           .map((crop, index) => (
             <div
               key={index}
@@ -237,7 +251,28 @@ const CropCompare = ({ currentPrice, crops, selectedCrop, marketData }) => {
                 <div
                   className="w-1 h-6 rounded-full mr-2"
                   style={{
-                    backgroundColor: `rgb(${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 10}, ${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 100}, ${(Math.abs(crop.prices[crop.prices.length - 1].max_price - currentPrice) / 255) + 50})`
+                    backgroundColor: `rgb(${
+                      Math.abs(
+                        crop.prices[crop.prices.length - 1].max_price -
+                          currentPrice
+                      ) /
+                        255 +
+                      10
+                    }, ${
+                      Math.abs(
+                        crop.prices[crop.prices.length - 1].max_price -
+                          currentPrice
+                      ) /
+                        255 +
+                      100
+                    }, ${
+                      Math.abs(
+                        crop.prices[crop.prices.length - 1].max_price -
+                          currentPrice
+                      ) /
+                        255 +
+                      50
+                    })`,
                   }}
                 ></div>
                 <p className="text-sm font-medium text-gray-800">{crop.name}</p>
@@ -261,20 +296,23 @@ const CropPrices = () => {
   const [previousPrice, setPreviousPrice] = useState(0);
   const [priceChange, setPriceChange] = useState(0);
 
-
   const combinedData = () => {
-    return cropPrices.find((c) => c.name === selectedCrop).prices.map((price) => { });
-  }
+    return cropPrices
+      .find((c) => c.name === selectedCrop)
+      .prices.map((price) => {});
+  };
 
   const dispatch = useDispatch();
-  const { data: cropPrices, pagination } = useSelector((state) => state?.agmarknetReducer.data);
-  
+  const { data: cropPrices, pagination } = useSelector(
+    (state) => state?.agmarknetReducer.data
+  );
+
   const get = async () => {
-    dispatch(fetchAgmarknetPrices())
-  }
+    dispatch(fetchAgmarknetPrices());
+  };
   useEffect(() => {
     if (cropPrices.length == 0) get();
-  }, [cropPrices])
+  }, [cropPrices]);
 
   const uniqueCommodities = Array.from(
     new Map(cropPrices.map((item) => [item.name, item])).values()
@@ -292,13 +330,12 @@ const CropPrices = () => {
     }
   }, [selectedCrop, cropPrices]);
 
-
   const handleNextPage = () => {
     if (pagination?.hasNextPage) {
       dispatch(fetchAgmarknetPrices(pagination.page + 1));
     }
   };
-  
+
   const handlePrevPage = () => {
     if (pagination?.hasPrevPage) {
       dispatch(fetchAgmarknetPrices(pagination.page - 1));
@@ -308,16 +345,20 @@ const CropPrices = () => {
   useEffect(() => {
     if (uniqueCommodities.length > 0) {
       if (!uniqueCommodities.some((crop) => crop.name === selectedCrop)) {
-        setSelectedCrop(uniqueCommodities[0].name);  // Set the first crop by default if current selection is unavailable
+        setSelectedCrop(uniqueCommodities[0].name); // Set the first crop by default if current selection is unavailable
       }
     }
   }, [uniqueCommodities, selectedCrop]);
 
-
-
   return (
-    <div className="md:h-screen flex  flex-col overflow-hidden">
-      <main className="flex-grow flex flex-col ">
+    <div className="md:h-screen flex bg-zinc-50 flex-col ">
+      <div className="relative">
+        <Header
+          title={"Crop Price Trends"}
+          des={
+            "Upload crop images for instant disease detection & treatment advice"
+          }
+        />
         <ChartToggleAndSelector
           selectedCrop={selectedCrop}
           setSelectedCrop={setSelectedCrop}
@@ -325,44 +366,58 @@ const CropPrices = () => {
           setChartView={setChartView}
           crops={uniqueCommodities}
         />
+      </div>
+      <main className="h-[86vh] flex flex-col ">
+        <div className="grid grid-cols-3 h-full overflow-hidden grid-rows-2 py-2 px-20 w-full gap-4  flex-grow">
+          <div className="relative shadow row-span-2 flex-col h-full ">
+            <div className="w-full h-[93%] bg-gradient-to-br from-zinc-50 space-y-1.5 overflow-y-auto">
+              {uniqueCommodities.map((crop, i) => (
+                <CropCard
+                  key={i}
+                  crop={crop}
+                  selectedCrop={selectedCrop}
+                  setSelectedCrop={setSelectedCrop}
+                />
+              ))}
+            </div>
 
-        <div className="grid grid-cols-4 p-4 w-full gap-3 flex-grow">
-          <div className="space-y-2 overflow-y-auto flex-col h-[77vh]">
-            {uniqueCommodities.map((crop, i) => (
-              <CropCard
-                key={i}
-                crop={crop}
+            <div className="flex gap-2 px-2 pb-2  sticky top-full">
+              <button
+                disabled={!pagination?.hasPrevPage}
+                onClick={handlePrevPage}
+                className="bg-emerald-600 disabled:bg-zinc-300 disabled:text-black/[.8] hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200"
+              >
+                Prev
+              </button>
+              <button
+                disabled={!pagination?.hasNextPage}
+                onClick={handleNextPage}
+                className="bg-emerald-600 disabled:bg-zinc-100 hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          <div className="col-span-2 flex flex-col h-full gap-3">
+            <div className="h-[60vh] bg-white relative flex items-center justify-center rounded-xl shrink-0">
+              <CropChart
                 selectedCrop={selectedCrop}
-                setSelectedCrop={setSelectedCrop}
+                chartView={chartView}
+                combinedData={cropPrices}
+                currentPrice={currentPrice}
+                priceChange={priceChange}
               />
-            ))}
-          <div className="flex gap-2">
-          <button disabled={!pagination?.hasPrevPage} onClick={handlePrevPage} className="bg-emerald-600 disabled:bg-zinc-100 hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200">
-              Prev
-            </button>
-            <button disabled={!pagination?.hasNextPage} onClick={handleNextPage} className="bg-emerald-600 disabled:bg-zinc-100 hover:bg-emerald-700 w-1/2 text-white font-medium py-2 px-4 rounded-lg shadow transition duration-200">
-              Next
-            </button>
-          </div>
-          </div>
+            </div>
 
-          <div className="col-span-2 h-max flex flex-1 flex-col">
-            <CropChart
-              selectedCrop={selectedCrop}
-              chartView={chartView}
-              combinedData={cropPrices}
-              currentPrice={currentPrice}
-              priceChange={priceChange}
-            />
-          </div>
-
-          <div className="space-y-3 h-max">
-            <CropCompare
-              selectedCrop={selectedCrop}
-              crops={uniqueCommodities}
-              marketData={marketData}
-              currentPrice={currentPrice}
-            />
+            <div className="h-40  rounded-xl shrink-0 overflow-hidden  ">
+              <CropCompare
+                selectedCrop={selectedCrop}
+                crops={uniqueCommodities}
+                marketData={marketData}
+                currentPrice={currentPrice}
+              />
+            </div>
           </div>
         </div>
       </main>
