@@ -3,9 +3,9 @@ import React from 'react'
 
 const UploadList = ({allDiagnosis,selectedDiagnosis,getSeverityColor,setSelectedDiagnosis}) => {
   return (
-    <div className="w-2/5 min-40 bg-white border-r border-gray-200 overflow-y-auto">
+    <div className="md:w-2/5 w-28 min-40 bg-white border-r border-gray-200 overflow-y-auto">
           <div className="p-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-700">Your Diagnoses</h2>
+            <h2 className="font-semibold text-gray-700">Your Uploads</h2>
           </div>
           {allDiagnosis.length>0 ? 
           <div className="divide-y divide-gray-200">
@@ -13,13 +13,13 @@ const UploadList = ({allDiagnosis,selectedDiagnosis,getSeverityColor,setSelected
               <div 
                 key={diagnosis._id}
                 onClick={() => setSelectedDiagnosis(diagnosis._id)} 
-                className={`p-4 cursor-pointer  hover:bg-gray-50 transition-colors ${selectedDiagnosis?._id === diagnosis._id ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
+                className={`md:p-4 p-2 cursor-pointer  hover:bg-gray-50 transition-colors ${selectedDiagnosis?._id === diagnosis._id ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
               >
                 <div className="flex items-center gap-2 justify-between w-full">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden mr-3 flex-shrink-0">
+                  <div className="md:w-16 h-16 w-full bg-gray-100 rounded-lg overflow-hidden mr-3 flex-shrink-0">
                     <img src={diagnosis.image} alt={diagnosis.cropName} className="w-full text-xs h-full object-cover" />
                   </div>
-                  <div className="flex-1 ">
+                  <div className="flex-1 md:block hidden ">
                     <h3 className="font-medium text-gray-900">{diagnosis.cropName}</h3>
                     <p className="text-sm text-gray-600">{diagnosis.disease}</p>
                     <div className="flex items-center mt-1">

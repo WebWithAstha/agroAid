@@ -17,12 +17,12 @@ const DisplayDiagnosis = ({
     <div className="bg-white rounded-lg overflow-y-auto h-full shadow-md">
       {/* Detail Header */}
       <div className=" sticky top-0 bg-white">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-start">
+        <div className="md:p-6 border-b border-gray-200 md:flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
               {selectedDiagnosis.cropName}
             </h2>
-            <p className="text-lg text-gray-600">{selectedDiagnosis.disease}</p>
+            <p className="text-lg text-gray-600 md:mb-0 mb-1">{selectedDiagnosis.disease}</p>
           </div>
           <div>
             <span
@@ -42,7 +42,7 @@ const DisplayDiagnosis = ({
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="md:p-6 p-2 py-4">
         {activeTab === "overview" && 
           <Overview selectedDiagnosis={selectedDiagnosis}/>
         }
@@ -69,13 +69,13 @@ const DisplayDiagnosis = ({
 export default DisplayDiagnosis;
 
 const Tab = ({ activeTab, setActiveTab }) => (
-  <div className="border-b border-gray-200">
-    <nav className="flex">
+  <div className="border-b md:mt-0 mt-2 border-gray-200">
+    <nav className="md:flex grid grid-cols-3">
       <button
         onClick={() => setActiveTab("overview")}
-        className={`px-4 py-3 text-sm font-medium ${
+        className={`md:px-4 px-1 md:border-0 md:border-b border border-black/[.2] py-3 text-sm font-medium ${
           activeTab === "overview"
-            ? "border-b-2 border-green-500 text-green-600"
+            ? "border-b-2 border-transparent border-b-green-500 text-green-600"
             : "text-gray-500 hover:text-gray-700"
         }`}
       >
@@ -83,7 +83,7 @@ const Tab = ({ activeTab, setActiveTab }) => (
       </button>
       <button
         onClick={() => setActiveTab("symptoms")}
-        className={`px-4 py-3 text-sm font-medium ${
+        className={`md:px-4 px-1 md:border-0 md:border-b border border-black/[.2] py-3 text-sm font-medium ${
           activeTab === "symptoms"
             ? "border-b-2 border-green-500 text-green-600"
             : "text-gray-500 hover:text-gray-700"
@@ -93,7 +93,7 @@ const Tab = ({ activeTab, setActiveTab }) => (
       </button>
       <button
         onClick={() => setActiveTab("treatment")}
-        className={`px-4 py-3 text-sm font-medium ${
+        className={`md:px-4 px-1 md:border-0 md:border-b border border-black/[.2] py-3 text-sm font-medium ${
           activeTab === "treatment"
             ? "border-b-2 border-green-500 text-green-600"
             : "text-gray-500 hover:text-gray-700"
@@ -103,7 +103,7 @@ const Tab = ({ activeTab, setActiveTab }) => (
       </button>
       <button
         onClick={() => setActiveTab("prevention")}
-        className={`px-4 py-3 text-sm font-medium ${
+        className={`md:px-4 px-1 md:border-0 md:border-b border border-black/[.2] py-3 text-sm font-medium ${
           activeTab === "prevention"
             ? "border-b-2 border-green-500 text-green-600"
             : "text-gray-500 hover:text-gray-700"
@@ -113,7 +113,7 @@ const Tab = ({ activeTab, setActiveTab }) => (
       </button>
       <button
         onClick={() => setActiveTab("gallery")}
-        className={`px-4 py-3 text-sm font-medium ${
+        className={`md:px-4 px-1 md:border-0 md:border-b border border-black/[.2] py-3 text-sm font-medium ${
           activeTab === "gallery"
             ? "border-b-2 border-green-500 text-green-600"
             : "text-gray-500 hover:text-gray-700"

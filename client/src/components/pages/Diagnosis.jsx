@@ -6,6 +6,8 @@ import UploadList from '../diagnosis/UploadList.jsx';
 import DisplayDiagnosis from '../diagnosis/DisplayDiagnosis.jsx';
 import Header from '../partials/Header';
 import Loading from '../partials/Loading.jsx'
+import Btn from '../partials/Btn.jsx'
+
 
 
 // Main component
@@ -97,12 +99,13 @@ useEffect(() => {
 
     <Header title={"Crop Diagnosis Dashboard"}/>
 
-        <button 
-          onClick={handleNewUpload}
-          className="bg-white text-black absolute right-4 bottom-4 hover:bg-green-700 transition-all cursor-pointer hover:text-white py-2 px-4 rounded-lg flex items-center"
-          >
-          <Plus size={20} className="mr-1" /> New Diagnosis
-        </button>
+<div className="md:absolute right-6 bottom-4 md:mb-0 mb-2"
+
+onClick={handleNewUpload}
+>
+<Btn title={" New Diagnosis"}/>
+
+</div>
           </div>
     {/* Main Content */}
     <div className="flex flex-1 overflow-hidden">

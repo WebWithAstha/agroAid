@@ -4,8 +4,8 @@ import React from "react";
 const Overview = ({ selectedDiagnosis }) => {
   return (
     <div className="">
-      <div className="flex">
-        <div className="w-1/2 pr-4">
+      <div className="md:flex">
+        <div className="md:w-1/2 pr-4">
           <div className="rounded-lg bg-gray-100 overflow-hidden mb-4">
             <img
               src={selectedDiagnosis.image}
