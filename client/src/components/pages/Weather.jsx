@@ -80,7 +80,7 @@ const Weather = () => {
   const renderFiveDayForecast = useMemo(
     () => (forecastData) =>
       (
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid md:grid-cols-5 gap-3">
           {forecastData?.fiveDayForecast?.map(
             (
               day,

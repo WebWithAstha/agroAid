@@ -3,7 +3,7 @@ import QueryHeader from "./QueryHeader";
 
 const FarmerQuery = ({ query }) => (
   <div className="flex justify-end">
-    <div className="bg-green-600 text-white rounded-lg max-w-3/4 shadow-sm">
+    <div className="bg-green-600  md:w-3/5 w-4/5 text-white rounded-lg md:max-w-3/4 shadow-sm">
       <QueryHeader sender="you" time={query.createdAt} />
       <div className="p-4">
         {query.isVoice ? (
@@ -19,7 +19,7 @@ const FarmerQuery = ({ query }) => (
 const AssistantResponse = ({ response, createdAt }) => (
   response &&
   <div className="flex justify-start">
-    <div className="bg-white border w-3/5 border-gray-200 rounded-lg max-w-3/4 shadow-sm">
+    <div className="bg-white border md:w-3/5 w-4/5 border-gray-200 rounded-lg md:max-w-3/4 shadow-sm">
       <QueryHeader sender="bot" time={createdAt} />
 
       {response?.audioUrl && (

@@ -5,7 +5,7 @@ import { useNavigate} from 'react-router-dom'
 const Header = ({title,des}) => {
 const navigate = useNavigate();
   return (
-    <div className="relative  z-0  border-b border-black/[.2] bg-white  md:px-24 py-5  overflow-hidden flex justify-between items-center">
+    <div className="relative  z-0  border-b border-black/[.2] bg-white px-20  md:px-24 py-5  overflow-hidden flex justify-between items-center">
       <div onClick={() => navigate(-1)} className="absolute bg-green-600 rounded-full p-2 text-white top-1/2 -translate-y-1/2  md:left-8 left-3">
         <ArrowLeftIcon className="" />
       </div>

@@ -14,6 +14,7 @@ import IntroCard from "./IntroCard";
 import OpenMarket from "./OpenMarket";
 import { services } from "../../data/serviceOffered";
 import ServiceCard from "./ServiceCard";
+import Logo from "../partials/Logo";
 
 
 
@@ -45,9 +46,12 @@ const ServicesGrid = () => {
 const Dashboard = () => {
 
   return (
-    <div className="min-h-screen bg-zinc-50 pt-16 ">
+    <div className="min-h-screen bg-zinc-50 md:pt-16 ">
+      <div className="md:hidden px-4 pt-2 sticky top-0 z-[990] bg-white pb-2">
+        <Logo/>
+      </div>
       <Navbar />
-      <main className="flex-1 px-3 pb-20 md:px-20 mx-auto w-full">
+      <main className="flex-1 px-2 pb-20 md:px-20 mx-auto w-full">
         <IntroCard/>
         <OpenMarket/>
         <ServicesGrid />
