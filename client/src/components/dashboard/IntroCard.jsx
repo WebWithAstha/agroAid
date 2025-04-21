@@ -26,7 +26,9 @@ const IntroCard = () => {
             Voice-powered assistant for instant answers
           </p>
         </div>
+        <Link to='/ivr'>
         <Btn title={"IVR Demo"}/>
+        </Link>
       </div>
       <BG url={video}/>
     </div>
