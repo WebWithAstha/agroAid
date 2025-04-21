@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { dailyWeatherForecast } from "../../store/Actions/weatherAction";
 import Header from "../partials/Header";
 import Loading from "../partials/Loading.jsx";
+import WeatherLoading from "../loading/WeatherLoading.jsx";
 
 const Weather = () => {
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ const Weather = () => {
   );
 
   return loading ? (
-    <Loading />
+    <WeatherLoading />
   ) : (
     forecast && (
       <div className=" overflow-hidden w-full font-sans relative">
