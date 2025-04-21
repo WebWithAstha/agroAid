@@ -55,7 +55,7 @@ const CropCard = ({ crop, onClick }) => {
         <div className="h-48">
 
           <img
-            src={crop.image[0]}
+            src={crop.image}
             alt={crop.name}
             className="w-full h-48 object-contain"
           />
@@ -137,7 +137,7 @@ const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
       <div className="md:flex">
         <div className="md:w-1/3">
           <img
-            src={crop.image[0]}
+            src={crop.image}
             alt={crop.name}
             className="w-full h-64 object-cover"
           />
