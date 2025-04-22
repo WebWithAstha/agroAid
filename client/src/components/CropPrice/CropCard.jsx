@@ -11,7 +11,7 @@ const CropCard = ({ crop, selectedCrop, setSelectedCrop }) => {
           }`}
       >
         <div className="p-2">
-          <p className="text-sm font-medium">{crop.name}</p>
+          <p className="text-sm font-medium">{crop.name} <span className="font-thin text-xs">({crop.market})</span></p>
           <div className="flex items-center justify-between mt-1">
             <p className="text-xs">
               ₹{crop.prices[crop.prices.length - 1].min_price} - ₹

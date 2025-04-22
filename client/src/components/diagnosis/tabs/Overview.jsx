@@ -2,6 +2,8 @@ import { AlertTriangle, BarChart4, Info, Shell } from "lucide-react";
 import React from "react";
 
 const Overview = ({ selectedDiagnosis }) => {
+  console.log(selectedDiagnosis);
+
   return (
     <div className="">
       <div className="md:flex">
@@ -29,13 +31,28 @@ const Overview = ({ selectedDiagnosis }) => {
                 <p className="text-sm text-gray-500">Disease</p>
                 <p className="font-medium">{selectedDiagnosis.disease}</p>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">Severity</p>
-                <p className="font-medium">{selectedDiagnosis.severity}</p>
+              <div className="w-full max-w-md">
+                <p className="text-sm text-gray-600 mb-1">Severity</p>
+
+                {/* Gradient bar container */}
+                <div className="relative h-3 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-500 shadow-inner overflow-hidden">
+
+                  {/* Pointer */}
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border border-white bg-gray-800 shadow-md transition-all duration-300 ease-in-out"
+                    style={{ left: `calc(${selectedDiagnosis.severity * 100}% - 10px)` }}
+                  />
+                </div>
+
+                {/* Percentage */}
+                <div className=" text-sm text-gray-700 mt-1 font-medium tracking-wide">
+                  {(selectedDiagnosis.severity * 100).toFixed(1)}%
+                </div>
               </div>
+
               <div>
                 <p className="text-sm text-gray-500">Date</p>
-                <p className="font-medium">{selectedDiagnosis.uploadDate}</p>
+                <p className="font-medium">{new Date(selectedDiagnosis.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
