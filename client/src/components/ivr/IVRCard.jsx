@@ -11,19 +11,11 @@ const IVRCard = () => {
 
   const initiateIVRCall = async () => {
     try {
-      setIsPlaying(true);
       setIsDisabled(true);
-      initiateDemoCall();
-
-      // Stop animation after 15 seconds
-      setTimeout(() =>{ 
-        setIsPlaying(false)
-        setIsDisabled(false)
-      }, 10000);
+      await initiateDemoCall(setIsDisabled);
 
     } catch (error) {
       console.error('API Error:', error);
-      setIsPlaying(false);
       setIsDisabled(false);
     }
   };
@@ -41,32 +33,15 @@ const IVRCard = () => {
           <Phone size={56} />
         </div>
         <p className="text-green-700 mb-4">Experience our IVR system firsthand</p>
-        <button
-          onClick={() => {
-            if (!isPlaying && !isDisabled) {
-              initiateIVRCall();
-            }
-          }}
-          disabled={isDisabled}
-          className={`${
-            isDisabled ? 'bg-rose-600 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
-          } text-white px-4 py-2 rounded-full flex items-center mx-auto mb-4 transition duration-300`}
-        >
-          {isPlaying ? (
-            <>
-              <PhoneCall size={20} className="mr-2" /> Calling...
-            </>
-          ) : (
-            <>
-              <Phone size={20} className="mr-2" /> Initiate a Call
-            </>
-          )}
-        </button>
-        {/* {isPlaying && (
-          <div className="relative w-full h-2 bg-green-200 rounded-full overflow-hidden">
-            <div className="absolute inset-y-0 left-0 bg-green-600 rounded-full animate-progress"></div>
-          </div>
-        )} */}
+
+        <button onClick={initiateIVRCall}
+         disabled={isDisabled}
+         className={`${
+           isDisabled ? 'bg-rose-600 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+         } text-white px-4 py-2 rounded-full flex items-center mx-auto mb-4 transition duration-300`}
+       
+         >{isDisabled?'Calling..':'Call'}</button>
+
       </div>
     </div>
   );
