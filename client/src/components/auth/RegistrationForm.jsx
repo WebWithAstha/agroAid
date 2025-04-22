@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateDetails } from '../../store/Actions/authAction';
 import { useNavigate } from 'react-router-dom';
-
+import logo from '../../assets/logo.png'
 export default function RegistrationForm() {
     const dispatch = useDispatch();
   const [formData, setFormData] = useState({

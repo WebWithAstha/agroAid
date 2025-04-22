@@ -4,7 +4,7 @@ import "react-phone-input-2/lib/style.css";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { signinAndSignup } from "../../store/Actions/authAction";
-
+import logo from '../../assets/logo.png'
 
 const Register = () => {
   const navigate = useNavigate();
@@ -26,8 +26,8 @@ const Register = () => {
             AgroAid
           </h1>
           <img
-            className="h-20 w-20 mx-auto my-4 object-contain"
-            src="https://sdmntpreastus2.oaiusercontent.com/files/00000000-9e4c-51f6-9af3-35ba58b93d75/raw?se=2025-04-08T07%3A51%3A46Z&sp=r&sv=2024-08-04&sr=b&scid=761b4413-be90-52d0-b5cc-826dc5bfa8af&skoid=cbbaa726-4a2e-4147-932c-56e6e553f073&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-04-08T01%3A06%3A31Z&ske=2025-04-09T01%3A06%3A31Z&sks=b&skv=2024-08-04&sig=0yc8f95K%2BCxIZONg5aI5Jt/%2B5wlRnzpbT9krVjXv/kU%3D"
+            className="h-20 w-20 mx-auto my-0 object-contain"
+            src={logo}
             alt="AgroAid logo"
           />
           <p className="text-gray-600 text-sm italic">The farmer's voice</p>
