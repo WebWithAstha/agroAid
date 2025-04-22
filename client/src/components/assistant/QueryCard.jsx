@@ -20,7 +20,7 @@ const AssistantResponse = ({ response, createdAt }) => (
   response &&
   <div className="flex justify-start">
     <div className="bg-white border md:w-3/5 w-4/5 border-gray-200 rounded-lg md:max-w-3/4 shadow-sm">
-      <QueryHeader sender="bot" time={new Date(query.createdAt).toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} />
+      <QueryHeader sender="bot" time={new Date(createdAt).toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} />
 
       {response?.audioUrl && (
         <div className="px-4 py-2 pb-4 border-b border-zinc-200">
