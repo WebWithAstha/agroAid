@@ -140,9 +140,13 @@ export const processMessage = async (req, res) => {
       timeout: 5, // seconds to wait for input
     });
 
-    gather.say(
-      "Do you need more help? Press 1 to ask another question, or press 2 to hang up."
-    );
+    const further = {
+      en: "https://ik.imagekit.io/b8twhzei3r/RESMaheshEnglisj.mp3?updatedAt=1745304938610",
+      hi: "https://ik.imagekit.io/b8twhzei3r/REsAnika%20-%20Hindi.mp3?updatedAt=1745304938861",
+      bi: "https://ik.imagekit.io/b8twhzei3r/REsJeet%20-%20Hindi,%20Bihari.mp3?updatedAt=1745304938857"
+    };
+    
+    gather.play(further[lang]);
 
     //fallback (if no response)
     twiml.say(
