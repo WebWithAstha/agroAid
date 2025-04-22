@@ -109,6 +109,16 @@ export const processMessage = async (req, res) => {
     const transcript =  await getTranscript(recordingUrl,lang==='bi' ? 'hi' :lang)
     console.log("transcript response : ",transcript)
 
+    if (!transcript) {
+      const fallbackResponse = "I'm sorry, I couldn't understand the message.";
+      const fallbackVoice = await getVoice(fallbackResponse, lang);
+      twiml.play(fallbackVoice);
+      twiml.say("Please try again or call later.");
+      twiml.hangup();
+      res.type("text/xml").send(twiml.toString());
+      return;
+    }
+
     // Step 2: Get Gemini response
     const textResponse = await callGeminiApi(transcript);
     console.log("text response : ",textResponse)
