@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateDetails } from '../../store/Actions/authAction';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegistrationForm() {
     const dispatch = useDispatch();
@@ -101,6 +102,7 @@ export default function RegistrationForm() {
       mainCrops: formData.mainCrops.filter(crop => crop !== cropToRemove)
     });
   };
+  const navigate = useNavigate();
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -108,7 +110,7 @@ export default function RegistrationForm() {
         ...formData,
         location: `${formData.city}, ${formData.state}`,
         isCompleted:true
-      }))
+      },navigate))
   };
   
   return (

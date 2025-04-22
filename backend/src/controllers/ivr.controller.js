@@ -100,17 +100,21 @@ export const processMessage = async (req, res) => {
     const recordingUrl = req.body.RecordingUrl;
     let lang = req.query.lang;
     const twiml = new twilio.twiml.VoiceResponse();
+    console.log(lang)
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
 
     // Step 1: Convert audio to text
     const transcript =  await getTranscript(recordingUrl,lang==='bi' ? 'hi' :lang)
+    console.log("transcript response : ",transcript)
 
     // Step 2: Get Gemini response
     const textResponse = await callGeminiApi(transcript);
+    console.log("text response : ",textResponse)
     // Step 3: Convert response to voice (here mocked with static audio)
     const voiceUrl = await getVoice(textResponse,lang)
+    console.log(voiceUrl)
 
     // const voiceUrl =
     //   "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2";

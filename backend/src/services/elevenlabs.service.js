@@ -2,14 +2,18 @@ import { config } from "../config/config.js";
 
 export const getVoice = async function(text,lan) {
     const api = config.elevenApiKey;
+    console.log("at get voice service")
+    console.log(lan)
     
     const voiceMap = {
       hi: config.elevenVoiceId_hi,
       en: config.elevenVoiceId_en,
       bi: config.elevenVoiceId_bi
-  };
-
-  const voiceId = voiceMap[lan] || config.elevenVoiceId_en; // default to English if unknown
+    };
+    
+    const voiceId = voiceMap[lan] || config.elevenVoiceId_en; // default to English if unknown
+    console.log("voice id  : ",voiceId)
+    console.log("at get voice service")
 
   
     try {

@@ -16,8 +16,8 @@ const userSchema = new mongoose.Schema(
     },
     language: {
       type: String,
-      enum: ["en", "hi", "pa", "ta"], // "en" for English, "hi" for Hindi, "pa" for Punjabi
-      default: "en",
+      enum: ["en", "hi", "bi"], // "en" for English, "hi" for Hindi, "pa" for Punjabi
+      default: "hi",
     },
     profile: {
       type: String,
