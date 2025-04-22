@@ -143,12 +143,15 @@ export const cropHealthController = async (req, res) => {
         const { name, scientific_name: scientificName, probability } = response.data.result.disease.suggestions[0]
         const similarImages = response.data.result.disease.suggestions[0].similar_images.map(img => img.url);
 
+        
+
         // console.log(response.data.result.disease.suggestions[0].similarImages)
         const { description, treatment, symptoms, preventions } = await getDiseaseDetailByGemini(name, scientificName);
         const diagnosis = await Diagnosis.create({
-            userId: '67fccf1dd19811b34b9daee9',
+            userId: req.user._id,
             disease: name,
             scientificName,
+            cropName:response.data.result.crop.suggestions[0].name,
             description, treatment, symptoms, preventions,
             severity: probability,
             similarImages,

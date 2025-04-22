@@ -33,8 +33,6 @@ export const dailyWeatherForecast = () => async (dispatch) => {
               icon: day.day.condition.icon,
             })),
         };
-        console.log("weather data fetched");
-
         dispatch(setForecast(weatherUIData));
         dispatch(setWeatherLoading(false));
     } catch (error) {

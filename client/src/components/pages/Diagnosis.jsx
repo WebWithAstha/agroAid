@@ -29,6 +29,8 @@ const Diagnosis = () => {
     (state) => state.diagnosisReducer.allDiagnosis
   );
 
+  
+
   const setSelectedDiagnosis = (id) => {
     dispatch(selectDiagnosisAction(id));
     setIsFormOpen(false);
@@ -72,6 +74,7 @@ const Diagnosis = () => {
       };
 
       reader.readAsDataURL(file);
+      setUploadedImage(null);
     }
   };
 

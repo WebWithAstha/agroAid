@@ -6,8 +6,6 @@ export const getPrices = async (page=0) => {
         const response = await Axios.get(`/services/agmarknet?page=${page}`);
         return response;
     } catch (error) {
-        console.error("Error fetching prices:", error);
-        toast.error("Error fetching prices. Please try again later.");
         throw error;
     }
 }

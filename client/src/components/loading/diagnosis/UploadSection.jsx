@@ -1,4 +1,4 @@
-import { Check, Upload } from 'lucide-react';
+import { Check, Upload, X } from 'lucide-react';
 import React from 'react'
 
 const UploadSection = ({ uploadedImage, isAnalyzing, handleImageUpload, resetDiagnosis }) => {

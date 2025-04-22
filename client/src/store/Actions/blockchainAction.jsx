@@ -1,4 +1,3 @@
-// src/redux/actions/blockchainActions.js
 import { ethers } from "ethers";
 import {
     setAccount,
@@ -7,14 +6,13 @@ import {
     resetBlockchain,
 } from "../slices/blockChainSlice";
 import { setallCrops, setMyCrops } from "../slices/cropSlice";
+import { toast } from "sonner";
 
 import CROP_MARKETPLACE_ABI from "../../artifacts/contracts/CropMarketplace.sol/CropMarketplace.json";
 const CROP_MARKETPLACE_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-// Dynamic contract getter
 const getContract = (withSigner = false) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log(provider, "provider");
     const signerOrProvider = withSigner ? provider.getSigner() : provider;
     return new ethers.Contract(
         CROP_MARKETPLACE_ADDRESS,
@@ -37,6 +35,7 @@ export const connectWallet = () => async (dispatch) => {
 
             dispatch(setAccount(account));
             dispatch(setBalance(balance));
+            toast.success("Wallet connected");
         } else {
             throw new Error("MetaMask not found");
         }
@@ -44,8 +43,7 @@ export const connectWallet = () => async (dispatch) => {
         dispatch(setLoading(false));
     } catch (error) {
         dispatch(setLoading(false));
-        console.error("Failed to connect wallet:", error.message);
-        throw error;
+        toast.error("Failed to connect wallet: " + error.message);
     }
 };
 
@@ -72,13 +70,13 @@ export const checkIfWalletIsConnected = () => async (dispatch) => {
         dispatch(setLoading(false));
     } catch (error) {
         dispatch(setLoading(false));
-        console.error("Error checking wallet connection:", error.message);
-        throw error;
+        toast.error("Error checking wallet connection: " + error.message);
     }
 };
 
 export const disconnectWallet = () => async (dispatch) => {
     dispatch(resetBlockchain());
+    toast.success("Wallet disconnected");
 };
 
 export const listCrop = (
@@ -97,12 +95,12 @@ export const listCrop = (
     try {
         const { account } = getState().blockchainReducer;
         if (!account) {
-            console.log("Account not found. Connecting...");
+            toast.info("Connecting wallet...");
             await dispatch(connectWallet());
         }
 
         const contract = getContract(true);
-        const timestamp = Math.floor(new Date(harvestDate).getTime()); // Convert to seconds
+        const timestamp = Math.floor(new Date(harvestDate).getTime());
         const tx = await contract.listCrop(
             name,
             image,
@@ -112,37 +110,37 @@ export const listCrop = (
             totalQuantity,
             perQuintalPrice,
             description,
-        )
+        );
         await tx.wait();
-        dispatch(fetchAllCrops(true)); 
-        setShowUploadForm(false); // Close the form after successful listing
+        dispatch(fetchAllCrops(true));
+        setShowUploadForm(false);
     } catch (error) {
-        console.error("Error listing crop:", error.message);
-        throw error;
+        toast.error("Error listing crop: " + error.message);
     }
 };
 
-export const buyCrop = (cropId, quantity , setSelectedCrop) => async (dispatch, getState) => {
+export const buyCrop = (cropId, quantity, setSelectedCrop) => async (dispatch, getState) => {
     try {
         const { account } = getState().blockchainReducer;
         if (!account) {
-            console.log("Account not found. Connecting...");
+            toast.info("Connecting wallet...");
             await dispatch(connectWallet());
         }
 
         const contract = getContract(true);
         const crop = await contract.crops(cropId);
+        const totalCost = crop.perQuintalPrice * quantity;
 
-        const totalCost = crop.perQuintalPrice * quantity ; // in Ether
         const tx = await contract.buyCrop(cropId, quantity, {
-            value: ethers.utils.parseEther(totalCost.toString()),  // Use parseEther instead
+            value: ethers.utils.parseEther(totalCost.toString()),
         });
+        await tx.wait();
+
         dispatch(fetchAllCrops(false));
-        console.log("Crop purchased successfully.");
+        toast.success("Crop purchased successfully");
         setSelectedCrop(null);
     } catch (error) {
-        console.error("Error purchasing crop:", error.message);
-        throw error;
+        toast.error("Error purchasing crop: " + error.message);
     }
 };
 
@@ -150,7 +148,7 @@ export const fetchAllCrops = (filter = false) => async (dispatch, getState) => {
     try {
         const { account } = getState().blockchainReducer;
         if (!account) {
-            console.log("Account not found. Connecting...");
+            toast.info("Connecting wallet...");
             await dispatch(connectWallet());
         }
 
@@ -180,10 +178,7 @@ export const fetchAllCrops = (filter = false) => async (dispatch, getState) => {
         } else {
             dispatch(setallCrops(formattedCrops));
         }
-
-        console.log(formattedCrops, "formatted crops");
     } catch (error) {
-        console.error("Error fetching crops:", error);
-        throw error;
+        toast.error("Error fetching crops: " + error.message);
     }
 };

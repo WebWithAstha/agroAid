@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { getPrices } from "../../Services/agmarknet.service.js";
 import { setAgmarknetData, setAgmarknetLoading, resetAgmarknet } from "../slices/agarmarknetSlice";
 
@@ -9,7 +10,7 @@ export const fetchAgmarknetPrices = (page) => async (dispatch) => {
     dispatch(setAgmarknetData(records));
     dispatch(setAgmarknetLoading(false));
   } catch (error) {
-    console.error("Failed to fetch Agmarknet data:", error);
+    toast.error("Failed to fetch Agmarknet data.");
     dispatch(setAgmarknetLoading(false));
   }
 };
