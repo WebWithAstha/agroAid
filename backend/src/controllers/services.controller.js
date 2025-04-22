@@ -83,7 +83,7 @@ export const weatherController = async (req, res) => {
     try {
         const forecastCache = await redis.get(`${city}-forecast`);
         const currentCache = await redis.get(`${city}-current`);
-        
+
         if (forecastCache && currentCache) {
             const parsedForecast = JSON.parse(forecastCache);
             const parsedCurrent = JSON.parse(currentCache);
@@ -107,6 +107,7 @@ export const weatherController = async (req, res) => {
                 aqi: 'no',
             },
         });
+
         await redis.set(`${city}-forecast`, JSON.stringify(forecastResponse.data), 'EX', 3600);
         await redis.set(`${city}-current`, JSON.stringify(currentResponse.data), 'EX', 3600);
         return successResponse(res, {
@@ -143,7 +144,7 @@ export const cropHealthController = async (req, res) => {
         const { name, scientific_name: scientificName, probability } = response.data.result.disease.suggestions[0]
         const similarImages = response.data.result.disease.suggestions[0].similar_images.map(img => img.url);
 
-        
+
 
         // console.log(response.data.result.disease.suggestions[0].similarImages)
         const { description, treatment, symptoms, preventions } = await getDiseaseDetailByGemini(name, scientificName);
@@ -151,7 +152,7 @@ export const cropHealthController = async (req, res) => {
             userId: req.user._id,
             disease: name,
             scientificName,
-            cropName:response.data.result.crop.suggestions[0].name,
+            cropName: response.data.result.crop.suggestions[0].name,
             description, treatment, symptoms, preventions,
             severity: probability,
             similarImages,
@@ -203,3 +204,4 @@ export const uploadFileController = async (req, res) => {
         return serverError(res, 'Failed to upload file to ImageKit.');
     }
 };
+

@@ -7,6 +7,7 @@ export const dailyWeatherForecast = () => async (dispatch) => {
         dispatch(setWeatherLoading(true));
         const data = await dailyWeatherForecastService();
         const today = data.data.currentResponse.current;
+        
         const weatherUIData = {
             main: {
                 temperature: today.temp_c, // or today.day.maxtemp_c
@@ -33,6 +34,9 @@ export const dailyWeatherForecast = () => async (dispatch) => {
               icon: day.day.condition.icon,
             })),
         };
+
+        console.log(weatherUIData);
+        
         dispatch(setForecast(weatherUIData));
         dispatch(setWeatherLoading(false));
     } catch (error) {

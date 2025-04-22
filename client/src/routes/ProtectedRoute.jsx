@@ -26,8 +26,10 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (user.isCompleted == true && pathname == "/register") {
-    if (user.type === "buyer") <Navigate to="/directmarket" replace />;
-    else <Navigate to="/dashboard" replace />;
+    console.log(user);
+    
+    if (user.type === "buyer") return <Navigate to="/directmarket" replace />;
+    else return <Navigate to="/dashboard" replace />;
   }
 
   if (user && user.isCompleted == false && pathname !== "/register") {
