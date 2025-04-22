@@ -14,7 +14,6 @@ export const loadUserQueries = () => async (dispatch) => {
     console.log("queries fetch from cache")
   } else {
     try {
-        console.log("hello")
       const res = await Axios.get('/assist/user-queries'); // your GET API
       dispatch(loadQueries(res.data.data));
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(res.data.data));

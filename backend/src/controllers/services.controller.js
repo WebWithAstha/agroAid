@@ -8,6 +8,36 @@ import ImageKit from "imagekit";
 import redis from '../services/redis.service.js';
 import { uploadFileToImageKit } from '../services/ImageKit.service.js';
 
+import { getSchemeList, getSchemeDetails } from "../services/geminiSchemes.service.js"; // or wherever your functions are
+
+// Controller for listing multiple schemes
+export const schemeListController = async (req, res) => {
+  try {
+    const language = req.user?.language || "en";
+    const data = await getSchemeList(language);
+    return successResponse(res, "Scheme list fetched successfully", data);
+  } catch (error) {
+    console.error("Error in schemeListController:", error);
+    return serverError(res, "Failed to fetch scheme list");
+  }
+};
+
+// Controller for details of a specific scheme
+export const schemeDetailsController = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) return res.status(400).json({ message: "Scheme name is required in query" });
+
+    const language = req.user?.language || "en";
+    const data = await getSchemeDetails(name, language);
+    return successResponse(res, "Scheme details fetched successfully", data);
+  } catch (error) {
+    console.error("Error in schemeDetailsController:", error);
+    return serverError(res, "Failed to fetch scheme details");
+  }
+};
+
+
 // controller
 export const agmarknetController = async (req, res) => {
     try {
