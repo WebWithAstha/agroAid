@@ -6,7 +6,7 @@ import { getDiseaseDetailByGemini } from '../services/gemini.diagnosis.service.j
 import marketModel from '../models/market.model.js';
 import ImageKit from "imagekit";
 import redis from '../services/redis.service.js';
-
+import { uploadFileToImageKit } from '../services/ImageKit.service.js';
 
 // controller
 export const agmarknetController = async (req, res) => {
@@ -176,32 +176,29 @@ export const getAllDiagnosis = async (req, res) => {
     }
 }
 
+
 export const uploadFileController = async (req, res) => {
     if (!req.files || !req.files.data) {
         return badRequest(res, 'No file uploaded. Please upload an image file.');
     }
     const data = req.files.data;
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.mp3'];
-    const fileExtension = data.name.slice(((data.name.lastIndexOf(".") - 1) >>> 0) + 2);
-    if (!allowedExtensions.includes(`.${fileExtension.toLowerCase()}`)) {
-        return badRequest(res, 'Invalid file type. Only files (.jpg, .jpeg, .png, .gif , .mp3) are allowed.');
+    const fileExtension = data.name.slice(((data.name.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
+    if (!allowedExtensions.includes(`.${fileExtension}`)) {
+        return badRequest(res, 'Invalid file type. Only files (.jpg, .jpeg, .png, .gif, .mp3) are allowed.');
     }
-    const imagekit = new ImageKit({
-        publicKey: config.imageKit.publicKey,
-        privateKey: config.imageKit.privateKey,
-        urlEndpoint: config.imageKit.urlEndpoint,
-    });
 
     try {
-        const response = await imagekit.upload({
-            file: data.data,
-            fileName: data.name,
-            useUniqueFileName: true,
-        });
-        return successResponse(res, response, 'File uploaded successfully.');
+        const fileData = {
+            data: data.data,  // Binary data of the file
+            name: data.name    // File name
+        };
+        const uploadResponse = await uploadFileToImageKit(fileData, res);
+        return successResponse(res, uploadResponse, 'File uploaded successfully!');
     } catch (error) {
-        console.error('Error uploading file to ImageKit:', error);
-        return serverError(res, 'Failed to upload file to ImageKit.');
+        console.error('Error in file upload:', error);
+        return badRequest(res, 'Failed to upload the file.');
     }
 };
+
 

@@ -1,18 +1,14 @@
-import React from 'react'
+import React from 'react';
 
 const AudioPlayer = ({ audioUrl }) => {
-    return (
-      <div className="mt-2">
-        <audio
-          controls
-          preload="auto"
-          className="w-full md:min-w-xs max-w-xs"
-          src={audioUrl}
-        >
-          Your browser does not support the audio element.
-        </audio>
-      </div>
-    );
-  };
+  return (
+    <div className="mt-2">
+      <audio controls>
+        <source src={audioUrl} type="audio/mp3" />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  );
+};
 
-export default AudioPlayer
+export default AudioPlayer;

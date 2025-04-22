@@ -15,11 +15,9 @@ export const assistQuery = async (req, res) => {
     if (isVoice) {
       data = await getTranscript(data,lan);
     }
-    console.log(data)
     const textResponse = await callGeminiApi(data);
     console.log("text response : " , textResponse)
     const audioUrl = await getVoice(textResponse,lan);
-    console.log(audioUrl);
     
     const newQuery = await Query.create({
       userId: req.user._id,

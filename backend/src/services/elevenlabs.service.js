@@ -1,21 +1,14 @@
 import { config } from "../config/config.js";
+import { uploadFileToImageKit } from "./ImageKit.service.js";
 
 export const getVoice = async function(text,lan) {
     const api = config.elevenApiKey;
-    console.log("at get voice service")
-    console.log(lan)
-    
     const voiceMap = {
       hi: config.elevenVoiceId_hi,
       en: config.elevenVoiceId_en,
       bi: config.elevenVoiceId_bi
     };
-    console.log(config)
     const voiceId = voiceMap[lan] || 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
-    console.log("voice id  : ",voiceId)
-    console.log("at get voice service")
-
-  
     try {
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',
@@ -32,15 +25,23 @@ export const getVoice = async function(text,lan) {
           }
         })
       });
-  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API error: ${response.status} - ${errorText}`);
       }
-  
       const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      return audioUrl;
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const audioFileName = `audio-${Date.now()}.mp3`;
+      const fileData = {
+        data: buffer, 
+        name: audioFileName,
+      };
+      const uploadResponse = await uploadFileToImageKit(fileData);
+      if (uploadResponse && uploadResponse.url) {
+        return uploadResponse.url;
+      }
+      throw new Error("Failed to upload file to ImageKit");
     } catch (error) {
       console.error('Voice generation failed:', error.message);
       return null;
