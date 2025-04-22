@@ -1,7 +1,7 @@
 import React from 'react'
 import HeaderLoading from './HeaderLoading.jsx'
 
-const CropPrices = () => {
+const CropPricesLoading = () => {
   return (
     <div className='h-screen overflow-hidden'>
         <HeaderLoading/>
@@ -20,4 +20,4 @@ const CropPrices = () => {
   )
 }
 
-export default CropPrices
+export default CropPricesLoading
