@@ -9,6 +9,8 @@ const _config = {
   assemblyKey:process.env.ASSEMBLY_API_KEY,
   elevenApiKey:process.env.ELEVEN_API_KEY,
   elevenVoiceId_en:process.ELEVEN_VOICE_ID_EN,
+  elevenVoiceId_hi:process.ELEVEN_VOICE_ID_HI,
+  elevenVoiceId_bi:process.ELEVEN_VOICE_ID_BI,
   corsOrigin:process.env.CORS_ORIGIN,
   twilio: {
     accountSid: process.env.TWILIO_ACCOUNT_SID,

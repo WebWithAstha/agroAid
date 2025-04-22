@@ -1,8 +1,16 @@
 import { config } from "../config/config.js";
 
-export const getVoice = async function(text) {
+export const getVoice = async function(text,lan) {
     const api = config.elevenApiKey;
-    const voiceId = config.elevenVoiceId_en;
+    
+    const voiceMap = {
+      hi: config.elevenVoiceId_hi,
+      en: config.elevenVoiceId_en,
+      bi: config.elevenVoiceId_bi
+  };
+
+  const voiceId = voiceMap[lan] || config.elevenVoiceId_en; // default to English if unknown
+
   
     try {
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {

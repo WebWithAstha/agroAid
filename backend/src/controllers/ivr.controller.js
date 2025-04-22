@@ -1,5 +1,8 @@
 import twilio from "twilio";
 import { config } from "../config/config.js";
+import { getTranscript } from "../services/assembly.service.js";
+import { callGeminiApi } from "../services/gemini.service.js";
+import { getVoice } from "../services/elevenlabs.service.js";
 
 const accountSid = config.twilio.accountSidIvr;
 const authToken = config.twilio.authTokenIvr;
@@ -9,6 +12,7 @@ const myNumber = "+917489098294";
 const baseUrl = "https://agroaid-bdsm.onrender.com/api";
 
 const client = twilio(accountSid, authToken);
+const recordedAudioUrl = ["https://ik.imagekit.io/b8twhzei3r/Anika-Hindi.mp3?updatedAt=1745299006241","https://ik.imagekit.io/b8twhzei3r/Mahesh_English.mp3?updatedAt=1745299005956","https://ik.imagekit.io/b8twhzei3r/Jeet%20Bihari.mp3?updatedAt=1745299005926"]
 
 // Start the call
 export const startCall = async (req, res) => {
@@ -41,7 +45,7 @@ export const voiceMenu = (req, res) => {
     });
 
     gather.say(
-      "Welcome to Agro Aid. Press 1 for Hindi. Press 2 for English. Press 3 for Punjabi. Press 4 for Tamil."
+      "Welcome to Agro Aid. Press 1 for Hindi. Press 2 for English. Press 3 for Bihari."
     );
 
     res.type("text/xml");
@@ -62,19 +66,17 @@ export const selectLanguage = (req, res) => {
     const langMap = {
       1: "hi", // Hindi
       2: "en", // English
-      3: "pa", // Punjabi
-      4: "ta", // Tamil
+      3: "bi", // Punjabi
     };
 
     const selectedLang = langMap[digit];
 
     if (!selectedLang) {
-      twiml.say("Invalid selection. Goodbye!");
+      twiml.say("You select a wrong option. We are hanging up the call, please try again.");
       twiml.hangup();
     } else {
-      twiml.say(
-        `You selected ${selectedLang}. Please record your message after the beep. Press the pound key when done.`
-      );
+
+      twiml.play(recordedAudioUrl[digit-1]);
 
       twiml.record({
         maxLength: 30,
@@ -96,18 +98,22 @@ export const selectLanguage = (req, res) => {
 export const processMessage = async (req, res) => {
   try {
     const recordingUrl = req.body.RecordingUrl;
-    const lang = req.query.lang;
+    let lang = req.query.lang;
     const twiml = new twilio.twiml.VoiceResponse();
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
 
     // Step 1: Convert audio to text
-    // Step 2: Get Gemini response
-    // Step 3: Convert response to voice (here mocked with static audio)
+    const transcript =  await getTranscript(recordingUrl,lang==='bi' ? 'hi' :lang)
 
-    const voiceUrl =
-      "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2";
+    // Step 2: Get Gemini response
+    const textResponse = await callGeminiApi(transcript);
+    // Step 3: Convert response to voice (here mocked with static audio)
+    const voiceUrl = await getVoice(textResponse,lang)
+
+    // const voiceUrl =
+    //   "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2";
 
     // Play the response audio
     twiml.play(voiceUrl);
