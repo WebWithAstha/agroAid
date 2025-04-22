@@ -1,8 +1,8 @@
 import twilio from "twilio";
 import { config } from "../config/config.js";
 import { getTranscript } from "../services/assembly.service.js";
-import { callGeminiApi } from "../services/gemini.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
+import { callGeminiApi } from "../services/geminiCrop.service.js";
 
 const accountSid = config.twilio.accountSidIvr;
 const authToken = config.twilio.authTokenIvr;

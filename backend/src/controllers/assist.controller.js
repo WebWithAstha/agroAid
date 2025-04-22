@@ -1,40 +1,32 @@
-import axios from "axios";
-import { config } from "../config/config.js";
 import { getTranscript } from "../services/assembly.service.js";
-import { callGeminiApi } from "../services/Gemini.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
 import { Query } from "../models/query.model.js";
-import { User } from "../models/userModel.js";
 import {
-  successResponse,
-  badRequest,
   serverError,
   notFoundResponse,
 } from "../utils/responseHandler.js";
+import { callGeminiApi } from "../services/geminiCrop.service.js";
 
 export const assistQuery = async (req, res) => {
   let { data, isVoice } = req.body;
   const inp = data;
-  const user = await User.findById(req.user._id);
+  const lan =  req.user.language
   try {
     if (isVoice) {
-      data = await getTranscript(data,'hi');
-      // data = "I am hungry"
-      // console.log("transcripted : " , data)
+      data = await getTranscript(data,lan);
     }
     // console.log(data)
     const textResponse = await callGeminiApi(data);
     // console.log("text response : " , textResponse)
-    // const audioUrl = await getVoice(textResponse);
+    const audioUrl = await getVoice(textResponse,lan);
 
     const newQuery = await Query.create({
-      userId: user._id,
+      userId: req.user._id,
       query:inp,
       isVoice,
-      language:user.lan,
+      language:lan,
       response: {
-        // audioUrl,
-        audioUrl :inp,
+        audioUrl,
         text:textResponse,
       },
     })
