@@ -1,8 +1,8 @@
 import twilio from "twilio";
 import { config } from "../config/config.js";
 
-const accountSid = config.twilio.accountSid;
-const authToken = config.twilio.authToken;
+const accountSid = config.twilio.accountSidIvr;
+const authToken = config.twilio.authTokenIvr;
 
 const twilioNumber = "+19475003036";
 const myNumber = "+917489098294";
