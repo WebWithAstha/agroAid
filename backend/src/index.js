@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { config } from './config/config.js';
 import fileUpload from 'express-fileupload';
+import { isAuthenticated } from './middlewares/auth.middleware.js';
 
 const app = express();
 
@@ -36,7 +37,7 @@ app.use(fileUpload());
 
 
 app.use('/api/auth', authRoutes);
-app.use('/api/services', servicesRoutes)
+app.use('/api/services',isAuthenticated, servicesRoutes)
 app.use('/api/assist', assistRoutes)
 app.use('/api/ivr', ivrRoutes)
 

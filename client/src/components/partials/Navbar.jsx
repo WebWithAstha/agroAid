@@ -1,9 +1,11 @@
 import React from "react";
 import { Home, Search, Mic, User, Bell, CloudSun, Camera, IndianRupee } from "lucide-react";
-import { Link, NavLink } from "react-router-dom"; // or use `<a href>` if not using React Router
 import Logo from "./Logo";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
+  const {user} = useSelector((state) => state.authReducer);
+  
   const navItems = [
     { label: "Home", icon: <Home className="w-5 h-5" />, href: "/dashboard" },
     { label: "Search", icon: <Search className="w-5 h-5" />, href: "/search" },
@@ -24,7 +26,7 @@ const Navbar = () => {
                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                  </button>
                  <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-medium">
-                   RK
+                   {user && user.name ? user.name.charAt(0).toUpperCase() : "U"}
                  </div>
                </div>
         </div>

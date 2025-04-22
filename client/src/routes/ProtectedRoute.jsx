@@ -9,7 +9,6 @@ const ProtectedRoute = ({ children }) => {
     const dispatch = useDispatch();
     let { user, loading } = useSelector((state) => state.authReducer);
     const { pathname } = useLocation();
-    console.log(pathname)
 
     useEffect(() => {
         if (!user) {

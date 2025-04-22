@@ -123,11 +123,11 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/4">
           <div className="relative h-full">
-            <div className="h-48">
+            <div className="h-48 p-2">
               <img
                 src={crop.image}
                 alt={crop.name}
-                className="w-full h-48 md:h-full object-contain"
+                className="w-full h-48 md:h-full object-cover"
               />
             </div>
             {/* {crop.status === "low_stock" && (

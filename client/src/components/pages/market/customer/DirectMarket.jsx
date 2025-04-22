@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Clock, MapPin, Truck, User, ShoppingCart } from 'lucide-react';
+import { Clock, MapPin, Truck, User, ShoppingCart, Edit, Delete, DeleteIcon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { buyCrop, connectWallet, fetchAllCrops } from '../../../../store/Actions/blockchainAction';
 
@@ -30,7 +30,7 @@ const DirectMarket = () => {
         </header>
 
         {selectedCrop ? (
-          <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} setSelectedCrop={setSelectedCrop} />
+          <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} account={account} setSelectedCrop={setSelectedCrop} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sampleCrops && sampleCrops.map(crop => (
@@ -52,12 +52,12 @@ const CropCard = ({ crop, onClick }) => {
       onClick={onClick}
     >
       <div className="relative">
-        <div className="h-48">
+        <div className="h-48 p-2">
 
           <img
             src={crop.image}
             alt={crop.name}
-            className="w-full h-48 object-contain"
+            className="w-full h-48 object-cover"
           />
         </div>
         {crop.verified && (
@@ -111,21 +111,21 @@ const CropCard = ({ crop, onClick }) => {
   );
 }
 
-const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
+const CropDetail = ({ crop, onBack, setSelectedCrop, account }) => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
 
   const handlePurchase = (e) => {
     e.preventDefault();
     console.log('Purchase initiated for', quantity, 'units of', crop.name);
-    dispatch(buyCrop(crop.id, quantity,setSelectedCrop));
+    dispatch(buyCrop(crop.id, quantity, setSelectedCrop));
   };
 
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-4 bg-green-700 text-white flex justify-between items-center">
-        <h2 className="text-xl font-bold">Crop Details</h2>
+        <h2 className="text-xl font-bold">Crop Details,</h2>
         <button
           onClick={onBack}
           className="bg-white text-green-700 px-3 py-1 rounded-md hover:bg-green-50 transition-colors duration-300"
@@ -134,7 +134,7 @@ const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
         </button>
       </div>
 
-      <div className="md:flex">
+      <div className="md:flex p-4">
         <div className="md:w-1/3">
           <img
             src={crop.image}
@@ -195,10 +195,21 @@ const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {crop.user === account ? (
+            <div className="flex gap-4">
+              <button className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
+                <Edit size={18} className="mr-2" />
+                Edit
+              </button>
+              <button className="cursor-pointer bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-md font-medium flex items-center transition-colors duration-300">
+                <DeleteIcon size={18} className="mr-2" />
+                Delete
+              </button>
+            </div>
+          ) : (<div className="flex items-center space-x-4">
             <div className="flex items-center border rounded-md overflow-hidden">
               <button
-              type='button'
+                type='button'
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
               >
@@ -213,7 +224,7 @@ const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
                 min="1"
               />
               <button
-              type='button'
+                type='button'
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200"
                 onClick={() => setQuantity(quantity + 1)}
               >
@@ -225,7 +236,8 @@ const CropDetail = ({ crop, onBack ,setSelectedCrop}) => {
               <ShoppingCart size={18} className="mr-2" />
               Purchase Now ({(crop.perQuintalPrice * quantity).toFixed(3)} ETH)
             </button>
-          </div>
+          </div>)}
+
         </form>
       </div>
     </div>
