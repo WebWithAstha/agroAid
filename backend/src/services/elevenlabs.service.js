@@ -10,8 +10,8 @@ export const getVoice = async function(text,lan) {
       en: config.elevenVoiceId_en,
       bi: config.elevenVoiceId_bi
     };
-    
-    const voiceId = voiceMap[lan] || config.elevenVoiceId_en; // default to English if unknown
+    console.log(config)
+    const voiceId = voiceMap[lan] || 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
     console.log("voice id  : ",voiceId)
     console.log("at get voice service")
 
