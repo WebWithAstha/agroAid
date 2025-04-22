@@ -27,7 +27,10 @@ import {
       if (result.success) {
         dispatch(setUser(result.data));
         dispatch(setLoading(false));
-        if (result.data.isCompleted) navigate('/dashboard');
+        if (result.data.isCompleted){
+          if(result.data.type === "buyer")navigate('/directmarket')
+          navigate('/dashboard');
+        }
         else navigate('/register');
         return result.data;
       } else {

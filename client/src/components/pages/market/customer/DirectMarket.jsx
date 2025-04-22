@@ -33,10 +33,21 @@ const DirectMarket = () => {
           <CropDetail crop={selectedCrop} onBack={() => setSelectedCrop(null)} account={account} setSelectedCrop={setSelectedCrop} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sampleCrops && sampleCrops.map(crop => (
-              <CropCard key={crop.id} crop={crop} onClick={() => setSelectedCrop(crop)} />
-            ))}
+            {sampleCrops?.length > 0 ? (
+              sampleCrops.map(crop => (
+                <CropCard
+                  key={crop.id}
+                  crop={crop}
+                  onClick={() => setSelectedCrop(crop)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500 text-lg font-semibold py-10">
+                No Crops Found
+              </div>
+            )}
           </div>
+
         )}
       </div>
     </div>

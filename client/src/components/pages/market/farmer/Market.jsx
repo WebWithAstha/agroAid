@@ -101,15 +101,22 @@ const FarmerDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              {myCrops && myCrops.map((crop, index) => (
-                <CropListingCard
-                  key={index}
-                  crop={crop}
-                  onEdit={() => handleEditCrop(crop)}
-                  onDelete={() => handleDeleteCrop(crop._id)}
-                />
-              ))}
+              {myCrops?.length > 0 ? (
+                myCrops.map((crop) => (
+                  <CropListingCard
+                    key={crop._id}
+                    crop={crop}
+                    onEdit={() => handleEditCrop(crop)}
+                    onDelete={() => handleDeleteCrop(crop._id)}
+                  />
+                ))
+              ) : (
+                <div className="text-center text-gray-500 text-lg font-medium">
+                  No Crops Found
+                </div>
+              )}
             </div>
+
           </>
         )}
       </div>
