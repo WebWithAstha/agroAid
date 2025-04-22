@@ -3,11 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import DashboardLoading from '../components/loading/DashboardLoading';
 import { fetchCurrentUser } from '../store/Actions/authAction';
+import DiagnosisLoading from '../components/loading/diagnosis/DiagnosisLoading';
 
 const ProtectedRoute = ({ children }) => {
     const dispatch = useDispatch();
-    const { user, loading } = useSelector((state) => state.authReducer);
+    let { user, loading } = useSelector((state) => state.authReducer);
     const { pathname } = useLocation();
+    console.log(pathname)
 
     useEffect(() => {
         if (!user) {
@@ -16,7 +18,10 @@ const ProtectedRoute = ({ children }) => {
     }, [user, dispatch]);
 
     if (loading) {
+        if(pathname == '/diagnosis')
+            return <DiagnosisLoading />;
         return <DashboardLoading />;
+        
     }
 
     if (!user) {

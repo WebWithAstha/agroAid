@@ -1,7 +1,16 @@
 import React from "react";
+import HeaderLoading from "../HeaderLoading";
+import ListLoading from "./ListLoading.jsx";
 
 const DiagnosisLoading = () => {
   return (
+    <div className=" h-96">
+      <HeaderLoading/>
+      <div className="flex">
+        <div className="max-w-md">
+
+        <ListLoading/>
+        </div>
     <div className="w-full flex-1 animate-pulse">
       <div className="flex border-b items-center w-full justify-between gap-4 border-zinc-300 p-6">
         <div className="">
@@ -38,6 +47,10 @@ const DiagnosisLoading = () => {
         </div>
         </div>
       </div>
+    </div> 
+      </div>
+   
+
     </div>
   );
 };

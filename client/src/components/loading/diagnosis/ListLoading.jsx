@@ -5,7 +5,6 @@ import DiagnosisLoading from "./DiagnosisLoading";
 const ListLoading = () => {
   return (
     <>
-      <HeaderLoading />
       <div className="flex">
         <div className="max-w-[23rem] flex-1 h-full border-zinc-300 animate-pulse py-4 border-r">
           <div className="px-4 mb-6">
@@ -25,7 +24,6 @@ const ListLoading = () => {
             </div>
           ))}
         </div>
-        <DiagnosisLoading/>
       </div>
     </>
   );
