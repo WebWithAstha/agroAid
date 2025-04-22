@@ -8,7 +8,7 @@ export const isAuthenticated = async (req, res, next) => {
         const { accessToken, refreshToken } = req.cookies;
 
         if (!accessToken) {
-            console.log("jk");
+          
             
             if (!refreshToken) {
                 return unauthorizedResponse(res);
@@ -16,7 +16,6 @@ export const isAuthenticated = async (req, res, next) => {
             try {
                 const decodedRefresh = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET);
                 const user = await User.findById(decodedRefresh.id).select("+refreshToken");
-                console.log(user.refreshToken, refreshToken);
                 
                 if (!user || user.refreshToken !== refreshToken) {
                     return forbiddenResponse(res);
