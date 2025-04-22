@@ -46,14 +46,14 @@ export const setCookies = async (res, accessToken, refreshToken) => {
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "Strict",
+        sameSite: "Lax",
         maxAge: Number(config.JWT_COOKIE_EXPIRES_IN),
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "Strict",
+        sameSite: "Lax",
         maxAge: Number(config.REFRESH_COOKIE_EXPIRES_IN),
     });
 };
