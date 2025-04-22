@@ -14,6 +14,8 @@ const _config = {
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,
     messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
+    accountSidIvr: process.env.TWILIO_ACCOUNT_SID_IVR,
+    authTokenIvr: process.env.TWILIO_AUTH_TOKEN_IVR,
   },
   AGMARKNET_API_KEY: process.env.AGMARKNET_API_KEY,
   WEATHER_API_KEY: process.env.WEATHER_API_KEY,
