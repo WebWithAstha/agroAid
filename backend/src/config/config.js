@@ -39,6 +39,8 @@ const _config = {
   redisHost:process.env.REDIS_HOST,
   redisPort: process.env.REDIS_PORT,
   redisPassword: process.env.REDIS_PASSWORD,
+  cookieSameSite: process.env.COOKIE_SAME_SITE,
+  
 };
 
 export const config = Object.freeze(_config);
