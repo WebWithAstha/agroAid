@@ -3,7 +3,7 @@ export const services = [
       title: "Weather",
       desc: "5-day forecast",
       position: "object-top",
-      img: "https://play-lh.googleusercontent.com/pCQw51XRP4UPr-FCYDjvNnEpFa0HDGJjjLDldN3rmw4KkwhqPu0PZXE8EopmAxzH9mQ",
+      img: "https://png.pngtree.com/png-vector/20221109/ourmid/pngtree-blue-cloud-sky-illustration-vector-png-image_6440240.png",
       color: "amber",
     //   icon: <CloudSun size={44} className="text-amber-600" />,
       link: "/weather"

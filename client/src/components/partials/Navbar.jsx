@@ -2,6 +2,7 @@ import React from "react";
 import { Home, Search, Mic, User, Bell, CloudSun, Camera, IndianRupee } from "lucide-react";
 import Logo from "./Logo";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const {user} = useSelector((state) => state.authReducer);
@@ -25,9 +26,11 @@ const Navbar = () => {
                    <Bell size={20} className="text-gray-600" />
                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                  </button>
+                 <Link to="/profile">
                  <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-medium">
                    {user && user.name ? user.name.charAt(0).toUpperCase() : "U"}
                  </div>
+                 </Link>
                </div>
         </div>
              </header>

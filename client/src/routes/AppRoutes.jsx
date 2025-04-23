@@ -16,6 +16,7 @@ import IvrSystem from '../components/pages/IvrSystem.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import NotFound from '../components/pages/NotFound.jsx';
 import PMKisanForm from '../components/pages/PMKisanForm.jsx';
+import FarmerProfile from '../components/pages/Profile.jsx';
 
 const AppRoutes = () => {
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
       <Route path="/assistant" element={<ProtectedRoute><Assistant /></ProtectedRoute>} />
       <Route path="/ivr" element={<ProtectedRoute><IvrSystem /></ProtectedRoute>} />
       <Route path="/pmkisan" element={<ProtectedRoute><PMKisanForm /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><FarmerProfile /></ProtectedRoute>} />
 
       <Route path='*' element={<NotFound />} />
     </Routes>
