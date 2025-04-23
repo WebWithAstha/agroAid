@@ -3,6 +3,7 @@ import { config } from "../config/config.js";
 import { getTranscript, getTranscriptFromBuffer } from "../services/assembly.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
 import { callGeminiApi } from "../services/geminiCrop.service.js";
+import axios from "axios";
 
 const accountSid = config.twilio.accountSidIvr;
 const authToken = config.twilio.authTokenIvr;
@@ -104,15 +105,15 @@ export const processMessage = async (req, res) => {
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
-    const audioResponse = await axios.get(recordingUrl + '.wav', {
+    const audioResponse = await axios.get("https://api.twilio.com/2010-04-01/Accounts/AC798d65b5b42ce1a7a29cecbae3d08877/Recordings/RE348c55d17907ecb182934ab128d82f76" + '.wav', {
       responseType: 'arraybuffer',
       auth: {
-        username:accountSid,
+        username: accountSid,
         password: authToken
       }
     });
-    console.log(audioResponse);
-    const transcript = await getTranscriptFromBuffer(audioResponse.data, lang === 'bi' ? 'hi' : lang);
+    const data = Buffer.from(audioResponse.data);
+    const transcript = await getTranscriptFromBuffer(data, lang === 'bi' ? 'hi' : lang);
     console.log("transcript response : ", transcript)
 
     if (!transcript) {
@@ -196,3 +197,5 @@ export const nextAction = (req, res) => {
   res.type("text/xml");
   res.send(twiml.toString());
 };
+
+

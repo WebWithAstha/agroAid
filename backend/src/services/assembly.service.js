@@ -30,45 +30,55 @@ export const getTranscript = async (audioUrl, lan = 'en') => {
 };
 
 // utils/transcriptionBuffer.js
-import FormData from 'form-data';
 
-export const getTranscriptFromBuffer = async (audioBuffer, lang = 'en') => {
+export const getTranscriptFromBuffer = async (buffer) => {
   try {
-    const form = new FormData();
-    form.append('audio', audioBuffer, { filename: 'audio.wav' });
-    form.append('language_code', lang);
-
-    const response = await axios.post('https://api.assemblyai.com/v2/transcript', form, {
-      headers: {
-        ...form.getHeaders(),
-        authorization: process.env.ASSEMBLYAI_API_KEY
-      }
-    });
-
-    const pollingUrl = response.data.id ? `https://api.assemblyai.com/v2/transcript/${response.data.id}` : null;
-    if (!pollingUrl) return null;
-
-    // Poll for completion
-    let transcript;
-    while (true) {
-      const pollRes = await axios.get(pollingUrl, {
-        headers: { authorization: process.env.ASSEMBLYAI_API_KEY }
-      });
-      if (pollRes.data.status === 'completed') {
-        transcript = pollRes.data.text;
-        break;
-      } else if (pollRes.data.status === 'error') {
-        throw new Error(pollRes.data.error);
-      }
-      await new Promise(res => setTimeout(res, 2000)); // Wait 2 seconds
+    if (!buffer || !Buffer.isBuffer(buffer)) {
+      throw new Error('Invalid or undefined buffer passed to getTranscriptFromBuffer');
     }
 
-    return transcript;
-  } catch (err) {
-    console.error("❌ Error while transcribing buffer:", err);
-    return null;
+    // Upload the buffer to AssemblyAI
+    const uploadResponse = await client.files.upload(buffer);
+    console.log('Upload Response:', JSON.stringify(uploadResponse, null, 2));
+
+    // Extract the audio URL
+    const audioUrl = uploadResponse;
+
+    if (!audioUrl) {
+      throw new Error('Uploaded file URL is undefined');
+    }
+
+    console.log('Audio URL:', audioUrl);
+
+    // Create a transcript from the uploaded audio
+    const transcript = await client.transcripts.create({
+      audio_url: audioUrl,
+    });
+
+    console.log('Transcript Creation Response:', transcript);
+
+    let transcriptStatus = 'processing';
+    let completedTranscript = null;
+
+    while (transcriptStatus === 'processing') {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      completedTranscript = await client.transcripts.get(transcript.id);
+      transcriptStatus = completedTranscript.status;
+      console.log('Polling Status:', transcriptStatus);
+    }
+    if (completedTranscript.status === 'completed') {
+      console.log('Transcript completed:', completedTranscript.text);
+      return completedTranscript.text;
+    } else {
+      throw new Error('Transcription failed or was cancelled');
+    }
+  } catch (error) {
+    console.error('Transcription Error:', error);
+    throw error;
   }
 };
+
+
 
 
 // Example usage:
