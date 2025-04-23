@@ -91,9 +91,9 @@ export const selectLanguage = (req, res) => {
         maxLength: 30,
         finishOnKey: "#",
         // action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
-        recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         method: "POST",
-        recordingStatusCallbackMethod: "POST",
+        // recordingStatusCallbackMethod: "POST",
       });
     }
 
