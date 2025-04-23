@@ -13,13 +13,17 @@ const client = new AssemblyAI({
  * @returns {Promise<string>} - The transcribed text
  */
 export const getTranscript = async (audioUrl, lan = 'en') => {
+  console.log("language got" , lan)
   try {
     const transcript = await client.transcripts.transcribe({
       audio: audioUrl,
       language_code: lan,
     });
+    console.log(transcript)
+    console.log(transcript.text)
     return transcript.text;
   } catch (error) {
+    console.log(error)
     console.error('Error while fetching transcript:', error);
     throw error;
   }
