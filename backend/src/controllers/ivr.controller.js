@@ -105,7 +105,7 @@ export const processMessage = async (req, res) => {
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
-    const audioResponse = await axios.get(recordingUrl + '.wav', {
+    const audioResponse = await axios.get(recordingUrl , {
       responseType: 'arraybuffer',
       auth: {
         username: accountSid,
