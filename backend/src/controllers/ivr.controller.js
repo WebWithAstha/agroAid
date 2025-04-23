@@ -71,7 +71,6 @@ export const selectLanguage = (req, res) => {
     const twiml = new twilio.twiml.VoiceResponse();
     console.log("🌐 Language selected:", digit);
 
- 
     const langMap = {
       1: "hi", // Hindi
       2: "en", // English
@@ -91,10 +90,8 @@ export const selectLanguage = (req, res) => {
       twiml.record({
         maxLength: 30,
         finishOnKey: "#",
-        // action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
-        recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`, // ✅ This is what Twilio uses to continue the IVR
         method: "POST",
-        // recordingStatusCallbackMethod: "POST",
       });
     }
 
@@ -109,6 +106,7 @@ export const selectLanguage = (req, res) => {
 export const processMessage = async (req, res) => {
   console.log("🌐 processMessage triggered");
   console.log("Request body:", req.body);
+
   const twiml = new twilio.twiml.VoiceResponse();
   try {
     const lang = req.query.lang || "en";
@@ -125,8 +123,26 @@ export const processMessage = async (req, res) => {
     let audioBuffer;
 
     try {
-      const client = twilio(accountSid, authToken);
-      const recording = await client.recordings(recordingSid).fetch();
+      let recording;
+      let attempts = 0;
+      const maxAttempts = 5;
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+  
+      while (attempts < maxAttempts) {
+        try {
+          recording = await client.recordings(recordingSid).fetch();
+          if (recording && recording.uri) break; // ✅ Successfully fetched
+        } catch (err) {
+          console.warn(`⏳ Recording not ready yet (attempt ${attempts + 1})`);
+        }
+  
+        await delay(1000); // wait 1 second
+        attempts++;
+      }
+  
+      if (!recording || !recording.uri) {
+        throw new Error("Recording not available after retries");
+      }
 
       const audioUrl = `https://api.twilio.com${recording.uri.replace(
         ".json",
@@ -185,8 +201,8 @@ export const processMessage = async (req, res) => {
     const gather = twiml.gather({
       numDigits: 1,
       action: `${baseUrl}/ivr/next-action?lang=${lang}`,
-        method: "POST",
-        // recordingStatusCallbackMethod: "POST",
+      method: "POST",
+      // recordingStatusCallbackMethod: "POST",
       timeout: 5,
     });
 
@@ -229,9 +245,8 @@ export const nextAction = (req, res) => {
       maxLength: 30,
       finishOnKey: "#",
       // action: `${baseUrl}/ivr/process-message?lang=${lang}`,
-      recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      action: `${baseUrl}/ivr/process-message?lang=${lang}`,
       method: "POST",
-      recordingStatusCallbackMethod: "POST",
     });
   } else {
     // End the call
