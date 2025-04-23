@@ -107,7 +107,7 @@ export const selectLanguage = (req, res) => {
 
 export const processMessage = async (req, res) => {
   console.log("🌐 processMessage triggered");
-console.log("Request body:", req.body);
+  console.log("Request body:", req.body);
   const twiml = new twilio.twiml.VoiceResponse();
   try {
     const lang = req.query.lang || "en";
@@ -127,10 +127,15 @@ console.log("Request body:", req.body);
       const client = twilio(accountSid, authToken);
       const recording = await client.recordings(recordingSid).fetch();
 
-      const audioUrl = `https://api.twilio.com${recording.uri.replace('.json', '.mp3')}`;
+      const audioUrl = `https://api.twilio.com${recording.uri.replace(
+        ".json",
+        ".mp3"
+      )}`;
       console.log("🎧 Fetched Audio URL from Twilio:", audioUrl);
 
-      const authString = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
+      const authString = Buffer.from(`${accountSid}:${authToken}`).toString(
+        "base64"
+      );
 
       const audioResponse = await axios.get(audioUrl, {
         responseType: "arraybuffer",
@@ -178,8 +183,9 @@ console.log("Request body:", req.body);
     // Step 5: Gather further input
     const gather = twiml.gather({
       numDigits: 1,
-      action: `${baseUrl}/ivr/next-action?lang=${lang}`,
-      method: "POST",
+      recordingStatusCallback: `${baseUrl}/ivr/next-action?lang=${lang}`,
+        method: "POST",
+        recordingStatusCallbackMethod: "POST",
       timeout: 5,
     });
 
@@ -244,4 +250,3 @@ export const recordComplete = (req, res) => {
 
   res.type("text/xml").send(twiml.toString());
 };
-
