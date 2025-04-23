@@ -1,6 +1,7 @@
 import { Camera, ChevronRight, CloudSun, IndianRupee, Link, ScrollText } from 'lucide-react';
 import React from 'react'
 import ServiceCard from './ServiceCard';
+import 'img'
 
 const Services = () => {
     const services = [

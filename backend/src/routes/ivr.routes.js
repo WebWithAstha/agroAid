@@ -1,5 +1,5 @@
 import express from 'express';
-import {nextAction, processMessage, selectLanguage, startCall, voiceMenu } from '../controllers/ivr.controller.js';
+import {nextAction, processMessage, recordComplete, selectLanguage, startCall, voiceMenu } from '../controllers/ivr.controller.js';
 const router = express.Router()
 
 
@@ -8,6 +8,8 @@ router.post("/voice-menu", voiceMenu);
 router.post("/select-language", selectLanguage);
 router.post("/process-message", processMessage);
 router.post("/next-action", nextAction);
+router.post("/record-complete", recordComplete);
+
 
 
 export default router;

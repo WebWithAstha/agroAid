@@ -1,6 +1,9 @@
 import twilio from "twilio";
 import { config } from "../config/config.js";
-import { getTranscript, getTranscriptFromBuffer } from "../services/assembly.service.js";
+import {
+  getTranscript,
+  getTranscriptFromBuffer,
+} from "../services/assembly.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
 import { callGeminiApi } from "../services/geminiCrop.service.js";
 import axios from "axios";
@@ -13,7 +16,11 @@ const myNumber = "+917489098294";
 const baseUrl = "https://agroaid-bdsm.onrender.com/api";
 
 const client = twilio(accountSid, authToken);
-const recordedAudioUrl = ["https://ik.imagekit.io/b8twhzei3r/Anika-Hindi.mp3?updatedAt=1745299006241", "https://ik.imagekit.io/b8twhzei3r/Mahesh_English.mp3?updatedAt=1745299005956", "https://ik.imagekit.io/b8twhzei3r/Jeet%20Bihari.mp3?updatedAt=1745299005926"]
+const recordedAudioUrl = [
+  "https://ik.imagekit.io/b8twhzei3r/Anika-Hindi.mp3?updatedAt=1745299006241",
+  "https://ik.imagekit.io/b8twhzei3r/Mahesh_English.mp3?updatedAt=1745299005956",
+  "https://ik.imagekit.io/b8twhzei3r/Jeet%20Bihari.mp3?updatedAt=1745299005926",
+];
 
 // Start the call
 export const startCall = async (req, res) => {
@@ -73,17 +80,20 @@ export const selectLanguage = (req, res) => {
     const selectedLang = langMap[digit];
 
     if (!selectedLang) {
-      twiml.say("You select a wrong option. We are hanging up the call, please try again.");
+      twiml.say(
+        "You select a wrong option. We are hanging up the call, please try again."
+      );
       twiml.hangup();
     } else {
-
       twiml.play(recordedAudioUrl[digit - 1]);
 
       twiml.record({
         maxLength: 30,
         finishOnKey: "#",
-        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        // action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         method: "POST",
+        recordingStatusCallbackMethod: "POST",
       });
     }
 
@@ -95,37 +105,54 @@ export const selectLanguage = (req, res) => {
   }
 };
 
-
-
 export const processMessage = async (req, res) => {
+  console.log("🌐 processMessage triggered");
+  console.log("Request body:", req.body);
   const twiml = new twilio.twiml.VoiceResponse();
   try {
-    const recordingUrl = req.body.RecordingUrl;
     const lang = req.query.lang || "en";
-    
-    if (!recordingUrl) {
-      throw new Error("Recording URL is missing");
+    const recordingSid = req.body.RecordingSid;
+
+    if (!recordingSid) {
+      console.error("❌ No RecordingSid in request body");
+      throw new Error("Recording SID is missing");
     }
 
-    console.log("🎙️ Recording URL:", recordingUrl);
     console.log("🌐 Language:", lang);
+    console.log("🎯 Recording SID:", recordingSid);
 
-    // Step 1: Fetch the audio buffer
-    let audioResponse;
+    let audioBuffer;
+
     try {
-      audioResponse = await axios.get(`${recordingUrl}.mp3`, {
+      const client = twilio(accountSid, authToken);
+      const recording = await client.recordings(recordingSid).fetch();
+
+      const audioUrl = `https://api.twilio.com${recording.uri.replace(
+        ".json",
+        ".mp3"
+      )}`;
+      console.log("🎧 Fetched Audio URL from Twilio:", audioUrl);
+
+      const authString = Buffer.from(`${accountSid}:${authToken}`).toString(
+        "base64"
+      );
+
+      const audioResponse = await axios.get(audioUrl, {
         responseType: "arraybuffer",
-        auth: {
-          username: accountSid,
-          password: authToken,
+        headers: {
+          Authorization: `Basic ${authString}`,
         },
+        maxRedirects: 5,
       });
-    } catch (fetchErr) {
-      console.error("❌ Error fetching audio from Twilio:", fetchErr.message);
+
+      audioBuffer = Buffer.from(audioResponse.data);
+      console.log("✅ Audio buffer fetched successfully");
+    } catch (audioErr) {
+      console.error("❌ Error while fetching audio:", audioErr.message);
       throw new Error("Failed to fetch the recorded message.");
     }
 
-    const audioBuffer = Buffer.from(audioResponse.data);
+    // const audioBuffer = Buffer.from(audioResponse.data);
 
     // Step 2: Transcribe the message
     const transcript = await getTranscriptFromBuffer(
@@ -157,7 +184,8 @@ export const processMessage = async (req, res) => {
     const gather = twiml.gather({
       numDigits: 1,
       action: `${baseUrl}/ivr/next-action?lang=${lang}`,
-      method: "POST",
+        method: "POST",
+        // recordingStatusCallbackMethod: "POST",
       timeout: 5,
     });
 
@@ -199,8 +227,10 @@ export const nextAction = (req, res) => {
     twiml.record({
       maxLength: 30,
       finishOnKey: "#",
-      action: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      // action: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${lang}`,
       method: "POST",
+      recordingStatusCallbackMethod: "POST",
     });
   } else {
     // End the call
@@ -212,4 +242,11 @@ export const nextAction = (req, res) => {
   res.send(twiml.toString());
 };
 
+export const recordComplete = (req, res) => {
+  const twiml = new twilio.twiml.VoiceResponse();
+  twiml.say("Thank you. Processing your message.");
+  // optionally add: twiml.pause({ length: 2 });
+  twiml.hangup();
 
+  res.type("text/xml").send(twiml.toString());
+};
