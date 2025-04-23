@@ -105,7 +105,7 @@ export const processMessage = async (req, res) => {
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
-    const audioResponse = await axios.get("https://api.twilio.com/2010-04-01/Accounts/AC798d65b5b42ce1a7a29cecbae3d08877/Recordings/RE348c55d17907ecb182934ab128d82f76" + '.wav', {
+    const audioResponse = await axios.get(recordingUrl + '.wav', {
       responseType: 'arraybuffer',
       auth: {
         username: accountSid,

@@ -39,27 +39,15 @@ export const getTranscriptFromBuffer = async (buffer) => {
 
     // Upload the buffer to AssemblyAI
     const uploadResponse = await client.files.upload(buffer);
-    console.log('Upload Response:', JSON.stringify(uploadResponse, null, 2));
-
-    // Extract the audio URL
     const audioUrl = uploadResponse;
-
     if (!audioUrl) {
       throw new Error('Uploaded file URL is undefined');
     }
-
-    console.log('Audio URL:', audioUrl);
-
-    // Create a transcript from the uploaded audio
     const transcript = await client.transcripts.create({
       audio_url: audioUrl,
     });
-
-    console.log('Transcript Creation Response:', transcript);
-
     let transcriptStatus = 'processing';
     let completedTranscript = null;
-
     while (transcriptStatus === 'processing') {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       completedTranscript = await client.transcripts.get(transcript.id);
@@ -67,7 +55,6 @@ export const getTranscriptFromBuffer = async (buffer) => {
       console.log('Polling Status:', transcriptStatus);
     }
     if (completedTranscript.status === 'completed') {
-      console.log('Transcript completed:', completedTranscript.text);
       return completedTranscript.text;
     } else {
       throw new Error('Transcription failed or was cancelled');
