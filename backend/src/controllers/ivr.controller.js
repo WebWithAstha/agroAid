@@ -114,7 +114,7 @@ export const processMessage = async (req, res) => {
       }
     });
    } catch (error) {
-    logger.error("Error fetching audio:", error);
+    console.error("Error fetching audio:", error);
    }
     const data = Buffer.from(audioResponse.data);
     const transcript = await getTranscriptFromBuffer(data, lang === 'bi' ? 'hi' : lang);
