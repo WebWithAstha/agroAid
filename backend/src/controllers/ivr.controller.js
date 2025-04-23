@@ -113,13 +113,15 @@ export const processMessage = async (req, res) => {
     // Step 1: Fetch the audio buffer
     let audioResponse;
     try {
-      audioResponse = await axios.get(`${recordingUrl}.mp3`, {
-        responseType: "arraybuffer",
-        auth: {
-          username: accountSid,
-          password: authToken,
-        },
-      });
+      const authString = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
+
+audioResponse = await axios.get(recordingUrl, {
+  responseType: "arraybuffer",
+  headers: {
+    Authorization: `Basic ${authString}`,
+  },
+  maxRedirects: 5,
+});
     } catch (fetchErr) {
       console.error("❌ Error fetching audio from Twilio:", fetchErr.message);
       throw new Error("Failed to fetch the recorded message.");
