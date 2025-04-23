@@ -1,6 +1,6 @@
 import twilio from "twilio";
 import { config } from "../config/config.js";
-import { getTranscript } from "../services/assembly.service.js";
+import { getTranscript, getTranscriptFromBuffer } from "../services/assembly.service.js";
 import { getVoice } from "../services/elevenlabs.service.js";
 import { callGeminiApi } from "../services/geminiCrop.service.js";
 
@@ -12,7 +12,7 @@ const myNumber = "+917489098294";
 const baseUrl = "https://agroaid-bdsm.onrender.com/api";
 
 const client = twilio(accountSid, authToken);
-const recordedAudioUrl = ["https://ik.imagekit.io/b8twhzei3r/Anika-Hindi.mp3?updatedAt=1745299006241","https://ik.imagekit.io/b8twhzei3r/Mahesh_English.mp3?updatedAt=1745299005956","https://ik.imagekit.io/b8twhzei3r/Jeet%20Bihari.mp3?updatedAt=1745299005926"]
+const recordedAudioUrl = ["https://ik.imagekit.io/b8twhzei3r/Anika-Hindi.mp3?updatedAt=1745299006241", "https://ik.imagekit.io/b8twhzei3r/Mahesh_English.mp3?updatedAt=1745299005956", "https://ik.imagekit.io/b8twhzei3r/Jeet%20Bihari.mp3?updatedAt=1745299005926"]
 
 // Start the call
 export const startCall = async (req, res) => {
@@ -76,7 +76,7 @@ export const selectLanguage = (req, res) => {
       twiml.hangup();
     } else {
 
-      twiml.play(recordedAudioUrl[digit-1]);
+      twiml.play(recordedAudioUrl[digit - 1]);
 
       twiml.record({
         maxLength: 30,
@@ -104,10 +104,16 @@ export const processMessage = async (req, res) => {
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
-
-    // Step 1: Convert audio to text
-    const transcript =  await getTranscript(recordingUrl,lang==='bi' ? 'hi' :lang)
-    console.log("transcript response : ",transcript)
+    const audioResponse = await axios.get(recordingUrl + '.wav', {
+      responseType: 'arraybuffer',
+      auth: {
+        username:accountSid,
+        password: authToken
+      }
+    });
+    console.log(audioResponse);
+    const transcript = await getTranscriptFromBuffer(audioResponse.data, lang === 'bi' ? 'hi' : lang);
+    console.log("transcript response : ", transcript)
 
     if (!transcript) {
       const fallbackResponse = "I'm sorry, I couldn't understand the message.";
@@ -121,9 +127,9 @@ export const processMessage = async (req, res) => {
 
     // Step 2: Get Gemini response
     const textResponse = await callGeminiApi(transcript);
-    console.log("text response : ",textResponse)
+    console.log("text response : ", textResponse)
     // Step 3: Convert response to voice (here mocked with static audio)
-    const voiceUrl = await getVoice(textResponse,lang)
+    const voiceUrl = await getVoice(textResponse, lang)
     console.log(voiceUrl)
 
     // const voiceUrl =
@@ -145,7 +151,7 @@ export const processMessage = async (req, res) => {
       hi: "https://ik.imagekit.io/b8twhzei3r/REsAnika%20-%20Hindi.mp3?updatedAt=1745304938861",
       bi: "https://ik.imagekit.io/b8twhzei3r/REsJeet%20-%20Hindi,%20Bihari.mp3?updatedAt=1745304938857"
     };
-    
+
     gather.play(further[lang]);
 
     //fallback (if no response)
