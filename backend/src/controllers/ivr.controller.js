@@ -101,12 +101,14 @@ export const processMessage = async (req, res) => {
     const recordingUrl = req.body.RecordingUrl;
     let lang = req.query.lang;
     const twiml = new twilio.twiml.VoiceResponse();
-    console.log(lang)
+    console.log(accountSid, authToken)
+    console.log("📞 Processing message...");
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
+    let audioResponse;
    try {
-    const audioResponse = await axios.get(recordingUrl , {
+     audioResponse = await axios.get(recordingUrl , {
       responseType: 'arraybuffer',
       auth: {
         username: accountSid,
