@@ -108,6 +108,7 @@ export const processMessage = async (req, res) => {
   console.log("Request body:", req.body);
 
   const twiml = new twilio.twiml.VoiceResponse();
+
   try {
     const lang = req.query.lang || "en";
     const recordingSid = req.body.RecordingSid;
@@ -120,58 +121,49 @@ export const processMessage = async (req, res) => {
     console.log("🌐 Language:", lang);
     console.log("🎯 Recording SID:", recordingSid);
 
-    let audioBuffer;
+    let recording;
+    let attempts = 0;
+    const maxAttempts = 5;
+    const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-    try {
-      let recording;
-      let attempts = 0;
-      const maxAttempts = 5;
-      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-  
-      while (attempts < maxAttempts) {
-        try {
-          recording = await client.recordings(recordingSid).fetch();
-          if (recording && recording.uri) break; // ✅ Successfully fetched
-        } catch (err) {
-          console.warn(`⏳ Recording not ready yet (attempt ${attempts + 1})`);
-        }
-  
-        await delay(1000); // wait 1 second
-        attempts++;
-      }
-  
-      if (!recording || !recording.uri) {
-        throw new Error("Recording not available after retries");
+    while (attempts < maxAttempts) {
+      try {
+        recording = await client.recordings(recordingSid).fetch();
+        if (recording && recording.uri) break; // ✅ Successfully fetched
+      } catch (err) {
+        console.warn(`⏳ Recording not ready yet (attempt ${attempts + 1})`);
       }
 
-      const audioUrl = `https://api.twilio.com${recording.uri.replace(
-        ".json",
-        ".mp3"
-      )}`;
-      console.log("🎧 Fetched Audio URL from Twilio:", audioUrl);
-
-      const authString = Buffer.from(`${accountSid}:${authToken}`).toString(
-        "base64"
-      );
-
-      const audioResponse = await axios.get(audioUrl, {
-        responseType: "arraybuffer",
-        headers: {
-          Authorization: `Basic ${authString}`,
-        },
-        maxRedirects: 5,
-      });
-
-      audioBuffer = Buffer.from(audioResponse.data);
-      console.log("✅ Audio buffer fetched successfully");
-    } catch (audioErr) {
-      console.error("❌ Error while fetching audio:", audioErr.message);
-      throw new Error("Failed to fetch the recorded message.");
+      await delay(1000); // wait 1 second
+      attempts++;
     }
 
-    // const audioBuffer = Buffer.from(audioResponse.data);
+    if (!recording || !recording.uri) {
+      throw new Error("Recording not available after retries");
+    }
 
-    // Step 2: Transcribe the message
+    const audioUrl = `https://api.twilio.com${recording.uri.replace(
+      ".json",
+      ".mp3"
+    )}`;
+    console.log("🎧 Fetched Audio URL from Twilio:", audioUrl);
+
+    const authString = Buffer.from(`${accountSid}:${authToken}`).toString(
+      "base64"
+    );
+
+    const audioResponse = await axios.get(audioUrl, {
+      responseType: "arraybuffer",
+      headers: {
+        Authorization: `Basic ${authString}`,
+      },
+      maxRedirects: 5,
+    });
+
+    const audioBuffer = Buffer.from(audioResponse.data);
+    console.log("✅ Audio buffer fetched successfully");
+
+    // Step 2: Transcribe
     const transcript = await getTranscriptFromBuffer(
       audioBuffer,
       lang === "bi" ? "hi" : lang
@@ -189,7 +181,7 @@ export const processMessage = async (req, res) => {
 
     console.log("📝 Transcript:", transcript);
 
-    // Step 3: Get Gemini response
+    // Step 3: Gemini response
     const textResponse = await callGeminiApi(transcript);
     console.log("🤖 Gemini response:", textResponse);
 
@@ -197,12 +189,11 @@ export const processMessage = async (req, res) => {
     const voiceUrl = await getVoice(textResponse, lang);
     twiml.play(voiceUrl);
 
-    // Step 5: Gather further input
+    // Step 5: Gather input
     const gather = twiml.gather({
       numDigits: 1,
       action: `${baseUrl}/ivr/next-action?lang=${lang}`,
       method: "POST",
-      // recordingStatusCallbackMethod: "POST",
       timeout: 5,
     });
 
@@ -216,7 +207,6 @@ export const processMessage = async (req, res) => {
       gather.play(furtherPrompts[lang]);
     }
 
-    // Fallback if no input
     twiml.say(
       "We did not receive any input. Ending the call. Thank you for using AgroAid."
     );
@@ -230,6 +220,7 @@ export const processMessage = async (req, res) => {
     res.type("text/xml").send(twiml.toString());
   }
 };
+
 
 export const nextAction = (req, res) => {
   const digit = req.body.Digits;
