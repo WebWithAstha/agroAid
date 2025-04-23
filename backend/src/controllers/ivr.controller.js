@@ -71,6 +71,14 @@ export const selectLanguage = (req, res) => {
     const twiml = new twilio.twiml.VoiceResponse();
     console.log("🌐 Language selected:", digit);
 
+    // 🛡️ Check if it's an initial call or something else
+  if (!digit) {
+    // Don't proceed if Digits isn't part of the request
+    twiml.say("Invalid flow. Please try again.");
+    twiml.hangup();
+    return res.type("text/xml").send(twiml.toString());
+  }
+
     const langMap = {
       1: "hi", // Hindi
       2: "en", // English
