@@ -48,8 +48,9 @@ export const voiceMenu = (req, res) => {
 
     const gather = twiml.gather({
       numDigits: 1,
-      action: `${baseUrl}/ivr/select-language`,
+      recordingStatusCallback: `${baseUrl}/ivr/select-language`,
       method: "POST",
+      recordingStatusCallbackMethod: "POST",
     });
 
     gather.say(
