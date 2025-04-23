@@ -105,6 +105,7 @@ export const processMessage = async (req, res) => {
 
     console.log("🎙️ Message recorded at:", recordingUrl);
     console.log("🌐 Language for processing:", lang);
+   try {
     const audioResponse = await axios.get(recordingUrl , {
       responseType: 'arraybuffer',
       auth: {
@@ -112,6 +113,9 @@ export const processMessage = async (req, res) => {
         password: authToken
       }
     });
+   } catch (error) {
+    logger.error("Error fetching audio:", error);
+   }
     const data = Buffer.from(audioResponse.data);
     const transcript = await getTranscriptFromBuffer(data, lang === 'bi' ? 'hi' : lang);
     console.log("transcript response : ", transcript)
