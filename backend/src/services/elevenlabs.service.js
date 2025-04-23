@@ -8,7 +8,8 @@ export const getVoice = async function(text,lan) {
       en: config.elevenVoiceId_en,
       bi: config.elevenVoiceId_bi
     };
-    const voiceId = voiceMap[lan] || 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
+    // const voiceId = voiceMap[lan] || 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
+    const voiceId = 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
     try {
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',

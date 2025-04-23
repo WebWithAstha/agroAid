@@ -15,6 +15,7 @@ import Assistant from '../components/pages/Assistant.jsx';
 import IvrSystem from '../components/pages/IvrSystem.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import NotFound from '../components/pages/NotFound.jsx';
+import PMKisanForm from '../components/pages/PMKisanForm.jsx';
 
 const AppRoutes = () => {
 
@@ -36,6 +37,7 @@ const AppRoutes = () => {
       <Route path="/directmarket" element={<ProtectedRoute><DirectMarket /></ProtectedRoute>} />
       <Route path="/assistant" element={<ProtectedRoute><Assistant /></ProtectedRoute>} />
       <Route path="/ivr" element={<ProtectedRoute><IvrSystem /></ProtectedRoute>} />
+      <Route path="/pmkisan" element={<ProtectedRoute><PMKisanForm /></ProtectedRoute>} />
 
       <Route path='*' element={<NotFound />} />
     </Routes>
