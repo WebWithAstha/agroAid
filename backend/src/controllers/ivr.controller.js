@@ -183,9 +183,9 @@ export const processMessage = async (req, res) => {
     // Step 5: Gather further input
     const gather = twiml.gather({
       numDigits: 1,
-      recordingStatusCallback: `${baseUrl}/ivr/next-action?lang=${lang}`,
+      action: `${baseUrl}/ivr/next-action?lang=${lang}`,
         method: "POST",
-        recordingStatusCallbackMethod: "POST",
+        // recordingStatusCallbackMethod: "POST",
       timeout: 5,
     });
 
