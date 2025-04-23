@@ -90,7 +90,7 @@ export const selectLanguage = (req, res) => {
       twiml.record({
         maxLength: 30,
         finishOnKey: "#",
-        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        // action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         method: "POST",
         recordingStatusCallbackMethod: "POST",
@@ -221,7 +221,7 @@ export const nextAction = (req, res) => {
     twiml.record({
       maxLength: 30,
       finishOnKey: "#",
-      action: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      // action: `${baseUrl}/ivr/process-message?lang=${lang}`,
       recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${lang}`,
       method: "POST",
       recordingStatusCallbackMethod: "POST",
