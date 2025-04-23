@@ -14,6 +14,7 @@ import { connectWallet, fetchAllCrops, listCrop } from "../../../../store/Action
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../../../../Services/fileUpload.service.js";
 import Header from "../../../partials/Header";
+import Btn from "../../../partials/Btn.jsx";
 
 
 const FarmerDashboard = () => {
@@ -209,6 +210,44 @@ const CropListingCard = ({ crop, onEdit, onDelete }) => {
 };
 
 const CropForm = ({ initialData, onSave, onCancel }) => {
+
+
+  const handleLocation = () => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+  
+      try {
+        const response = await fetch(
+          `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=f9a1d04a074d48679b23e7c7e6875464`
+        );
+        const data = await response.json();
+  
+        if (data.results.length > 0) {
+          const components = data.results[0].components;
+          const city = components.city || components.town || components.village || "";
+          const state = components.state || "";
+          const fullLocation = `${city}, ${state}`;
+  
+          setFormData((prev) => ({
+            ...prev,
+            location: fullLocation,
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            location: `${latitude}, ${longitude}`, // fallback
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching location details:", error);
+        setFormData((prev) => ({
+          ...prev,
+          location: `${latitude}, ${longitude}`, // fallback
+        }));
+      }
+    });
+  };
+  
   const [imagePreviews, setImagePreviews] = useState(null);
   const [formData, setFormData] = useState(
     initialData || {
@@ -449,9 +488,10 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
               <p className="mt-1 text-xs text-red-500">{errors.totalQuantity}</p>
             )}
           </div>
+<div className="flex items-end gap-2">
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="">
+            <label className="block w-full text-sm font-medium text-gray-700 mb-1">
               Location
             </label>
             <input
@@ -461,9 +501,10 @@ const CropForm = ({ initialData, onSave, onCancel }) => {
               onChange={handleChange}
               className="w-full p-2 border rounded-md border-gray-300"
               placeholder="Farm location"
-            />
+              />
           </div>
-
+            <div onClick={handleLocation} className="px-3 py-2 bg-rose-400 flex items-center rounded text-white text-xs font-medium mb-1 justify-center">Get Location</div>
+              </div>
           <div>
             <div className="flex items-center mt-6">
               <input

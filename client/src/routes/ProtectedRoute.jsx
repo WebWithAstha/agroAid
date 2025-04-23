@@ -36,6 +36,8 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/register" replace />;
   }
 
+
+
   return (
     <>
       <GoogleTranslate lang={user.language} />

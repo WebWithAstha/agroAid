@@ -3,14 +3,10 @@ import { uploadFileToImageKit } from "./ImageKit.service.js";
 
 export const getVoice = async function(text,lan) {
     const api = config.elevenApiKey;
-    const voiceMap = {
-      hi: config.elevenVoiceId_hi,
-      en: config.elevenVoiceId_en,
-      bi: config.elevenVoiceId_bi
-    };
-    const voiceId = voiceMap[lan] || 'iLrek0aeAREetkK9NhwJ'; // default to English if unknown
+// default to English if unknown
+
     try {
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/SV61h9yhBg4i91KIBwdz`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

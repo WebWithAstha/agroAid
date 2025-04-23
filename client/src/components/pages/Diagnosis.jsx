@@ -49,7 +49,8 @@ const Diagnosis = () => {
       // console.log("hey")
       setIsFormOpen(true);
     }
-    if (!allDiagnosis) {
+    
+    if (allDiagnosis.length==0) {
       dispatch(fetchAllDiagnosisAction());
     }
   }, []);
