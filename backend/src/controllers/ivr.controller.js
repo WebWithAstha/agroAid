@@ -72,7 +72,7 @@ export const selectLanguage = (req, res) => {
     console.log("🌐 Language selected:", digit);
 
     // 🛡️ Check if it's an initial call or something else
-  if (!digit) {
+  if (digit ==) {
     // Don't proceed if Digits isn't part of the request
     twiml.say("Invalid flow. Please try again.");
     twiml.hangup();
@@ -87,7 +87,7 @@ export const selectLanguage = (req, res) => {
 
     const selectedLang = langMap[digit];
 
-    if (!selectedLang) {
+    if (!selectedLang && digit.toString() !== "#") {
       twiml.say(
         "You select a wrong option. We are hanging up the call, please try again."
       );
