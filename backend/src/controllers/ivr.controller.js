@@ -91,7 +91,9 @@ export const selectLanguage = (req, res) => {
         maxLength: 30,
         finishOnKey: "#",
         action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
+        recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${selectedLang}`,
         method: "POST",
+        recordingStatusCallbackMethod: "POST",
       });
     }
 
@@ -104,6 +106,8 @@ export const selectLanguage = (req, res) => {
 };
 
 export const processMessage = async (req, res) => {
+  console.log("🌐 processMessage triggered");
+console.log("Request body:", req.body);
   const twiml = new twilio.twiml.VoiceResponse();
   try {
     const lang = req.query.lang || "en";
@@ -218,7 +222,9 @@ export const nextAction = (req, res) => {
       maxLength: 30,
       finishOnKey: "#",
       action: `${baseUrl}/ivr/process-message?lang=${lang}`,
+      recordingStatusCallback: `${baseUrl}/ivr/process-message?lang=${lang}`,
       method: "POST",
+      recordingStatusCallbackMethod: "POST",
     });
   } else {
     // End the call
@@ -229,3 +235,13 @@ export const nextAction = (req, res) => {
   res.type("text/xml");
   res.send(twiml.toString());
 };
+
+export const recordComplete = (req, res) => {
+  const twiml = new twilio.twiml.VoiceResponse();
+  twiml.say("Thank you. Processing your message.");
+  // optionally add: twiml.pause({ length: 2 });
+  twiml.hangup();
+
+  res.type("text/xml").send(twiml.toString());
+};
+
