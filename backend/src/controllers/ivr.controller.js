@@ -95,83 +95,91 @@ export const selectLanguage = (req, res) => {
   }
 };
 
-// Final handler: get transcript → Gemini → audio → respond
+
+
 export const processMessage = async (req, res) => {
+  const twiml = new twilio.twiml.VoiceResponse();
   try {
     const recordingUrl = req.body.RecordingUrl;
-    let lang = req.query.lang;
-    const twiml = new twilio.twiml.VoiceResponse();
-    console.log(accountSid, authToken)
-    console.log("📞 Processing message...");
+    const lang = req.query.lang || "en";
+    
+    if (!recordingUrl) {
+      throw new Error("Recording URL is missing");
+    }
 
-    console.log("🎙️ Message recorded at:", recordingUrl);
-    console.log("🌐 Language for processing:", lang);
+    console.log("🎙️ Recording URL:", recordingUrl);
+    console.log("🌐 Language:", lang);
+
+    // Step 1: Fetch the audio buffer
     let audioResponse;
-   try {
-     audioResponse = await axios.get(recordingUrl , {
-      responseType: 'arraybuffer',
-      auth: {
-        username: accountSid,
-        password: authToken
-      }
-    });
-   } catch (error) {
-    console.error("Error fetching audio:", error);
-   }
-    const data = Buffer.from(audioResponse.data);
-    const transcript = await getTranscriptFromBuffer(data, lang === 'bi' ? 'hi' : lang);
-    console.log("transcript response : ", transcript)
+    try {
+      audioResponse = await axios.get(`${recordingUrl}.mp3`, {
+        responseType: "arraybuffer",
+        auth: {
+          username: accountSid,
+          password: authToken,
+        },
+      });
+    } catch (fetchErr) {
+      console.error("❌ Error fetching audio from Twilio:", fetchErr.message);
+      throw new Error("Failed to fetch the recorded message.");
+    }
+
+    const audioBuffer = Buffer.from(audioResponse.data);
+
+    // Step 2: Transcribe the message
+    const transcript = await getTranscriptFromBuffer(
+      audioBuffer,
+      lang === "bi" ? "hi" : lang
+    );
 
     if (!transcript) {
-      const fallbackResponse = "I'm sorry, I couldn't understand the message.";
-      const fallbackVoice = await getVoice(fallbackResponse, lang);
+      console.warn("⚠️ No transcript generated");
+      const fallbackMessage = "I'm sorry, I couldn't understand the message.";
+      const fallbackVoice = await getVoice(fallbackMessage, lang);
       twiml.play(fallbackVoice);
       twiml.say("Please try again or call later.");
       twiml.hangup();
-      res.type("text/xml").send(twiml.toString());
-      return;
+      return res.type("text/xml").send(twiml.toString());
     }
 
-    // Step 2: Get Gemini response
+    console.log("📝 Transcript:", transcript);
+
+    // Step 3: Get Gemini response
     const textResponse = await callGeminiApi(transcript);
-    console.log("text response : ", textResponse)
-    // Step 3: Convert response to voice (here mocked with static audio)
-    const voiceUrl = await getVoice(textResponse, lang)
-    console.log(voiceUrl)
+    console.log("🤖 Gemini response:", textResponse);
 
-    // const voiceUrl =
-    //   "https://firebasestorage.googleapis.com/v0/b/upload-images-da293.appspot.com/o/voice-messages%2Fmenx27s-laughter-121577.mp3?alt=media&token=8a0515e0-1690-4e2b-8293-061b1288d7c2";
-
-    // Play the response audio
+    // Step 4: Convert to voice
+    const voiceUrl = await getVoice(textResponse, lang);
     twiml.play(voiceUrl);
 
-    // Ask if they want further assistance
+    // Step 5: Gather further input
     const gather = twiml.gather({
       numDigits: 1,
       action: `${baseUrl}/ivr/next-action?lang=${lang}`,
       method: "POST",
-      timeout: 5, // seconds to wait for input
+      timeout: 5,
     });
 
-    const further = {
+    const furtherPrompts = {
       en: "https://ik.imagekit.io/b8twhzei3r/RESMaheshEnglisj.mp3?updatedAt=1745304938610",
       hi: "https://ik.imagekit.io/b8twhzei3r/REsAnika%20-%20Hindi.mp3?updatedAt=1745304938861",
-      bi: "https://ik.imagekit.io/b8twhzei3r/REsJeet%20-%20Hindi,%20Bihari.mp3?updatedAt=1745304938857"
+      bi: "https://ik.imagekit.io/b8twhzei3r/REsJeet%20-%20Hindi,%20Bihari.mp3?updatedAt=1745304938857",
     };
 
-    gather.play(further[lang]);
+    if (furtherPrompts[lang]) {
+      gather.play(furtherPrompts[lang]);
+    }
 
-    //fallback (if no response)
+    // Fallback if no input
     twiml.say(
       "We did not receive any input. Ending the call. Thank you for using AgroAid."
     );
     twiml.hangup();
 
-    res.type("text/xml");
-    res.send(twiml.toString());
-  } catch (error) {
-    console.error("❌ Error in processMessage:", error);
-    const twiml = new twilio.twiml.VoiceResponse();
+    res.type("text/xml").send(twiml.toString());
+  } catch (err) {
+    console.error("❌ Error in processMessage:", err.message);
     twiml.say("Sorry, there was a problem processing your request. Goodbye.");
     twiml.hangup();
     res.type("text/xml").send(twiml.toString());
