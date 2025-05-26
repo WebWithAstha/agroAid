@@ -7,8 +7,8 @@ const ChartToggleAndSelector = ({
     crops,
   }) => {
     return (
-      <div className="relative w-full">
-        <div className="flex absolute right-4 bottom-8 z-99 items-center space-x-2">
+      <div className="relative w-full flex flex-col">
+        <div className="flex md:absolute md:mx-0 mx-4 self-end right-4 bottom-8 z-99 items-center space-x-2">
           {/* Crop Selector */}
           <div className="relative">
             <select

@@ -48,21 +48,20 @@ const CropChart = ({
             });
     }, [combinedData, selectedCrop]);
 
-
     return (
-        <div className="h-full w-full m-auto border border-gray-100 rounded-lg shadow-sm p-3">
-            <div className="flex items-center justify-between mb-2 mr-2">
+        <div className="h-full w-full m-auto border border-gray-100 rounded-lg shadow-sm p-2 sm:p-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 mr-2 gap-2">
                 <div className="flex items-center">
                     <div
                         className="mr-2 w-1 h-8 rounded-full"
                         style={{ backgroundColor: "#0ea5e9" }}
                     ></div>
                     <div>
-                        <h2 className="text-sm font-bold bg-sky-400 mb-1 px-4 py-1.5 rounded-xl text-gray-600">
+                        <h2 className="text-xs sm:text-sm font-bold bg-sky-400 mb-1 px-2 sm:px-4 py-1 sm:py-1.5 rounded-xl text-gray-600">
                             {selectedCrop}
                         </h2>
                         <div className="flex items-center">
-                            <span className="text-md font-medium">₹{currentPrice}</span>
+                            <span className="text-sm sm:text-md font-medium">₹{currentPrice}</span>
                             <div
                                 className={`flex items-center ml-2 ${priceChange >= 0 ? "text-emerald-600" : "text-red-500"
                                     }`}
@@ -72,14 +71,14 @@ const CropChart = ({
                                 ) : (
                                     <ArrowDown size={12} />
                                 )}
-                                <span className="ml-px text-md">
+                                <span className="ml-px text-sm sm:text-md">
                                     {Math.abs(priceChange).toFixed(1)}%
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-end flex-wrap items-center mb-2 gap-2 text-sm text-gray-600 font-medium">
+                <div className="flex flex-wrap justify-end items-center gap-2 text-xs sm:text-sm text-gray-600 font-medium">
                     <div className="flex items-center ">
                         <span
                             className="inline-block w-3 h-3 mr-1 rounded-full"
@@ -94,10 +93,7 @@ const CropChart = ({
                 </div>
             </div>
 
-            {/* Labels for Min and Max */}
-
-
-            <ResponsiveContainer width="100%" height="80%" minHeight={150}>
+            <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 180 : "80%"} minHeight={120}>
                 <AreaChart
                     data={chartData}
                     margin={{ top: 40, right: 10, left: 0, bottom: 0 }}

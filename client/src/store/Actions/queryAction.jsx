@@ -11,16 +11,16 @@ export const loadUserQueries = () => async (dispatch) => {
   const cached = sessionStorage.getItem(SESSION_KEY);
   if (cached) {
     dispatch(loadQueries(JSON.parse(cached)));
-    console.log("queries fetch from cache")
+    // console.log("queries fetch from cache")
   } else {
     try {
       const res = await Axios.get('/assist/user-queries'); // your GET API
       dispatch(loadQueries(res.data.data));
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(res.data.data));
-      console.log("queries fetch from bk")
+      // console.log("queries fetch from bk")
     } catch (err) {
       console.log(err)
-      console.log("Failed to fetch queries")
+      // console.log("Failed to fetch queries")
       console.error("Failed to load queries", err);
     }
   }
@@ -48,13 +48,13 @@ export const sendUserQuery = (queryText, isVoice = false) => async (dispatch, ge
     const curQueries = getState().queryReducer.queries;
 
     const queryWithResponse = res.data.data;
-    console.log(res.data.data)
+    // console.log(res.data.data)
     const updatedQueries = curQueries.map(q=> q._id === tempId ? queryWithResponse :q)
     dispatch(loadQueries(updatedQueries))
 
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedQueries));
   } catch (error) {
     console.error('Query error:', error);
-    console.log("err getting response for wuery")
+    // console.log("err getting response for wuery")
   }
 };

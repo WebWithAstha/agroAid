@@ -54,17 +54,27 @@ const OtpVerification = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-100 to-white px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl p-8">
-        <h2 className="text-2xl font-semibold text-center text-emerald-800 mb-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-100 to-white px-2 sm:px-4 py-8">
+      <div className="w-full max-w-xs sm:max-w-md bg-white rounded-2xl p-4 sm:p-8 relative">
+        <button
+          type="button"
+          className="absolute left-3 top-3 text-emerald-700 hover:text-emerald-900 transition p-1 rounded-full"
+          onClick={() => navigate(-1)}
+          aria-label="Back"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 className="text-xl sm:text-2xl font-semibold text-center text-emerald-800 mb-4">
           OTP Verification
         </h2>
-        <p className="text-center text-sm text-gray-600 mb-6">
+        <p className="text-center text-xs sm:text-sm text-gray-600 mb-6">
           Please enter the 6-digit code sent to your number
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="flex justify-between space-x-2 mb-6">
+          <div className="flex justify-between space-x-1 sm:space-x-2 mb-6">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -74,7 +84,7 @@ const OtpVerification = () => {
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 ref={(el) => (inputsRef.current[index] = el)}
-                className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                className="w-8 h-10 sm:w-12 sm:h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
               />
             ))}
           </div>
@@ -82,7 +92,7 @@ const OtpVerification = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full disabled:bg-gray-200 disabled:text-gray-400 bg-emerald-600 hover:bg-emerald-700 transition text-white py-2.5 rounded-lg text-sm font-semibold shadow-md flex items-center justify-center"
+            className="w-full disabled:bg-gray-200 disabled:text-gray-400 bg-emerald-600 hover:bg-emerald-700 transition text-white py-2 rounded-lg sm:py-2.5 text-sm font-semibold shadow-md flex items-center justify-center"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

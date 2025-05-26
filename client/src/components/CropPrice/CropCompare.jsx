@@ -6,7 +6,7 @@ const CropCompare = ({ currentPrice, crops, selectedCrop, marketData }) => {
         <h2 className="text-lg font-medium text-gray-800 mb-3">
           Price Comparison
         </h2>
-        <div className="space-y-2 grid gap-3 grid-cols-3">
+        <div className="space-y-2 grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {crops
             .filter((c) => c.name !== selectedCrop)
             .slice(0, 3)

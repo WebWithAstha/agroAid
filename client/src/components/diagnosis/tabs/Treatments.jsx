@@ -1,10 +1,10 @@
 import { Leaf, Shell } from "lucide-react";
 import React from "react";
 
-const Treatments = ({selectedDiagnosis}) => {
+const Treatments = ({ selectedDiagnosis }) => {
   return (
     <div>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-lime-50 p-5 rounded-lg">
           <h3 className="text-xl font-medium text-gray-800 mb-4 flex items-center">
             <Shell size={24} className="mr-2 text-green-600" /> Chemical
@@ -19,10 +19,9 @@ const Treatments = ({selectedDiagnosis}) => {
                 Application Guidelines
               </h4>
               <ul className="text-sm text-gray-600 space-y-2">
-              {selectedDiagnosis.treatment.chemical.map((t,i)=>(
-                <li>• {t}</li>
-
-              ))}
+                {selectedDiagnosis.treatment.chemical.map((t, i) => (
+                  <li key={i}>• {t}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -41,10 +40,9 @@ const Treatments = ({selectedDiagnosis}) => {
                 Benefits of Organic Approach
               </h4>
               <ul className="text-sm text-gray-600 space-y-2">
-              {selectedDiagnosis.treatment.organic.map((t,i)=>(
-                <li>• {t}</li>
-
-              ))}
+                {selectedDiagnosis.treatment.organic.map((t, i) => (
+                  <li key={i}>• {t}</li>
+                ))}
               </ul>
             </div>
           </div>

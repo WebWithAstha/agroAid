@@ -73,31 +73,30 @@ const CropPrices = () => {
   }, [uniqueCommodities, selectedCrop]);
 
   return (
-    <div className="md:h-screen flex bg-zinc-50 flex-col ">
+    <div className="min-h-screen flex bg-zinc-50 flex-col">
       <div className="relative">
         {!uniqueCommodities || uniqueCommodities.length === 0 ? (
           <HeaderLoading />
         ) : (
           <>
-          <Header
-            title="Crop Price Trends"
-            des="Upload crop images for instant disease detection & treatment advice"
+            <Header
+              title="Crop Price Trends"
+              des="Upload crop images for instant disease detection & treatment advice"
             />
-        <ChartToggleAndSelector
-          selectedCrop={selectedCrop}
-          setSelectedCrop={setSelectedCrop}
-          chartView={chartView}
-          setChartView={setChartView}
-          crops={uniqueCommodities}
-        />
-            </>
+            <ChartToggleAndSelector
+              selectedCrop={selectedCrop}
+              setSelectedCrop={setSelectedCrop}
+              chartView={chartView}
+              setChartView={setChartView}
+              crops={uniqueCommodities}
+            />
+          </>
         )}
-
       </div>
-      <main className="md:h-[86vh] flex flex-col ">
-        <div className="md:grid md:grid-cols-3 h-full md:overflow-hidden md:grid-rows-2 py-2 px-10 md:px-20 w-full gap-4  flex-grow">
+      <main className="flex flex-col flex-1">
+        <div className="flex flex-col-reverse  md:grid md:grid-cols-3 md:grid-rows-2 h-full md:overflow-hidden py-2 px-2 sm:px-4 md:px-10 lg:px-20 w-full gap-4 flex-grow">
           <div className="relative w-full bg-white md:mb-0 mb-3 shadow md:row-span-2 flex-col h-full">
-            <div className="w-full h-80 shrink-0 md:h-[93%] bg-gradient-to-br from-zinc-50 space-y-1.5 overflow-y-auto">
+            <div className="w-full h-64 sm:h-80 md:h-[93%] bg-gradient-to-br from-zinc-50 space-y-1.5 overflow-y-auto">
               {!uniqueCommodities || uniqueCommodities.length === 0 ? (
                 <div className="w-full h-full px-4 py-2 flex flex-col gap-4">
                   {[1, 2, 3, 4, 5, 6].map((e) => (
@@ -130,7 +129,7 @@ const CropPrices = () => {
           </div>
 
           <div className="col-span-2 flex flex-col h-full gap-3">
-            <div className="h-[60vh] bg-white relative flex items-center justify-center rounded-xl shrink-0">
+            <div className="h-64 sm:h-[40vh] md:h-[60vh] bg-white relative flex items-center justify-center rounded-xl shrink-0">
               {!selectedCrop || !cropPrices || cropPrices.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <div className="w-32 h-32 rounded-full border-8 border-zinc-300 animate-spin border-t-transparent"></div>
@@ -149,7 +148,7 @@ const CropPrices = () => {
               )}
             </div>
 
-            <div className="h-40 rounded-xl shrink-0 overflow-hidden bg-white flex items-center justify-center">
+            <div className="h-32 sm:h-40 rounded-xl shrink-0 overflow-hidden bg-white flex items-center justify-center">
               {!uniqueCommodities || uniqueCommodities.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="w-10 h-10 border-4 border-zinc-300 border-t-transparent rounded-full animate-spin"></div>

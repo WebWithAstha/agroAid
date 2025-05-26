@@ -87,12 +87,20 @@ export const selectLanguage = (req, res) => {
     } else {
       twiml.play(recordedAudioUrl[digit - 1]);
 
+      // twiml.record({
+      //   maxLength: 30,
+      //   finishOnKey: "#",
+      //   action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`, // ✅ This is what Twilio uses to continue the IVR
+      //   method: "POST",
+      // });
+
       twiml.record({
         maxLength: 30,
         finishOnKey: "#",
-        action: `${baseUrl}/ivr/process-message?lang=${selectedLang}`, // ✅ This is what Twilio uses to continue the IVR
+        action: `${baseUrl}/ivr/fetch-recorded-url`, // ✅ This is what Twilio uses to continue the IVR
         method: "POST",
       });
+
     }
 
     res.type("text/xml");
@@ -102,6 +110,45 @@ export const selectLanguage = (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+export const fetchRecordedUrl = async (req,res)=>{
+console.log("Request body:", req.body);
+
+
+  try {
+    const lang = req.query.lang || "en";
+    const recordingSid = req.body.RecordingSid;
+
+    if (!recordingSid) {
+      console.error("❌ No RecordingSid in request body");
+      throw new Error("Recording SID is missing");
+    }
+   
+    const audioUrl = `https://api.twilio.com${recording.uri.replace(
+      ".json",
+      ".mp3"
+    )}`;
+    console.log("🎧 Fetched Audio URL from Twilio:", audioUrl);
+
+    const authString = Buffer.from(`${accountSid}:${authToken}`).toString(
+      "base64"
+    );
+
+    const audioResponse = await axios.get(audioUrl, {
+      responseType: "arraybuffer",
+      headers: {
+        Authorization: `Basic ${authString}`,
+      },
+      maxRedirects: 5,
+    });
+
+    const audioBuffer = Buffer.from(audioResponse.data);
+    console.log("✅ Audio buffer fetched successfully");
+  }catch{
+
+  }
+  
+}
 
 export const processMessage = async (req, res) => {
   console.log("🌐 processMessage triggered");
@@ -118,30 +165,7 @@ export const processMessage = async (req, res) => {
       throw new Error("Recording SID is missing");
     }
 
-    console.log("🌐 Language:", lang);
-    console.log("🎯 Recording SID:", recordingSid);
-
-    let recording;
-    let attempts = 0;
-    const maxAttempts = 5;
-    const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
-    while (attempts < maxAttempts) {
-      try {
-        recording = await client.recordings(recordingSid).fetch();
-        if (recording && recording.uri) break; // ✅ Successfully fetched
-      } catch (err) {
-        console.warn(`⏳ Recording not ready yet (attempt ${attempts + 1})`);
-      }
-
-      await delay(1000); // wait 1 second
-      attempts++;
-    }
-
-    if (!recording || !recording.uri) {
-      throw new Error("Recording not available after retries");
-    }
-
+   
     const audioUrl = `https://api.twilio.com${recording.uri.replace(
       ".json",
       ".mp3"

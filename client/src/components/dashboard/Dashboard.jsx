@@ -51,10 +51,10 @@ const Dashboard = () => {
         <Logo/>
       </div>
       <Navbar />
-      <main className="flex-1 px-2 pb-20 md:px-20 mx-auto w-full">
+      <main className="flex-1 px-4 pb-20 md:px-20 mx-auto w-full">
         <IntroCard/>
-        <OpenMarket/>
         <ServicesGrid />
+        <OpenMarket/>
       </main>
     </div>
   );

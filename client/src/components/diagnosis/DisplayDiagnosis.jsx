@@ -16,7 +16,7 @@ const DisplayDiagnosis = ({
    selectedDiagnosis &&
     <div className="bg-white rounded-lg overflow-y-auto h-full shadow-md">
       {/* Detail Header */}
-      <div className=" sticky top-0 bg-white">
+      <div className=" md:sticky top-0 z-[40] bg-white">
         <div className="md:p-6 border-b border-gray-200 md:flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">

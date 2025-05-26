@@ -37,7 +37,7 @@ const Preventions = ({selectedDiagnosis}) => {
                 </div> */}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <h4 className="font-medium text-gray-800 mb-3">
                   Resistant Varieties

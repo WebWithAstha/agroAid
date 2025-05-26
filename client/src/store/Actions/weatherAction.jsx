@@ -35,7 +35,7 @@ export const dailyWeatherForecast = () => async (dispatch) => {
             })),
         };
 
-        console.log(weatherUIData);
+        // console.log(weatherUIData);
         
         dispatch(setForecast(weatherUIData));
         dispatch(setWeatherLoading(false));

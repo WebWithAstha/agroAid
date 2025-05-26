@@ -6,23 +6,23 @@ const Overview = ({ selectedDiagnosis }) => {
 
   return (
     <div className="">
-      <div className="md:flex">
-        <div className="md:w-1/2 pr-4">
-          <div className="rounded-lg bg-gray-100 overflow-hidden mb-4">
+      <div className="flex flex-col md:flex-row">
+        <div className="w-full md:w-1/2 md:pr-4 mb-4 md:mb-0">
+          <div className="rounded-lg bg-gray-100 overflow-hidden">
             <img
               src={selectedDiagnosis.image}
               alt={selectedDiagnosis.cropName}
-              className="w-full text-sm h-64 object-cover"
+              className="w-full text-sm h-48 sm:h-56 md:h-64 object-cover"
             />
           </div>
         </div>
-        <div className="w-1/2 pl-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="w-full md:w-1/2 md:pl-4">
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
             <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
               <BarChart4 size={20} className="mr-2 text-green-600" /> Diagnosis
               Summary
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Crop</p>
                 <p className="font-medium">{selectedDiagnosis.cropName}</p>
@@ -58,7 +58,7 @@ const Overview = ({ selectedDiagnosis }) => {
           </div>
         </div>
       </div>
-      <div className="bg-rose-50 p-4  rounded-lg mb-4">
+      <div className="bg-rose-50 p-3 sm:p-4 rounded-lg mb-4 mt-4">
         <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
           <AlertTriangle size={20} className="mr-2 text-yellow-600" />{" "}
           Description

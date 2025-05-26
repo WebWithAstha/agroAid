@@ -5,7 +5,7 @@ const storedDiagnosis = sessionStorage.getItem("allDiagnosis");
 const parsedDiagnosis = storedDiagnosis ? JSON.parse(storedDiagnosis) : null;
 
 const initialState = {
-  allDiagnosis: parsedDiagnosis,
+  allDiagnosis: parsedDiagnosis || [], // Ensure it's always an array
   loading: false,
   selectedDiagnosis: null,
 };

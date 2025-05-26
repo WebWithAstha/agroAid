@@ -3,17 +3,17 @@ import React from 'react'
 
 const UploadList = ({allDiagnosis,selectedDiagnosis,getSeverityColor,setSelectedDiagnosis}) => {
   return (
-    <div className="md:w-2/5 w-28 min-40 bg-white border-r border-gray-200 overflow-y-auto">
+    <div className=" w-full flex-1 md:min-w-40  md:h-full h-40  bg-white border-r border-gray-200 md:overflow-y-auto">
           <div className="p-4 border-b border-gray-200">
             <h2 className="font-semibold text-gray-700">Your Uploads</h2>
           </div>
-          {allDiagnosis.length>0 ? 
-          <div className="divide-y divide-gray-200">
+          {allDiagnosis?.length>0 ? 
+          <div className="divide-y md:block flex md:overflow-x-hidden overflow-x-auto md:w-max w-full divide-gray-200">
             {[...allDiagnosis].reverse().map(diagnosis => (
               <div 
                 key={diagnosis._id}
                 onClick={() => setSelectedDiagnosis(diagnosis._id)} 
-                className={`md:p-4 p-2 cursor-pointer  hover:bg-gray-50 transition-colors ${selectedDiagnosis?._id === diagnosis._id ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
+                className={`md:p-4 p-2 shrink-0 md:w-full w-20 cursor-pointer  hover:bg-gray-50 transition-colors ${selectedDiagnosis?._id === diagnosis._id ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
               >
                 <div className="flex items-center gap-2 justify-between w-full">
                   <div className="md:w-16 h-16 w-full bg-gray-100 rounded-lg overflow-hidden mr-3 flex-shrink-0">

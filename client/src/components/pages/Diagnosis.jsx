@@ -37,7 +37,7 @@ const Diagnosis = () => {
   };
 
   let selectedDiagnosis;
-  if (allDiagnosis && allDiagnosis.length > 0) {
+  if (allDiagnosis && allDiagnosis?.length > 0) {
     selectedDiagnosis = allDiagnosis.find((d) => d._id === selectedDiagnosisId);
   }
   const storeId = sessionStorage.getItem("selectedDiagnosisId");
@@ -50,7 +50,7 @@ const Diagnosis = () => {
       setIsFormOpen(true);
     }
     
-    if (allDiagnosis.length==0) {
+    if (allDiagnosis?.length==0) {
       dispatch(fetchAllDiagnosisAction());
     }
   }, []);
@@ -105,54 +105,55 @@ const Diagnosis = () => {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
       {/* Header */}
-      <div className="relative">
+      <div className="relative ">
         <Header title={"Crop Diagnosis Dashboard"} />
 
         <div
-          className="md:absolute right-6 bottom-4 md:mb-0 mb-2"
+          className="md:absolute w-max md:mx-0 mx-4 ml-auto right-4 md:right-6 bottom-4 md:mb-0 mb-2"
           onClick={handleNewUpload}
         >
           <Btn title={" New Diagnosis"} />
         </div>
       </div>
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* Sidebar - List of diagnoses */}
         {allDiagnosis && (
-          <UploadList
-            allDiagnosis={allDiagnosis}
-            getSeverityColor={getSeverityColor}
-            setSelectedDiagnosis={setSelectedDiagnosis}
-            selectedDiagnosis={selectedDiagnosis}
-          />
+          <div className="w-full md:w-1/3 lg:w-1/4 md:p-0 p-2 max-w-full md:max-w-xs border-r border-zinc-200 bg-white md:overflow-x-hidden overflow-x-auto md:overflow-y-auto">
+            <UploadList
+              allDiagnosis={allDiagnosis}
+              getSeverityColor={getSeverityColor}
+              setSelectedDiagnosis={setSelectedDiagnosis}
+              selectedDiagnosis={selectedDiagnosis}
+            />
+          </div>
         )}
 
         {/* Main content area */}
-        <div className="w-full h-full overflow-hidden p-2">
-  {loading ? (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-zinc-300 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-zinc-500 text-sm">Loading analysis...</p>
-      </div>
-    </div>
-  ) : !isFormOpen ? (
-    <DisplayDiagnosis
-      selectedDiagnosis={selectedDiagnosis}
-      activeTab={activeTab}
-      setActiveTab={setActiveTab}
-      getSeverityColor={getSeverityColor}
-    />
-  ) : (
-    <UploadSection
-      uploadedImage={uploadedImage}
-      isAnalyzing={isAnalyzing}
-      handleImageUpload={handleImageUpload}
-      resetDiagnosis={resetDiagnosis}
-    />
-  )}
-</div>
-
+        <div className="w-full h-full overflow-hidden p-2 sm:p-4 flex-1">
+          {loading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 border-4 border-zinc-300 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-zinc-500 text-sm">Loading analysis...</p>
+              </div>
+            </div>
+          ) : !isFormOpen ? (
+            <DisplayDiagnosis
+              selectedDiagnosis={selectedDiagnosis}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              getSeverityColor={getSeverityColor}
+            />
+          ) : (
+            <UploadSection
+              uploadedImage={uploadedImage}
+              isAnalyzing={isAnalyzing}
+              handleImageUpload={handleImageUpload}
+              resetDiagnosis={resetDiagnosis}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
