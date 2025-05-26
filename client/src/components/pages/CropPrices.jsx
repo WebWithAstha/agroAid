@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../partials/Header";
-import { fetchAgmarknetPrices } from "../../store/Actions/agmarknetAction";
+import { fetchAgmarknetPrices } from "../../store/storeActions/agmarknetAction";
 import CropChart from "../CropPrice/CropChart";
 import CropCompare from "../CropPrice/CropCompare";
 import ChartToggleAndSelector from "../CropPrice/ChartToggleAndSelector";

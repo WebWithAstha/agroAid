@@ -3,7 +3,7 @@ import {useDispatch, useSelector } from 'react-redux';
 import Header from '../partials/Header';
 import QueryList from '../assistant/QueryList';
 import QueryInput from '../assistant/QueryInput';
-import { loadUserQueries, sendUserQuery } from '../../store/actions/queryAction';
+import { loadUserQueries, sendUserQuery } from '../../store/storeActions/queryAction';
 import { useEffect } from 'react';
 
 const Assistant = () => {

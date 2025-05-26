@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Clock, MapPin, Truck, User, ShoppingCart, Edit, Delete, DeleteIcon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { buyCrop, connectWallet, fetchAllCrops } from '../../../../store/Actions/blockchainAction';
+import { buyCrop, connectWallet, fetchAllCrops } from '../../../../store/storeActions/blockchainAction';
 
 
 

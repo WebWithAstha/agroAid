@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyOtpAndAuthenticate } from "../../store/Actions/authAction";
+import { verifyOtpAndAuthenticate } from "../../store/storeActions/authAction";
 import { Loader2 } from "lucide-react";
 
 

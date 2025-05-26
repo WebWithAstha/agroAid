@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DashboardLoading from "../components/loading/DashboardLoading";
-import { fetchCurrentUser } from "../store/Actions/authAction";
+import { fetchCurrentUser } from "../store/storeActions/authAction";
 import DiagnosisLoading from "../components/loading/diagnosis/DiagnosisLoading";
 
 const ProtectedRoute = ({ children }) => {

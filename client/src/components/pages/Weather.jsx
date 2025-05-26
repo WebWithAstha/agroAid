@@ -11,7 +11,7 @@ import {
   Sunset,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { dailyWeatherForecast } from "../../store/Actions/weatherAction";
+import { dailyWeatherForecast } from "../../store/storeActions/weatherAction.jsx";
 import Header from "../partials/Header";
 import WeatherLoading from "../loading/WeatherLoading.jsx";
 

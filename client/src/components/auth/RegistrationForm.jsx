@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateDetails } from '../../store/Actions/authAction';
+import { updateDetails } from '../../store/storeActions/authAction';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png'
 export default function RegistrationForm() {

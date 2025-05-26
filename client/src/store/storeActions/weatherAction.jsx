@@ -1,6 +1,6 @@
 import { dailyWeatherForecastService } from "../../Services/weather.Service.js";
-import { Axios } from "../../utils/axios";
-import { setWeatherLoading, setForecast, resetWeather } from "../slices/weatherSlice";
+import { Axios } from "../../utils/axios.js";
+import { setWeatherLoading, setForecast, resetWeather } from "../slices/weatherSlice.jsx";
 
 export const dailyWeatherForecast = () => async (dispatch) => {
     try {

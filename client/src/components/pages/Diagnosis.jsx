@@ -5,7 +5,7 @@ import {
   fetchAllDiagnosisAction,
   selectDiagnosisAction,
   uploadForDiagnosisAction,
-} from "../../store/Actions/diagnosisAction.jsx";
+} from "../../store/storeActions/diagnosisAction.jsx";
 import UploadList from "../diagnosis/UploadList.jsx";
 import DisplayDiagnosis from "../diagnosis/DisplayDiagnosis.jsx";
 import Header from "../partials/Header";

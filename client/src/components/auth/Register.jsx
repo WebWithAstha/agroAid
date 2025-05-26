@@ -3,7 +3,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom'
-import { signinAndSignup } from "../../store/Actions/authAction";
+import { signinAndSignup } from "../../store/storeActions/authAction";
 import logo from '../../assets/logo.png'
 
 const Register = () => {
